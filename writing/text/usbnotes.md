@@ -112,7 +112,7 @@ Test this out, test it well (few reboots, move things around the ports, keep it 
 ### Hack two, hardware (soldered on hub doesn't work)
 
 What happens is that micro usb has a fifth pin. It's called 'id' and is used for something called otg, a part of usb standard ... doesn't matter what it's for. What does matter is that within micro usb adapters and plugs this pin is connected directly to the ground and this is what makes the hub work with pi zero.
-We got rid of this connection above. A person called PotaTox figured this out and described the fix in great detail here (http://www.sudomod.com/forum/viewtopic.php?f=8&t=1345). 
+We got rid of this connection above. PotaTox figured this out and described the fix in great detail [here] (http://www.sudomod.com/forum/viewtopic.php?f=8&t=1345). 
 
 __The trick is to solder the id pin directly to the ground pin, on the pi zero board itself.__
 
