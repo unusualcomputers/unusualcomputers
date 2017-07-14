@@ -26,7 +26,7 @@ In addition, pi zero can be powered through usb port, this then means that you w
 In fact it's awlays worth trying a simple non-powered hub first, before splashing out and using up more space and electricity than you need.
 
 How will you know you need more power for a device you are attaching? 
-Most of the time you won't, not for sure. They may simply not work or they may work some of the time or behave in odd ways. These are complicated things, practically impossible to test in all configurations, even the best ones will have only been tested for the most common ones, if that - power supply may be one of the reasons why they fail, but normally the easiest one to eliminate so worth having a go at. The first thing to try is setting `max_usb_current=1` in config.txt [LINK TO ARTICLE ABOUT EDITING IT]. It is strangely hard to find out how much effect this has on pi zero, on other ones (Pi 2, Pi 3) it increases the amount of current available to usb devices via pi. 
+Most of the time you won't, not for sure. They may simply not work or they may work some of the time or behave in odd ways. These are complicated things, practically impossible to test in all configurations, even the best ones will have only been tested for the most common ones, if that - power supply may be one of the reasons why they fail, but normally the easiest one to eliminate so worth having a go at. The first thing to try is setting `max_usb_current=1` in config.txt ( [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#configtxt) is how ). It is strangely hard to find out how much effect this has on pi zero, on other ones (Pi 2, Pi 3) it increases the amount of current available to usb devices via pi. 
 If this doesn't help, and you have one, try a better, stronger, power supply for raspberry itself (this never worked for me btw, but people with admirable experience recommend it).
 
 If none of this worked, and you figured out another way, please make it known somewhere, even better drop us a line, we'll add it here.
@@ -49,7 +49,7 @@ At this point you need to start testing the hub. Sometimes they just work, could
 ### Hack one, software
 
 If there are problems in a huge number of cases a fix discovered by
-[goldilocks](https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot) works wonderfully. The trick is to force raspberry to drop and then establish again the connection to the hub. To do this you add the following two lines of text to (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#rclocal)) in rasbian or to (FULL LINK TO autostart.sh) in OpenElec or ElecLibre.
+[goldilocks](https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot) works wonderfully. The trick is to force raspberry to drop and then establish again the connection to the hub. To do this you add the following two lines of text to (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#rclocal)) in rasbian or to autostart.sh ( details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#openeleclibreelec-autostartsh)) in OpenElec or ElecLibre.
 ```
     echo "1-1:1.0" > /sys/bus/usb/drivers/hub/unbind
     sleep 3
