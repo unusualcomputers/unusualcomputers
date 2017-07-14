@@ -25,7 +25,9 @@ Setting up software was as easy as it gets, a straightforward OpenElec installat
 To do this yourself:
 
 > If you have access to a computer with an SD card reader, download the OpenElec disk image from [here](http://openelec.tv/get-openelec)  and follow instructions [here](https://www.raspberrypi.org/documentation/installation/installing-images/) to copy in onto SD card. If you don't, by far the best option is to ask someone who does, anyone with a soul should do it for a smile (if they don't have an SD card reader you can buy one for a couple of euros, pounds, dollars).
+
 > The choice of SD cards is permanently a topic on enthusiasts forums, in short, anything with 4Gb or more will work. SanDisk ones are fastest, Kingston probably slowest. Get what you can afford and don't worry.
+
 > Similarly, OpenElec is not the only option, there are at least two more systems just as popular, LibreElec and OSMC - in both set up and usage there is no real difference between them, if you can't make your mind up say their names out loud and choose one you like the best, it will help when you are explaining someone what you did.
 
 
