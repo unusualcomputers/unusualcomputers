@@ -1,6 +1,6 @@
 # Kodi in a flower pot
 
-![pot](../pics/clay1_done2.JPG)
+  ![pot](../pics/clay1_done2_m.jpg)
 
 > A fully functional kodi machine built into a fully functional flower pot.
 > The computer is Raspberry Pi Zero running OpenElec, the pot is made of clay.
@@ -10,9 +10,9 @@ There is intrinsic beauty in rough unpolished shapes and there is humanity and d
 
 Technologists, on the other hand, know that it is neither hard nor expensive to build small computers and there is immense joy in thinking through the wiring and software to see it light up a screen in the end.
 
-Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve.
+Everyone knows that putting together a useful thing of beauty is what we are for. (even at times when taking pride in it is considered naïve).
 
-So here goes a flower pot with the best entertainment centre there is built into it.
+So here goes a flower pot with the best entertainment centre there is built into it, made for about £17/20 eur.
 
 
 ### The computer
@@ -30,36 +30,39 @@ Setting up software was as easy as it gets, a straightforward OpenElec installat
 
 #### USB hub
 
-Cable is always faster then WiFi; it can only be used when the TV is close enough to the router but it's good to have this as an option. 
-Simplest and probably cheapest to provide an empty USB port and get hold of a USB-ethernet converter (£2 on ebay). 
+For internet, cable is always faster then WiFi; it can only be used when the TV is close enough to the router but it's good to have this as an option. 
+Simplest and probably cheapest is to provide an empty USB port and get hold of a USB-ethernet converter (£2 on ebay). 
 
-For everything else there must be a WiFi connection, again a USB WiFi dongle works. 
+For everything else there is a WiFi connection, again a USB WiFi dongle works. 
 
 > The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken one, so start low and try them. If buying online, anything that mentions raspberry on ebay, aliexpress, amazon etc will do.
 
-We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking here [LINK] if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this [PICTURE or LINK]. Got it of ebay for a fiver, took a month to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
+We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking [here] (http://kodi.wiki/view/CEC) if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this: 
+
+![keyboard](../pics/kbd.jpg)
+
+Got it of ebay for a fiver,it took a couple of weeks to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
 
 All in all, three USB ports. The hub used was a 3 eur anonymous ebay special, so had to work a bit to make it work but it does (and in honesty, not worked that hard on it - see [LINK], a small change to autostart.sh file on the sd card and it was up and running).
 
 At this point I put it all together, connected the hub using a mini usb shim (a small adapter that goes inside a usb plug), a TV using a mini HDMI to HDMI cable and powered it up through a USB port on the TV. All was looking great except that I could not install any add-ons no matter what I tried. The next day I re-installed OpenElec and it just worked. Not sure what went wrong, nor if this was a problem with my installation or kodi servers, but the fix was ten minutes of work, so not really sure I care.
 
-Pi zero is tiny, the hub with a plastic box and even the USB plug looked unjustifiably big, so took that apart and soldered it onto the pi board (details here [LINK]).
+Pi zero is tiny, the hub with a plastic box and even the USB plug looked unjustifiably big, so took that apart and soldered it onto the pi board (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software)).
 
-Finally, a flower pot should be round and USB ports should be on its sides, so that dongles stick out for better reception, and the usb hub is rectangular <_< I had some loose usb ports from before (can't quite remember, but about a couple of pennies each, so I ordered them ages ago when buying something else, felt good I found the use for them). If I didn't I would have desoldered the ones already on the hub and used them. I soldered the ports onto wires, then those onto the hub where existing ports were and had the backbone of the machine ready. Pi and the hub can now be buried in clay and the ports laid near the edge of the pot. I also had to make a connection between the id and ground pins on the micro usb port at this point to make pi recognize the hub, details here [LINK to HACK TWO IN USB NOTES]
+Finally, a flower pot should be round and USB ports should be on its sides, so that dongles stick out for better reception, and the usb hub is rectangular :unamused: 
+I had some loose usb ports from before (can't quite remember, but about a couple of pennies each, I ordered them ages ago when buying something else, felt good that I found the use for them). If I didn't I would have desoldered the ones already on the hub and used them. I soldered the ports onto wires, then those onto the hub where existing ports were and had the backbone of the machine ready. Pi and the hub can now be buried in clay and the ports laid near the edge of the pot. I also had to make a connection between the id and ground pins on the micro usb port at this point to make pi recognize the hub, details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero)
 
 And it looked beautiful.
 
-
-[PICTURE]
-[PICTURE]
+![wired](../pics/clay1_wired2_s.jpg)
 
 Tested it all again, and it worked.
 
 #### Insulation
 
-It might not have mattered, but I have no idea how porous or conductive clay is, so had to insulate all this. One option was wrapping it all tightly into a plastic bag, which would likely be fine, but wanted to try home-made sugru for a while [LINK], and it worked a charm.
+It might not have mattered, but I have no idea how porous or conductive clay is, so had to insulate all this. One option was wrapping it all tightly into a plastic bag, which would likely be fine, but wanted to try [home-made sugru](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/silicone_dough.md#notes-on-silicone-doughoogoohome-made-sugru) for a while, and it worked a charm.
 
-[PICTURE]
+![silicone](../pics/clay1_silicone_s.jpg)
 
 > note to self: it looks alien and feels weird to touch, need to use this for something visible in the future
 
@@ -73,25 +76,21 @@ I never even touched clay before, preparations involved reading up a bit and wat
 
 Apparently you make a bottom of the pot by rolling clay out into a long sausage and then making a tight swirly circle, so the first layer:
 
-[PICTURE]
+![base](../pics/clay1_base_s.jpg)
 
 Then the machine, cables together, usb ports on the edges, straw through the middle:
 
-[PICTURE]
+![layer](../pics/clay1_layer_s.jpg)
 
 And a layer on top:
 
-
-[PICTURE]
+![closed](../pics/clay1_closed_s.jpg)
 
 Finally, the walls - again a long sausage of clay layered in a widening spiral, squeezed lightly as I built it up, and there it was :)
 
-
-
-[PICTURE]
-[PICTURE]
-[PICTURE]
-
+  ![pot](../pics/clay1_done_s.jpg)
+  ![pot](../pics/clay1_done2_s.jpg)
+  ![pot](../pics/clay1_done3_s.jpg)
 
 #### Epilogue:
 
