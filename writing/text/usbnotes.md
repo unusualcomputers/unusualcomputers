@@ -75,7 +75,7 @@ First get hold of a screwdriver and open the hub. Most of the time this is a sat
 
 Inside it you will see a little board with some usb ports soldered on and a place where the cable is connected to the board, there will be four wires, this is what you are after. Somethign like this:
 
-![insidehub](../pics/usb_hubpoints.JPG)
+![insidehub](../pics/usb_hub_wires.jpg)
 
 Usb uses four wires, two for power (VCC or 5v or pwr ... and
 ground or gnd ...) and two for communication (D+ or DP and D- or DM). They are colour coded and this is normaly respected, red is VCC, black ground, green D+, white D-. Often the board has markings identifying them too, I like to trust these more than the colours, or if both are there check them against each other. Mostly just paranoid, I have not seen one that got this wrong yet.
