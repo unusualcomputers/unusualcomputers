@@ -12,7 +12,7 @@ Technologists, on the other hand, know that it is neither hard nor expensive to 
 
 Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve.
 
-So here goes a flower pot with the best entertainment centre there is built into it, made for about £17/€20.
+So here goes a flower pot with the best entertainment centre there is built into it, made for about £23/€25.
 
 
 ### The computer
