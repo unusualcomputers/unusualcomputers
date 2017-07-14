@@ -1,7 +1,7 @@
 
 # Notes on silicone dough/oogoo/home-made sugru
 
-An excellent material for wrapping up electronics - mouldable play-dough like stuff that dries into rubbery elastic substance. There are versions of this you can buy, most notably Sugru, but it comes in small expensive bags. You can make it for next to nothing and it works really well. 
+An excellent material for wrapping up electronics, a mouldable play-dough like stuff that dries into rubbery elastic substance. There are versions of this you can buy, most notably Sugru, but it comes in small expensive bags. You can make it for next to nothing and it works really well. 
 
 There is many references, descriptions and clips online, search for 'home-made sugru', 'oogoo', 'proto-putty'. Definitely the most detailed and well researched one is by mikey77 on [instructables](http://www.instructables.com/id/How-To-Make-Your-Own-Sugru-Substitute/). mikey77 gives detailed instructions and recipes for various consistencies, colours, modifications and good explanations of what goes on. 
 
