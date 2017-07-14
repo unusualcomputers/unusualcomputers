@@ -57,14 +57,14 @@ If there are problems in a huge number of cases a fix discovered by
 ```
 The first line tells raspberry to disconnect from the hub, the second gives both raspberry and the hub 3 seconds to calm down, the third one reconnects again.
 
-It works surprisingly well, though it adds 3s too boot time - not experimented with yet, very likely this can be made shorter.
+It works surprisingly well, though it adds 3s to boot time - not experimented with this yet, very likely this can be made shorter.
 
 It doesn't work every time. If it didn't, so far we have not found other suggestions, if you do please let us know. Otherwise move on to a different hub. Keep this one, it may work with a different project - even with a different pi zero (I know, but it does happen), or when drivers in the software get updated.
 
 > this comes from
 https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot
 , thanks goldilocks. In there, the commands are wrapped into brackets that make it run in the background, this means that booting is faster but I have found that it doesn't work as often as above does. Likely something else happens during booting that affects it, so waiting seems more
-effective.)
+effective.
 
 ### Soldering the hub to pi zero
 
@@ -73,7 +73,7 @@ If not, you'll need some tools.
 
 First get hold of a screwdriver and open the hub. Most of the time this is a satisfyingly violent process - they very rarely come with screws (look for them under label stickers before you start though! there may be one or two there that stop you from splitting the box).
 
-Inside it you will see a little board with some usb ports soldered on and a place where the cable is connected to the board, there will be four wires, this is what you are after. Somethign like this:
+Inside it you will see a little board with some usb ports soldered on and a place where the cable is connected to the board, there will be four wires, this is what you are after. Something like this:
 
 ![insidehub](../pics/usb_hub_wires.jpg)
 
