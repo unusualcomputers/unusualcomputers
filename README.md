@@ -1,7 +1,7 @@
 # Unusual Computers Collective
 
-                                                       [unusualcomputerscollective.org](http://unusualcomputerscollective.org)
-                                                       unusual.computers(at)gmail.com
+[unusualcomputerscollective.org](http://unusualcomputerscollective.org)
+unusual.computers(at)gmail.com
 
 ## what we made 
 
