@@ -5,14 +5,15 @@
 > A fully functional kodi machine built into a fully functional flower pot.
 > The computer is Raspberry Pi Zero running OpenElec, the pot is made of clay.
 
+### Rough design
 
 There is intrinsic beauty in rough unpolished shapes and there is humanity and deep thought in shaping mud, philosophers know this.
 
-Technologists, on the other hand, know that it is neither hard nor expensive to build small computers and there is immense joy in thinking through the wiring and software to see it light up a screen in the end.
+Technologists, on the other hand, know that it is neither hard nor expensive to build small computers and there is immense joy in thinking through the wiring and software and seeing it light up a screen in the end.
 
-Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve.
+Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve. Nowadays we are overwhelmed by noisy grey boxes or sleek flat slabs. Nothing necessarily wrong with them, except that there is nothing else. Beauty is far richer than this, functional design is far more varied than this.
 
-So here goes a flower pot with the best entertainment centre there is built into it, made for about £23/€25.
+So I made a flower pot with the best entertainment centre there is built into it for about £23/€25.
 
 
 ### The computer
