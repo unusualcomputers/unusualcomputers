@@ -39,7 +39,7 @@ Simplest and cheapest is to provide an empty USB port and get hold of a USB-ethe
 
 For everything else we need a Wi-Fi connection, a USB Wi-Fi dongle works. 
 
-> The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken ones, so start low and try them. If buying online, anything that mentions raspberry (and most that don't) on e-bay, aliexpress, amazon etc will do.
+> The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in a shop, chances are you can return broken ones, so start low and try them. If buying online, anything that mentions raspberry (and most that don't) on e-bay, aliexpress, amazon etc will do.
 
 We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, it is always worth checking [here](http://kodi.wiki/view/CEC) if you know where the machine will be used. If the TV set is listed there, you don't need anything else. If not, there are options like smart phone apps to control them or really cheap IR remotes (under £2). I went for a small hand-held keyboard like this: 
 
