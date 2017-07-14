@@ -50,9 +50,9 @@ At this point I put it all together, connected the hub using a mini usb shim (a 
 Pi zero is tiny, the hub with a plastic box and even the USB plug looked unjustifiably big, so took that apart and soldered it onto the pi board (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software)).
 
 Finally, a flower pot should be round and USB ports should be on its sides, so that dongles stick out for better reception, and the usb hub is rectangular :unamused: 
-I had some loose usb ports from before (can't quite remember, but about a couple of pennies each, I ordered them ages ago when buying something else, felt good that I found the use for them). If I didn't I would have desoldered the ones already on the hub and used them. I soldered the ports onto wires, then those onto the hub where existing ports were and had the backbone of the machine ready. Pi and the hub can now be buried in clay and the ports laid near the edge of the pot. I also had to make a connection between the id and ground pins on the micro usb port at this point to make pi recognize the hub, details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero)
+I had some loose usb ports from before (can't quite remember, but about a couple of pennies each, I ordered them ages ago when buying something else, felt good that I found the use for them). If I didn't I would have desoldered the ones already on the hub and used them. I soldered the ports onto wires, then those onto the hub where existing ports were and had the backbone of the machine ready. Pi and the hub can now be buried in clay and the ports laid near the edge of the pot. I also had to make a connection between the id and ground pins on the micro usb port at this point to make pi recognize the hub, details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero).
 
-And it looked beautiful.
+And it was beautiful.
 
 ![wired](../pics/clay1_wired2_s.jpg)
 
