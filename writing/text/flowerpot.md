@@ -10,9 +10,9 @@ There is intrinsic beauty in rough unpolished shapes and there is humanity and d
 
 Technologists, on the other hand, know that it is neither hard nor expensive to build small computers and there is immense joy in thinking through the wiring and software to see it light up a screen in the end.
 
-Everyone knows that putting together a useful thing of beauty is what we are for. (even at times when taking pride in it is considered naïve).
+Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve.
 
-So here goes a flower pot with the best entertainment centre there is built into it, made for about £17/20 eur.
+So here goes a flower pot with the best entertainment centre there is built into it, made for about £17/€20.
 
 
 ### The computer
