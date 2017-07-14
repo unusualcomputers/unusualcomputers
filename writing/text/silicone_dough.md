@@ -12,6 +12,6 @@ Get some starch/corn flour/corn starch, different names depending on where you l
 
 Find an old can, paper cup, old something you don't mind messing up, pour in some silicone stuff, add corn flour and mix it. When it starts looking like dough, check out how sticky it is, and add more of one or the other. When good it's like play-dough and you can just mould it. It will stick to anything. You have about five minutes to do it, quite a bit of time really.
 
-Two things to remember - do not lean over it while mixing, it releases gas in blobs that stink to high heavens and won't hurt you, but will make you cough if you breathe it in and wear something on your hands while it's still soft, rubber gloves, plastic bag... before it becomes doughy it's a bastard to wash off (if you do get your hands soaked in it while it's still gooey, abrasive detergents work the best, washing machine stuff, still takes ages to remove though).
+Two things to remember - do not lean over it while mixing, it releases gas in blobs that stink to high heavens and won't hurt you but will make you cough if you breathe it in, and wear something on your hands while it's still soft, rubber gloves, plastic bag... before it becomes doughy it's a bastard to wash off (if you do get your hands soaked in it while it's still gooey, abrasive detergents work the best, washing machine stuff, still takes ages to remove though).
 
 Drop in a bit of paint too if you like, apparently linseed oil based ones are best, but almost anything should work.
