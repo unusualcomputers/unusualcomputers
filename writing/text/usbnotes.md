@@ -1,5 +1,7 @@
 # Notes on connecting USB hubs to pi zero
 
+* 
+
 
 ### Introduction
 
@@ -45,7 +47,7 @@ At this point you need to start testing the hub. Sometimes they just work, could
 If there are problems in a huge number of cases a fix discovered by
 (LINK) works wonderfully. The trick is to force raspberry to drop and then establish again the connection to the hub. To do this you add the following two lines of text to (FULL LINK TO rc.local) in rasbian or to (FULL LINK TO autostart.sh) in OpenElec or ElecLibre.
 ```
-	echo "1-1:1.0" > /sys/bus/usb/drivers/hub/unbind
+    echo "1-1:1.0" > /sys/bus/usb/drivers/hub/unbind
     sleep 3
     echo "1-1:1.0" > /sys/bus/usb/drivers/hub/bind
 ```
@@ -57,7 +59,7 @@ It doesn't work every time. If it didn't, so far we have not found other suggest
 
 (this comes from
 https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot
-, thanks [NAME]. In there, the commands are wrapped into brackets that make it run in the background, this means that booting is faster but I have found that it doesn't work as often as above does. Likely something else happens during booting that affects it, so waiting seems more
+, thanks goldilocks. In there, the commands are wrapped into brackets that make it run in the background, this means that booting is faster but I have found that it doesn't work as often as above does. Likely something else happens during booting that affects it, so waiting seems more
 effective.)
 
 ### Soldering the hub to pi zero
@@ -86,6 +88,11 @@ D+ |  green | pp22
 D- | white | pp23
 
 Try to keep the wires the same length, apparently big differences in their lengths may confuse the hub (to do with impendence, blah blah). 
+
+There is a nice picture of this [here](https://www.msldigital.com/pages/support-for-hub-zero):
+
+![msldigital](https://cdn.shopify.com/s/files/1/0270/0585/files/PiZeroConnections_large.jpg)
+
 Check what's connected to what several times - l have killed a hub by mixing the wires up (I noticed something's wrong when it didn't work and it was getting really, really hot).
 
 Soldering is much easier if you first add a nice blob of solder to each pad, let it cool, then heat it up again and sink the wire ends in. pp22 and pp23 are real close to each other and both are close to connections to usb port casing, you don't want to connect them with solder or loose wire - it is actually less fiddly then it seems, pads take solder or nicely, but do twist the wire ends and snip of any extras once they are on.
@@ -95,7 +102,7 @@ This should be it!
 Except that often it is not...
 Test this out, test it well (few reboots, move things around the ports, keep it runnign a while, download something large...). If it works, great, you are done. About half the time it doesn't, even though you tried it and it worked with a micro usb adapter.
 
-## Hack two, hardware
+### Hack two, hardware
 
 What happens is that micro usb has a fifth pin. It's called 'id' and is used for something called otg, a part of usb standard ... doesn't matter what it's for. What does matter is that within micro usb adapters and plugs this pin is connected directly to the ground and this is what makes the hub work with pi zero.
 We got rid of this connection above. A person called PotaTox figured this out and described the fix in great detail here (http://www.sudomod.com/forum/viewtopic.php?f=8&t=1345). 
@@ -105,6 +112,8 @@ __The trick is to solder the id pin directly to the ground pin, on the pi zero b
 Turn the board over, look closely at the back end of the micro usb port, the id pin is the leftmost one (looking from behind) and ground is the one next to it. Solder them together. (this really is fiddly, you don't want to make any other connections, but you'll feel all good once you've done it).
 
 Hopefully PotaTox will forgive me for using his briliant picture of this here.
+
+!(PotaTox)[../pics/potatox.png]
 
 Now that really is it.
 
