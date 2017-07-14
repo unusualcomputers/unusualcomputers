@@ -34,7 +34,7 @@ To do this yourself:
 
 #### USB hub
 
-For internet, cable is always faster then Wi-Fi; it can only be used when the TV is close enough to the router but it's good to have it as an option. 
+For internet, cable is always faster than Wi-Fi; it can only be used when the TV is close enough to the router but it's good to have it as an option. 
 Simplest and cheapest is to provide an empty USB port and get hold of a USB-ethernet converter (£2 on e-bay). 
 
 For everything else we need a Wi-Fi connection, a USB Wi-Fi dongle works. 
