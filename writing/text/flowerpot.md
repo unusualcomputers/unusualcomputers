@@ -13,7 +13,7 @@ Technologists, on the other hand, know that it is neither hard nor expensive to 
 
 Everyone knows that putting together a useful thing of beauty is what we are for, even at times when taking pride in it is considered naïve. Nowadays we are overwhelmed by noisy grey boxes or sleek flat slabs. Nothing necessarily wrong with them, except that there is nothing else. Beauty is far richer than this, functional design is far more varied than this.
 
-So I made a flower pot with the best entertainment centre there is built into it, for about £23/€25.
+So I made a flower pot with the best entertainment centre there is built into it, for about £23 (€25/$30).
 
 
 ### The computer
