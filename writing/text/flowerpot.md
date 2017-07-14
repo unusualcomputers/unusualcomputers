@@ -37,7 +37,7 @@ For everything else there is a WiFi connection, again a USB WiFi dongle works.
 
 > The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken one, so start low and try them. If buying online, anything that mentions raspberry on ebay, aliexpress, amazon etc will do.
 
-We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking [here] (http://kodi.wiki/view/CEC) if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this: 
+We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking [here](http://kodi.wiki/view/CEC) if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this: 
 
 ![keyboard](../pics/kbd.jpg)
 
