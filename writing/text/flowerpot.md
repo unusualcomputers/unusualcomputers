@@ -17,36 +17,36 @@ So here goes a flower pot with the best entertainment centre there is built into
 
 ### The computer
 
-Pretty much any Raspberry would have worked, so would any of the knock offs (Orange Pi, Banana Pi ... ). Pi Zero is ideal, smallest and the cheapest of the lot. The newer Pi Zero W has a WiFi chip on board, but it would have been wasted here - the machine will be under layers of clay, earth and silicone, reception would be rubbish that deep.
+Pretty much any Raspberry would have worked, so would any of the knock offs (Orange Pi, Banana Pi ... ). Pi Zero is ideal, smallest and the cheapest of the lot. The newer Pi Zero W has Wi-Fi built in, but it would have been wasted here, the machine will be under layers of clay, earth and silicone, reception would be rubbish.
 
 #### Software
 Setting up software was as easy as it gets, a straightforward OpenElec installation. 
 
 To do this yourself:
 
-> If you have access to a computer with an SD card reader, download the OpenElec disk image from [here](http://openelec.tv/get-openelec)  and follow instructions [here](https://www.raspberrypi.org/documentation/installation/installing-images/) to copy in onto SD card. If you don't, by far the best option is to ask someone who does, anyone with a soul should do it for a smile (if they don't have an SD card reader you can buy one for a couple of euros, pounds, dollars).
+> If you have access to a computer with an SD card reader, download the OpenElec disk image from [here](http://openelec.tv/get-openelec)  and follow instructions [here](https://www.raspberrypi.org/documentation/installation/installing-images/) to copy it onto a micro-SD card. If you don't, by far the best option is to ask someone who does, anyone with a soul should do it for a smile. If they don't have an SD card reader you can buy one for a couple of euros, pounds, dollars.
 
-> The choice of SD cards is permanently a topic on enthusiasts forums, in short, anything with 4Gb or more will work. SanDisk ones are fastest, Kingston probably slowest. Get what you can afford and don't worry.
+> The choice of SD cards is permanently a topic on enthusiasts forums, in short: anything with 4Gb or more will work. SanDisk ones are fastest, Kingston probably slowest. Get what you can afford and don't worry.
 
 > Similarly, OpenElec is not the only option, there are at least two more systems just as popular, LibreElec and OSMC - in both set up and usage there is no real difference between them, if you can't make your mind up say their names out loud and choose one you like the best, it will help when you are explaining someone what you did.
 
 
 #### USB hub
 
-For internet, cable is always faster then WiFi; it can only be used when the TV is close enough to the router but it's good to have this as an option. 
-Simplest and probably cheapest is to provide an empty USB port and get hold of a USB-ethernet converter (£2 on ebay). 
+For internet, cable is always faster then Wi-Fi; it can only be used when the TV is close enough to the router but it's good to have this as an option. 
+Simplest and cheapest is to provide an empty USB port and get hold of a USB-ethernet converter (£2 on ebay). 
 
-For everything else there is a WiFi connection, again a USB WiFi dongle works. 
+For everything else we need a Wi-Fi connection, a USB Wi-Fi dongle works. 
 
 > The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken one, so start low and try them. If buying online, anything that mentions raspberry on ebay, aliexpress, amazon etc will do.
 
-We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking [here](http://kodi.wiki/view/CEC) if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this: 
+We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking [here](http://kodi.wiki/view/CEC) if you know where the machine will be used, if the TV set is listed there, you don't need anything else. If not, there are options like smart phoen apps to control them or really cheap IR remotes (under £2) I went for a small hand-held keyboard like this: 
 
 ![keyboard](../pics/kbd.jpg)
 
 Got it of ebay for a fiver,it took a couple of weeks to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
 
-All in all, three USB ports. The hub used was a 3 eur anonymous ebay special, so had to work a bit to make it work but it does (and in honesty, not worked that hard on it - see [LINK], a small change to autostart.sh file on the sd card and it was up and running).
+All in all, three USB ports. The hub used was a 3 eur anonymous ebay special, so had to work a bit to make it work but it does (and in honesty, not worked that hard on it - see [details here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software), a small change to autostart.sh file on the sd card and it was up and running).
 
 At this point I put it all together, connected the hub using a mini usb shim (a small adapter that goes inside a usb plug), a TV using a mini HDMI to HDMI cable and powered it up through a USB port on the TV. All was looking great except that I could not install any add-ons no matter what I tried. The next day I re-installed OpenElec and it just worked. Not sure what went wrong, nor if this was a problem with my installation or kodi servers, but the fix was ten minutes of work, so not really sure I care.
 
@@ -75,7 +75,7 @@ Tested again. Worked again.
 
 #### The pot
 
-I never even touched clay before, preparations involved reading up a bit and watching youtube while at work in the week before. The plan was to build the computer into the base. Pots need holes in the bottom - the computer is made of two boards, a straw should fit in between them and leave a hole when removed. The bottom will have two layers - I was making a sandwich, clay, computer, clay. And I will use air-drying clay, can't bake this.
+I never even touched clay before, preparations involved reading up a bit and watching youtube while at work in the week before. The plan was to build the computer into the base. Pots need holes in the bottom; the computer is made of two boards, a straw should fit in between them and leave a hole when removed. The bottom will have two layers. I was making a sandwich, clay, computer, clay. And I used air-drying clay, can't bake this.
 
 Apparently you make a bottom of the pot by rolling clay out into a long sausage and then making a tight swirly circle, so the first layer:
 
