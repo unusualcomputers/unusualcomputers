@@ -61,7 +61,7 @@ It works surprisingly well, though it adds 3s to boot time - not experimented wi
 
 It doesn't work every time. If it didn't, so far we have not found other suggestions, if you do please let us know. Otherwise move on to a different hub. Keep this one, it may work with a different project - even with a different pi zero (I know, but it does happen), or when drivers in the software get updated.
 
-> this comes from
+> This comes from
 https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot
 , thanks goldilocks. In there, the commands are wrapped into brackets that make it run in the background, this means that booting is faster but I have found that it doesn't work as often as above does. Likely something else happens during booting that affects it, so waiting seems more
 effective.
@@ -80,11 +80,10 @@ Inside it you will see a little board with some usb ports soldered on and a plac
 Usb uses four wires, two for power (VCC or 5v or pwr ... and
 ground or gnd ...) and two for communication (D+ or DP and D- or DM). They are colour coded and this is normaly respected, red is VCC, black ground, green D+, white D-. Often the board has markings identifying them too, I like to trust these more than the colours, or if both are there check them against each other. Mostly just paranoid, I have not seen one that got this wrong yet.
 
-On the surface of pi zero there is quite a few shiny copper circles, marked pp1, pp2... (on pi zero w they are actually not marked, but are in the same places and work the same). These are connected to the insides of the little machine and used for factory testing but also provide a direct connection to its guts for use by aspiring hackers. The web mapped them out, start [here]
-(http://hackers.gallery/841/misc/raspberry-pi-zero-pad-probing) for example.
+On the surface of pi zero there is quite a few shiny copper circles, marked pp1, pp2... (on pi zero w they are actually not marked, but are in the same places and work the same). These are connected to the insides of the little machine and used for factory testing but also provide a direct connection to its guts for use by aspiring hackers. The web mapped them out, start [here](http://hackers.gallery/841/misc/raspberry-pi-zero-pad-probing) for example.
 You are looking for pp22 and pp23 - on the other side of micro usb port, for DP and DM connections - and pp1 and pp6 - on the left end of the board, for VCC and ground.
 
-Next, cut the usb plug from the hub cable and remove the cable jacket (the thick plastic wrapping around the four small wires) Hold on to the wires near where they are soldered to the hub and pull on the jacket slowly, it should slide right off. If it doesn't, carefully cut it lengthwise, nail scissors work well. 
+Next, cut the usb plug from the hub cable and remove the cable jacket (the thick plastic wrapping around the four small wires). Hold on to the wires near where they are soldered to the hub and pull on the jacket slowly, it should slide right off. If it doesn't, carefully cut it lengthwise, nail scissors work well. 
 Then get a bit of plastic off each wire end, twist the wire ends grab a soldering iron and solder them on to the pi as follows:
 
 connection | wire | pad
@@ -112,13 +111,13 @@ Test this out, test it well (few reboots, move things around the ports, keep it 
 ### Hack two, hardware (soldered on hub doesn't work)
 
 What happens is that micro usb has a fifth pin. It's called 'id' and is used for something called otg, a part of usb standard ... doesn't matter what it's for. What does matter is that within micro usb adapters and plugs this pin is connected directly to the ground and this is what makes the hub work with pi zero.
-We got rid of this connection above. PotaTox figured this out and described the fix in great detail [here] (http://www.sudomod.com/forum/viewtopic.php?f=8&t=1345). 
+We got rid of this connection above. PotaTox figured this out and described the fix in great detail [here](http://www.sudomod.com/forum/viewtopic.php?f=8&t=1345). 
 
 __The trick is to solder the id pin directly to the ground pin, on the pi zero board itself.__
 
-Turn the board over, look closely at the back end of the micro usb port, the id pin is the leftmost one (looking from behind) and ground is the one next to it. Solder them together. (this really is fiddly, you don't want to make any other connections, but you'll feel all good once you've done it).
+Turn the board over, look closely at the back end of the micro usb port, the id pin is the leftmost one (looking from behind) and ground is the one next to it. Solder them together. (this really is fiddly, you don't want to make any other connections, but you'll feel all good once you've done it)
 
-Hopefully PotaTox will forgive me for using his briliant picture of this here.
+Hopefully PotaTox will forgive me for using his briliant picture.
 
 ![PotaTox](../pics/potatox.png)
 
