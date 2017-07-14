@@ -33,7 +33,7 @@ If none of this worked, and you figured out another way, please make it known so
 
 ### Choosing a hub
 
-If buying online, give yourself time, best ones arrive from asia and will take anything between a week and four. If you come accross them in a local shop just get a couple, if buying online start on ebay, aliexress, banggoog and such and read user reviews, often they will mention ones that worked.
+If buying online, give yourself time, best ones arrive from asia and will take anything between a week and four. If you come accross them in a local shop just get a couple, if buying online start on ebay, aliexpress, banggood and such and read user reviews, often they will mention ones that worked.
 
 Choose the ones that are recommended in the comments if there are any relevant ones, the ones whose shape fits your projects, those that look easy to break open (see below) or those you like the colour of.
 
