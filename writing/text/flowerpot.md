@@ -21,13 +21,10 @@ Pretty much any Raspberry would have worked, so would any of the knock offs (Ora
 #### Software
 Setting up software was as easy as it gets, a straightforward OpenElec installation. 
 
-	To do this yourself:
-     
-	If you have access to a computer with an SD card reader, download the OpenElec disk image and follow instructions here (LINK) to copy in onto SD card. If you don't, by far the best option is to ask someone who does, anyone with a soul should do it for a smile (if they don't have an SD card reader you can buy one for a couple of euros, pounds, dollars).
-
-     The choice of SD cards is permanently a topic on enthusiasts forums, in short, anything with 4Gb or more will work. SanDisk ones are fastest, Kingston probably slowest. Get what you can afford and don't worry.
-     
-     Similarly, OpenElec is not the only option, there are at least two more systems just as popular, LibreElec and OXMC - in both set up and usage there is no real difference between them, if you can't make your mind up say their names out loud and choose one you like the best, it will help when you are explaining someone what you did.
+> To do this yourself:
+> If you have access to a computer with an SD card reader, download the OpenElec disk image and follow instructions here (LINK) to copy in onto SD card. If you don't, by far the best option is to ask someone who does, anyone with a soul should do it for a smile (if they don't have an SD card reader you can buy one for a couple of euros, pounds, dollars).
+> The choice of SD cards is permanently a topic on enthusiasts forums, in short, anything with 4Gb or more will work. SanDisk ones are fastest, Kingston probably slowest. Get what you can afford and don't worry.
+> Similarly, OpenElec is not the only option, there are at least two more systems just as popular, LibreElec and OXMC - in both set up and usage there is no real difference between them, if you can't make your mind up say their names out loud and choose one you like the best, it will help when you are explaining someone what you did.
 
 
 #### USB hub
@@ -37,7 +34,7 @@ Simplest and probably cheapest to provide an empty USB port and get hold of a US
 
 For everything else there must be a WiFi connection, again a USB WiFi dongle works. 
 
-	The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken one, so start low and try them. If buying online, anything that mentions raspberry on ebay, aliexpress, amazon etc will do.
+> The choice of a WiFi dongle is another hot topic in Raspberry Pi community. You can buy them for anything between £2 and £25 and spend a lifetime researching this. If you are buying them in the shop, chances are you can return broken one, so start low and try them. If buying online, anything that mentions raspberry on ebay, aliexpress, amazon etc will do.
 
 We also need some kind of remote control. Kodi works well with remote controls that come with some TV sets, always worth checking here [LINK] if you know where the machine will be used, if the TV set is listed there, you don't need anything else. I went for a small hand-held keyboard like this [PICTURE or LINK]. Got it of ebay for a fiver, took a month to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
 
@@ -63,7 +60,7 @@ It might not have mattered, but I have no idea how porous or conductive clay is,
 
 [PICTURE]
 
-    note to self: it looks alien and feels weird to touch, need to use this for something visible in the future
+> note to self: it looks alien and feels weird to touch, need to use this for something visible in the future
 
 
 Tested again. Worked again.
