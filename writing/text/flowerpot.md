@@ -45,9 +45,9 @@ We also need some kind of remote control. Kodi works well with remote controls t
 
 ![keyboard](../pics/kbd.jpg)
 
-Got it of ebay for a fiver,it took a couple of weeks to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
+Got it of e-bay for a fiver,it took a couple of weeks to arrive and it worked. These keyboards come with a dongle that you plug into USB and just work, a mouse pad and all the keys are there. And it's rechargeable. Can't ask for more.
 
-All in all, three USB ports. The hub used was a £2 anonymous e-bay special, so I had to put in some effort make it work but it does (and in honesty, not that much - see [details here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software), a small change to autostart.sh file on the sd card and it was up and running).
+All in all, three USB ports. The hub used was a £2 anonymous e-bay special, so I had to put in some effort to make it work but it does (and in honesty, not that much - see [details here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software), a small change to autostart.sh file on the sd card and it was up and running).
 
 At this point I put it all together, connected the hub using a mini usb shim (a small adapter that goes inside a usb plug), a TV using a mini HDMI to HDMI cable and powered it up through a USB port on the TV. All was looking great except that I could not install any add-ons no matter what I tried. The next day I re-installed OpenElec and it just worked. Not sure what went wrong, nor if this was a problem with my installation or kodi servers, but the fix was ten minutes of work, so not really sure I care.
 
