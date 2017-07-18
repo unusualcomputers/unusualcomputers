@@ -28,7 +28,7 @@ In fact it's awlays worth trying a simple non-powered hub first, before splashin
 How will you know you need more power for a device you are attaching? 
 Most of the time you won't, not for sure. They may simply not work or they may work some of the time or behave in odd ways. These are complicated things, practically impossible to test in all configurations, even the best ones will have only been tested for the most common ones, if that - power supply may be one of the reasons why they fail, but normally the easiest one to eliminate so worth having a go at. The first thing to try is a better, stronger, power supply, if you have one, for raspberry itself (this never worked for me btw, but people with admirable experience recommend it).
 
-> On Pi 2 and Pi 3 there is also a setting `max_usb_current=1` in [config.txt](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#configtxt). This increases the amount of current available to usb ports there, but on PiZero this has no effect (thanks [drgeoff](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=188581&p=1187789#p1187789) for clarifying this).
+> On Pi 2 and Pi 3 there is also a setting `max_usb_current=1` in [config.txt](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#configtxt). This increases the amount of current available to usb ports there, but on PiZero it has no effect (thanks [drgeoff](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=188581&p=1187789#p1187789) for clarifying this).
 
 If this has not worked, and you figured out another way, please make it known somewhere, even better drop me a line, I'll add it here.
 
