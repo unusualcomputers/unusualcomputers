@@ -30,7 +30,7 @@ Most of the time you won't, not for sure. They may simply not work or they may w
 
 > On Pi 2 and Pi 3 there is also a setting `max_usb_current=1` in [config.txt](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#configtxt). This increases the amount of current available to usb ports there, but on PiZero this has no effect (thanks [drgeoff](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=188581&p=1187789#p1187789) for clarifying this).
 
-If none of this worked, and you figured out another way, please make it known somewhere, even better drop me a line, I'll add it here.
+If this has not worked, and you figured out another way, please make it known somewhere, even better drop me a line, I'll add it here.
 
 ### Choosing a hub
 
