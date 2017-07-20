@@ -6,6 +6,7 @@
 * [Hack one, software (hub not recognized)](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-one-software)
 * [Soldering the hub to pi zero](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero)
 * [Hack two, hardware (soldered on hub doesn't work)](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#hack-two-hardware)
+* [Addendum: Powered hubs](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#addendum-powered-hubs)
 
 
 ### Introduction
