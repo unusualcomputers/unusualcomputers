@@ -21,7 +21,7 @@ By and large they can be made to work and this is not hard and feels good. You w
 ### Power
 
 Common wisdom is that powered hubs are always better. This is playing it safe by so big a margin that it's simply bullshit. You may need a powered hub if you will use it for a  hard drive, a monitor bigger than 7'', writing a CD/DVD, maybe, maybe a 3g dongle and even then not always. I have been running a 7'' touchscreen, a small hard disk, a 3g dongle with no power source other than what comes out of pi zero, itself powered by a kindle charger.
-In addition, pi zero can be powered through usb port, this then means that you would be providing two separate sources of power to it (one through it's normal power port, the other through usb), who knows what would happen.
+In addition, pi zero can be powered through usb port, this then means that you would be providing two separate sources of power to it (one through it's normal power port, the other through usb), who knows what would happen. (more details at the bottom)
 
 In fact it's awlays worth trying a simple non-powered hub first, before splashing out and using up more space and electricity than you need.
 
