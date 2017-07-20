@@ -126,3 +126,19 @@ Start testing again. If it doesn't work, start checking your connections, it is 
 
 I have not had this fail and all reports on the web are good, but if you are sure it didn't work, please let me know.
 
+### Addendum: Powered hubs
+
+If you are using a powered hub, for example for driving something that really is power hungry, or for testing there are things to watch out for: powerback and the power rating of the hub. 
+
+#### Powerback
+
+A standard compliant USB hub should not feed power back to the rasbperry through the micro USB port, but many do. This can be useful becasue it means you may not need any other power supply for the pi - on pi zero there is no circuitry to stop this power and it simply becomes a power source for it. __However__ if you are using both an independent power supply for pi and a powered hub that feeds back, you very likely have a problem and it's a difficult one to control - you will not know which one is used nor how they interact with each other. Small differences at least will always be there, even if each within standard tolerances, you simply have no idea what is happening with power inputs to the machine. Just don't, choose a hub that does not feed back.
+If you are relying on it to power the pi too, test it a whole lot, this is never an intended feauture, it will not have been tested or controlled. Chances are it will work fine, but it will be a matter of luck. 
+
+#### Power rating
+
+If you are using a powered hub, this is likely because you have a good reason to care for what power is supplied to peripherals. There should be 500mA supplied to each port simultaneously, and so the power supply unit for the hub should be rated at at least 500mA * number of ports (2A for a 4 port hub, 3.5A for a 7 port one). 
+
+There are some good test reports for these [here](http://www.cpmspectrepi.uk/raspberry_pi/MoinMoinExport/PoweredUSBHubs.html) (thanks Trevor).
+
+ > Many thanks to FTrevorGowen, W. H. Heydt and hippy for contributions [here](https://www.raspberrypi.org/forums/viewtopic.php?f=91&t=188581)
