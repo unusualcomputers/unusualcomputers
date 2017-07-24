@@ -17,5 +17,5 @@ __gifkoPro__ takes as input an existing video (something you made or downloaded,
 
 
 
-Please let us know if you used them and most certainly if you had any problems ( unusual.computers(at)gmail.com )
+Please let us know if you used them and most certainly if they did not work ( unusual.computers(at)gmail.com ).
 
