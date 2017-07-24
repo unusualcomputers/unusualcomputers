@@ -6,7 +6,7 @@ All utilities here use ffmpeg for processing so you have to install that first, 
 
 Optimal video sizes for twitter are 320x180, 640x360 and 1280x720. The quality of outputs will be best if pictures or video inputs are one of these.
 
-Once ffmpeg is installed just download the files from here into a separate folder on your machine and you can launch fshlbPro or gifko
+Once ffmpeg is installed just download the files from here into a separate folder on your machine and you can launch fshlbPro or gifko (just double click on them).
 
 __fshlbPro__ takes as input a picture (ideally a png file in one of the above sizes) and an audio file and combines them into an mp4 video suitable to upload to twitter with the picutre in the background and audio visualisation in the foreground.
 
