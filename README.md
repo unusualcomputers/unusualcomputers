@@ -7,6 +7,7 @@ calls and enquiries: unusual.computers(at)gmail.com
 ## what we made 
 
 * [Kodi in a flower pot](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/flowerpot.md#kodi-in-a-flower-pot)
+* [fshlb & gifko](https://github.com/unusualcomputers/unusualcomputers/blob/master/utilities/fshlb/windows/readme.md#fshlb--gifko)
 
 ## what we learned
 
