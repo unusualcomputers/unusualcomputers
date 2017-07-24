@@ -1,0 +1,189 @@
+<html>
+<head>
+<title>gifko pro</title>
+<HTA:APPLICATION
+    APPLICATIONNAME="gifko pro"
+    ID="hta_utility"
+    border            = "thin"
+    borderStyle        = "tool"
+    caption            = "yes"
+    contextMenu        = "no"
+    maximizeButton    = "no"
+    minimizeButton    = "yes"
+    navigable        = "no"
+    showInTaskbar    = "yes"
+    singleInstance    = "yes"
+    scroll = "no"
+    sysmenu            = "yes"
+    windowState        = "normal"  
+    VERSION="1.0"/>
+</head>
+ 
+<script language="VBScript">
+Dim SourceDir, FullName, arrFN
+Dim ToolFileName
+Dim CommandFile
+Const Width = 500
+Const Height = 550
+ 
+' get the directory of the HTA
+FullName = Replace(hta_utility.commandLine, Chr(34), "")  
+arrFN = Split(FullName, "\")  
+FileName = arrFN(Ubound(arrFN))  
+SourceDir = Replace(FullName, FileName, "")  
+ 
+ 
+Sub DoResize
+    'resize   
+    window.resizeTo Width, Height
+    screenWidth = Document.ParentWindow.Screen.AvailWidth
+    screenHeight = Document.ParentWindow.Screen.AvailHeight
+    posLeft = (screenWidth - Width) / 2
+    posTop = (screenHeight - Height) / 2     
+    'move to centerscreen
+    window.moveTo posLeft, posTop
+End Sub
+  
+Sub Window_OnLoad
+  DoResize
+End Sub
+
+Function BuildMp4Command()
+	
+		command = "ffmpeg -i " &  film.value & " -ss " & from.value 
+		
+		if duration.value <> "0.000" then
+			command = command & " -to " & duration.value
+		end if
+		
+		command = command & " -filter_complex ""fps=" & fps.value & ",scale=" & scale.value & ":-1"" -c:v libx264"
+		if videoq.value <> "default" then
+			command = command & " -crf " & CStr(36 - CInt(videoq.value))
+		end if
+		
+		if audioq.value <> "default" then
+			command = command & " -c:a aac -b:a " & audioq.value
+		end if
+		
+		command = command & " -strict -2 " & output.value
+		BuildMp4Command = command
+End Function
+
+
+' process the file
+Sub OnClickButtonButton1()
+	Set objR = CreateObject("WScript.Shell")
+	scaleWidth = 640
+	If scale.value <> "" Then
+		scaleWidth = scale.value
+	End If
+
+	If Right(output.value,3) = "gif" Then
+		command1 = "ffmpeg -y -ss " & from.value & " -t " & duration.value & " -i " & film.value & " -vf fps=" & fps.value & ",scale=" & scaleWidth & ":-1:flags=lanczos,palettegen  palette.png"
+		objR.Run command1
+		command2 = "ffmpeg -ss " & from.value & " -t " & duration.value & " -i " & film.value & " -i palette.png -filter_complex ""fps=" & fps.value & ",scale=" & scaleWidth &":-1:flags=lanczos[x];[x][1:v]paletteuse"" " & output.value
+		objR.Run command2
+		Set objF = CreateObject("Scripting.FileSystemObject")
+		objF.DeleteFile("pallete.png")
+		Set objF = Nothing
+	Else
+		command = BuildMp4Command
+		CommandLine.value = command
+		Set obj = CreateObject("WScript.Shell")
+		obj.Run command
+		MsgBox "Done"
+	End If
+	MsgBox "Done"
+	Set obj = Nothing
+
+End Sub
+</script>
+ 
+<body>
+	<table style="width:100%; height:100%;">
+	<tr>
+	<td><label for="film">the film</label></td>
+    <td><input type="file" name="film" value="" title="file that goes in, best if it has no spaces in the name"/></td>
+	</tr>
+	<tr>
+	<td><label for="from">from (MM:SS.sss)</label></td>
+    <td><input type="text" name="from" value="0.000" title="starts here, 2, 2.34, 2.345, 02.345, 01:02.2345 should all work. even 1:02:02.235 should (1 hour, 2 minutes, 2 seconds, 235 milliseconds) "/></td>
+	</tr>
+	<tr>
+	<td><label for="duration">to (MM:SS.sss)</label></td>
+    <td><input type="text" name="duration" value="0.000" title="ends here, 10, 2.34, 2.345, 02.345, 01:02.2345 should all work. even 1:02:02.235 should (1 hour, 2 minutes, 2 seconds, 235 milliseconds) "/></td>
+	</tr>	
+	<tr>
+	<td><label for="fps">fps (<40)</label></td>
+    <td><input type="text" name="fps" value="10" title="frames per second, bigger is better but files are bigger, twitter can't handle more than 40"/></td>
+	</tr>	
+	<tr>
+	<td><label for="scale">width</label></td>
+	<td>		
+		<select name="scale" id="scale" title = "width of the output">
+			<option value="640">640</option>
+			<option value="1280">1280</option>
+			<option value="320">320</option>
+		</select>
+	</td>
+	</tr>
+	<tr>
+	<td><label for="videoq">video quality</label></td>
+	<td>		
+		<select name="videoq" id="videoq" title = "quality of video, bigger is better but files are bigger">
+			<option value="default">default</option> 
+			<option value="15">15</option>
+			<option value="1">1</option> 
+			<option value="2">2</option> 
+			<option value="3">3</option> 
+			<option value="4">4</option> 
+			<option value="5">5</option> 
+			<option value="6">6</option> 
+			<option value="7">7</option> 
+			<option value="8">8</option> 
+			<option value="9">9</option> 
+			<option value="10">10</option>
+			<option value="11">11</option>
+			<option value="12">12</option>
+			<option value="13">13</option>			
+			<option value="14">14</option>
+			<option value="15">15</option>
+			<option value="16">16</option>
+			<option value="17">17</option>
+			<option value="18">18</option>
+			<option value="19">19</option>
+			<option value="20">20</option>	 	
+			<option value="21">21</option>
+			<option value="22">22</option>
+			<option value="23">23</option>
+			<option value="24">24</option>
+			<option value="25">25</option>
+		</select>
+	</td>
+	</tr>
+	<td><label for="audioq">audio quality</label></td>
+	<td>		
+		<select name="audioq" id="audioq" title = "quality of audio">
+			<option value="default">default</option> 
+			<option value="128k">128k</option>
+			<option value="32k">32k</option>
+			<option value="96k">96k</option>
+			<option value="160k">160k</option>
+			<option value="192k">192k</option>
+			<option value="256k">156k</option>
+		</select>
+	</td>
+	</tr>	
+	<tr>
+	<td><label for="output">output</label></td>
+    <td><input type="text" name="output" value=".mp4" title=".gif will be silent, .mp4 will be modern"/></td>
+	</tr>
+    <tr>
+	<td><input type="button" name="Button1" id="Button1" value="Create" onclick="OnClickButtonButton1" title = ":)">
+	<tr>
+	<th colspan=2><textarea readonly id="CommandLine" style="border: none;overflow:auto;width=100%;" rows="3" title="this is to send to habibi when things go wrong"></textarea></th>
+	</tr>
+	</tr>
+	
+</body>
+</html>

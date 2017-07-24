@@ -1,0 +1,242 @@
+<html>
+<head>
+<title>fshlb pro</title>
+<HTA:APPLICATION
+    APPLICATIONNAME="fshlb pro"
+    ID="hta_utility"
+    border            = "thin"
+    borderStyle        = "tool"
+    caption            = "yes"
+    contextMenu        = "no"
+    maximizeButton    = "no"
+    minimizeButton    = "yes"
+    navigable        = "no"
+    showInTaskbar    = "yes"
+    singleInstance    = "yes"
+    scroll = "no"
+    sysmenu            = "yes"
+    windowState        = "normal"  
+    VERSION="1.0"/>
+</head>
+ 
+<script language="VBScript">
+Const Width = 630
+Const Height = 500
+Set FSO = CreateObject("Scripting.FileSystemObject")
+ 
+Sub DoResize
+    'resize   
+    window.resizeTo Width, Height
+    screenWidth = Document.ParentWindow.Screen.AvailWidth
+    screenHeight = Document.ParentWindow.Screen.AvailHeight
+    posLeft = (screenWidth - Width) / 2
+    posTop = (screenHeight - Height) / 2     
+    'move to centerscreen
+    window.moveTo posLeft, posTop
+End Sub
+
+Sub PopulateColors
+	colors = Array("AliceBlue","AntiqueWhite","Aqua","Aquamarine","Azure","Beige","Bisque","Black","BlanchedAlmond","Blue","BlueViolet","Brown","BurlyWood","CadetBlue","Chartreuse","Chocolate","Coral","CornflowerBlue","Cornsilk","Crimson","Cyan","DarkBlue","DarkCyan","DarkGoldenRod","DarkGray","DarkGreen","DarkKhaki","DarkMagenta","DarkOliveGreen","Darkorange","DarkOrchid","DarkRed","DarkSalmon","DarkSeaGreen","DarkSlateBlue","DarkSlateGray","DarkTurquoise","DarkViolet","DeepPink","DeepSkyBlue","DimGray","DodgerBlue","FireBrick","FloralWhite","ForestGreen","Fuchsia","Gainsboro","GhostWhite","Gold","GoldenRod","Gray","Green","GreenYellow","HoneyDew","HotPink","IndianRed","Indigo","Ivory","Khaki","Lavender","LavenderBlush","LawnGreen","LemonChiffon","LightBlue","LightCoral","LightCyan","LightGoldenRodYellow","LightGreen","LightGrey","LightPink","LightSalmon","LightSeaGreen","LightSkyBlue","LightSlateGray","LightSteelBlue","LightYellow","Lime","LimeGreen","Linen","Magenta","Maroon","MediumAquaMarine","MediumBlue","MediumOrchid","MediumPurple","MediumSeaGreen","MediumSlateBlue","MediumSpringGreen","MediumTurquoise","MediumVioletRed","MidnightBlue","MintCream","MistyRose","Moccasin","NavajoWhite","Navy","OldLace","Olive","OliveDrab","Orange","OrangeRed","Orchid","PaleGoldenRod","PaleGreen","PaleTurquoise","PaleVioletRed","PapayaWhip","PeachPuff","Peru","Pink","Plum","PowderBlue","Purple","Red","RosyBrown","RoyalBlue","SaddleBrown","Salmon","SandyBrown","SeaGreen","SeaShell","Sienna","Silver","SkyBlue","SlateBlue","SlateGray","Snow","SpringGreen","SteelBlue","Tan","Teal","Thistle","Tomato","Turquoise","Violet","Wheat","White","WhiteSmoke","Yellow","YellowGreen")
+
+	For Each col in colors
+		Set objL = Document.createElement("OPTION")
+		objL.Text = col
+		objL.Value = col
+		lcolor.Add(objL)
+		Set objR = Document.createElement("OPTION")
+		objR.Text = col
+		objR.Value = col
+		rcolor.Add(objR)
+	Next  
+End Sub  
+Sub Window_OnLoad
+  DoResize
+  PopulateColors
+  PopulateSettingsFiles
+End Sub
+ 
+Function CreateCommand
+	xv = Trim(X.value)
+	yv = Trim(Y.value)
+	wv = Trim(W.value)
+	hv = Trim(H.value)
+	command = "ffmpeg -i " & sound.value & " -loop 1 -i " & picture.value & " -filter_complex ""[0:a]showwaves=s=" & wv & "x"& hv & ":mode=" & mode.value & ":colors=" & lcolor.value & "|" & rcolor.value & ",format=rgba,colorkey=black:similarity=0.5[sw];[1:v][sw]overlay=shortest=1:x=" & xv & ":y=" & yv & ",format=yuv420p[out]"" -map ""[out]"" -map 0:a -b:v 1M -c:v libx264 -preset fast -strict -2 " & output.value
+
+	CreateCommand = command
+End Function
+ 
+Sub OnClickCreate()
+	command = CreateCommand
+
+	Set obj = CreateObject("WScript.Shell")
+    obj.Run command
+	MsgBox "Done"
+	Set obj = Nothing
+
+End Sub
+Sub OnClickSaveSettings()
+	fname = InputBox("Name to save the settings under:")
+	outFile=fname & ".fshlbsettings"
+	Set objFile = FSO.CreateTextFile(outFile,True)
+	objFile.Write  mode.value & vbCrLf
+	objFile.Write  lcolor.value & vbCrLf	
+	objFile.Write  rcolor.value & vbCrLf	
+	objFile.Write  Trim(X.value) & vbCrLf	
+	objFile.Write  Trim(Y.value) & vbCrLf	
+	objFile.Write  Trim(W.value) & vbCrLf	
+	objFile.Write  Trim(H.value) & vbCrLf	
+	objFile.Close	
+	PopulateSettingsFiles
+	template.value = fname
+End Sub
+
+Sub OnClickExportCommand()
+	outFile="fshlbcommand.txt"
+	Set objFile = FSO.CreateTextFile(outFile,True)
+	objFile.Write CreateCommand & vbCrLf
+	objFile.Close	
+	MsgBox "Command is saved to fshlbcommand.txt"
+End Sub
+
+Sub PopulateSettingsFiles
+	For each opt in template.Options
+		opt.RemoveNode
+	Next
+	Set objL = Document.createElement("OPTION")
+	objL.Text = ""
+	objL.Value = ""
+	template.Add(objL)
+	extension = ".FSHLBSETTINGS"
+	extLen = Len(extension)
+	Set objFolder = FSO.GetFolder(".")
+	Set allFiles = objFolder.Files
+	For Each objFile in allFiles
+		fname = objFile.name
+		If UCase(Right(fname, extLen)) = extension Then
+			name = Left(fname, Len(fname) - extLen)
+			Set objL = Document.createElement("OPTION")
+			objL.Text = name
+			objL.Value = name
+			template.Add(objL)
+		End If
+	Next
+	template.value = ""
+End Sub
+Sub OnTemplate
+	If template.value = "" Then 
+		mode.value = "cline"
+		lcolor.value = "Red"
+		rcolor.value = "Green"
+		X.value = "20"
+		Y.value = "300"
+		W.value = "1240"
+		H.value = "410"
+		Return
+	End If
+	fname = template.value & ".fshlbsettings"
+	Set objFile = FSO.OpenTextFile(fname)
+	mode.value = objFile.ReadLine
+	lcolor.value = objFile.ReadLine
+	rcolor.value = objFile.ReadLine
+	X.value = objFile.ReadLine
+	Y.value = objFile.ReadLine
+	W.value = objFile.ReadLine
+	H.value = objFile.ReadLine
+End Sub
+
+</script>
+ 
+<body>
+	<table style="width:100%; height:25%;">
+	<tr>
+	<td><label for="picture">Picture file</label></td>
+    <td><input type="file" name="picture" value="" title = ".jpg, .png... best formats for twitter are 1280x720, 640x360 or 320x180"/></td>
+	</tr>
+	<tr>
+	<td><label for="sound">Sounds file</label>
+    <td><input type="file" name="sound" value="" title = ".mp3, .wav... a file with sound of you :)"/>
+	</tr>
+	<tr>
+	<td><label for="output">Output file</label>
+    <td><input type="text" name="output" value=".mp4" title = "something.mp4"/>
+    <td><input type="button" name="Button1" id="Button1" value="Create mp4" onclick="OnClickCreate" title = ":)">
+	</tr>
+	</table>
+	<hr>
+	<table style="width:100%; height:75%;">
+	<tr>
+	<td><label for="mode">Template</label></td>
+		<td>
+			<select name="template" id="template" onchange="OnTemplate" title = "load settings">
+				<option value="empty"></option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+	<td><label for="mode">Shape</label></td>
+	<td>
+		<select name="mode" id="mode" title = "kind of audio visualisation to create, colours only work for cline">
+			<option value="cline">cline</option>
+			<option value="point">point</option>
+			<option value="line">line</option>
+			<option value="p2p">p2p</option>
+		</select>
+	</td>
+	</tr>
+	<tr>
+	<td><label>Colours</label></td>
+	</tr>
+	<tr>
+	<td></td>
+	<td><label for="lcolor">Left channel</label></td>
+	<td><label for="rcolor">Right channel</label></td>
+	</tr>
+	<tr>
+	<td></td>
+	<td>
+		<select name="lcolor" id="lcolor" title = "colour for left audio channel, top tip - with same colours on both channels you know what you get">
+			<option value="Red">Red</option>
+		</select>
+	</td>
+	<td>
+		<select name="rcolor" id="rcolor" title = "colour for right audio channel, top tip - lighter colours give a nice greyish edge">
+			<option value="Green">Green</option>
+		</select>
+	</td>
+	</tr>
+	<tr>
+	<td><label>Position</label></td>
+	</tr>
+	<tr>
+	<td></td>
+	<td><label for="X">x</label></td>
+	<td><label for="Y">y</label></td>
+	</tr><tr>
+	<td></td>
+    <td><input type="text" name="X" value="20" title = "distance from left edge where pretty squiggles will start"/></td>
+    <td><input type="text" name="Y" value="300" title = "distance from top edge where the lines that are voice will start"/></td>
+	</tr>
+	<tr>
+	<td></td>
+	<td><label for="width">width</label></td>
+	<td><label for="height">height</label></td>
+	</tr>
+	<tr>
+	<td></td>
+    <td><input type="text" name="W" value="1240" title = "width of the picture of sound"/></td>
+    <td><input type="text" name="H" value="410" title = "height of the waves of sound"/></td>
+	</tr>
+	<tr>	
+	</tr>	
+	<tr>
+	<td></td>
+    <td><input type="button" name="Button3" id="Button3" value="Export command" onclick="OnClickExportCommand" title ="saves the ffmpeg gobbledygook line to a file, for when things go wrong"></td>
+    <td><input type="button" name="Button2" id="Button2" value="Save template" onclick="OnClickSaveSettings" title = "saves the settings (only the part below the flat line) into a named template which then appears in the list of templates above. code is magic."></td>
+	</tr>	
+	<tr>	
+	<td></td>
+	</tr>	
+		
+	</table>
+</body>
+</html>
