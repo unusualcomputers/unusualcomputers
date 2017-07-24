@@ -1,9 +1,10 @@
 # fshlb & gifko
 
-Windows utilities used to create twitter friendly media. 
+Windows utilities used to create twitter friendly videos. 
+
+All utilities here use ffmpeg for processing so you have to install that first, there is a very nice guide for this [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
 
 Optimal video sizes for twitter are 320x180, 640x360 and 1280x720. The quality of outputs will be best if pictures or video inputs are one of these.
-All utilities here use ffmpeg for processing so you have to install that first, there is a very nice guide for this [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/)
 
 Once ffmpeg is installed just download the files from here into a separate folder on your machine and you can launch fshlbPro or gifko
 
