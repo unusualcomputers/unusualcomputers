@@ -51,7 +51,7 @@ At this point you need to start testing the hub. Sometimes they just work, could
 ### Hack one, software
 
 If there are problems, in most cases a fix discovered by
-[goldilocks](https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot) works wonderfully. The trick is to force raspberry to drop and then establish again the connection to the hub. To do this you add the following two lines of text to (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#rclocal)) in rasbian or to autostart.sh ( details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#openeleclibreelec-autostartsh)) in OpenElec or LibreElec.
+[goldilocks](https://raspberrypi.stackexchange.com/questions/50975/usb-otg-hub-does-not-recognize-devices-at-boot) works wonderfully. The trick is to force raspberry to drop and then establish again the connection to the hub. To do this you add the following two lines of text to rc.local (details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#rclocal)) in rasbian or to autostart.sh ( details [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#openeleclibreelec-autostartsh)) in OpenElec or LibreElec.
 ```
     echo "1-1:1.0" > /sys/bus/usb/drivers/hub/unbind
     sleep 3
