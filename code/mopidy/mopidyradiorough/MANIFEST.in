@@ -1,0 +1,7 @@
+include .travis.yml
+include LICENSE
+include MANIFEST.in
+include README.rst
+include mopidy_radio_rough/ext.conf
+include mopidy_radio_rough/ucc.gif
+include tox.ini
