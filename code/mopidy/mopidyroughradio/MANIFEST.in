@@ -1,9 +1,0 @@
-include .travis.yml
-include LICENSE
-include MANIFEST.in
-include README.rst
-include mopidy_rough_radio/ext.conf
-include mopidy_rough_radio/ucc.gif
-include tox.ini
-
-recursive-include tests *.py
