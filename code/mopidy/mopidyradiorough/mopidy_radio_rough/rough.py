@@ -15,24 +15,37 @@ from tooltip import ToolTip
 import tkMessageBox
 import pdb
 
-# helpers
+# helper to pack widgets uniformly
 def pack(widget, side=None):
     if side is None:
         widget.pack(fill=BOTH,expand=1,padx=2,pady=2)
     else:
         widget.pack(fill=BOTH,expand=1,side=side,padx=2,pady=2)
 
-# main frame
+# main tk frame
+# runs on its own thread controlled by class GuiThread 
+# (at the bottom of the file) 
 class RadioRough(Tk):
     def __init__(self, q, core):
         Tk.__init__(self)
+        # q is the queue used to send events from mopidy and status to
+        # this thread
         self.q=q
+        
         self.logger = logging.getLogger(__name__)
+        
+        # browser is the interface to mopidy functions
         self.browser=MopidyBrowser(core,self.send_status,False)
         self.browser.set_volume(50)
+        
+        # loop tracks, or not
         self.loop = BooleanVar()
+
+        # ingnore _next_selet used to synchronise list updates as they  
+        # are sometimes required by mopidy events on other threads
         self.ignore_next_select=False
         
+        # tkinter layout setup
         self.style=ttk.Style()
         self.style.theme_use('clam')
         self.protocol("WM_DELETE_WINDOW", self.on_close)
@@ -99,7 +112,7 @@ class RadioRough(Tk):
         self._vol_delay=None
 
         mid_frame=Frame(base_frame,bd=0)
-        mid_frame.pack(fill=BOTH,expand=1)#,padx=0,pady=0)
+        mid_frame.pack(fill=BOTH,expand=1)
         self.style.configure('orange.Horizontal.TProgressbar', 
             foreground='orange', background='orange')
         self.progress=ttk.Progressbar(mid_frame,orient='horizontal',
@@ -128,6 +141,7 @@ class RadioRough(Tk):
         
         self.tl_view=None
 
+    # popup menu is dynamic
     def configure_list_popup(self,index=-1):
         self.list_popup.delete(0,END)
         if not self.browser.is_top_level():
@@ -201,6 +215,18 @@ class RadioRough(Tk):
         self.list_popup.add_command(label='clear selection',
             command=self.deselect_all) 
 
+    def on_list_popup_focus_out(self,evt):
+        self.list_popup.unpost()    
+    
+    def on_list_popup(self,evt):
+        nearest=self.the_list.nearest(evt.y)
+        self.the_list.select_set(nearest)
+        if not self.browser.is_top_level():
+            nearest-=1
+        self.configure_list_popup(nearest)
+        self.list_popup.post(evt.x_root,evt.y_root)
+
+    # handling tracks queue
     def remove_from_queue(self):
         self.browser.remove_tracks(self.__curindices())
         self.update_list()
@@ -213,6 +239,7 @@ class RadioRough(Tk):
         self.browser.flip_loop()
         self.loop.set(self.loop.get())
     
+    # podcasts
     def subscribe(self):
         self.browser.subscribe(self.__curindices())
 
@@ -239,6 +266,7 @@ class RadioRough(Tk):
         if y=='yes':            
             self.browser.keep_podcasts(self.__curindices())
        
+    # showing special lists   
     def show_subscriptions(self):
         self.browser.select_subscriptions()
         self.update_list()
@@ -259,6 +287,7 @@ class RadioRough(Tk):
         if curr is not None:
             self.the_list.select_set(curr+1)
 
+    # handling tooltips
     def the_list_tooltip(self,event):
         if event is None: return None
         if self.browser.is_top_level():
@@ -267,6 +296,7 @@ class RadioRough(Tk):
             idx=self.the_list.nearest(event.y)-1
         return enc(delint(self.browser.format_track_info_by_idx(idx)))
 
+    # cursor
     def _waiting(self):
         self.config(cursor='watch')
         self.update()
@@ -275,6 +305,7 @@ class RadioRough(Tk):
         self.config(cursor='')
         self.update()
 
+    # progress bar
     def to_time_string(self,ss):
         ssi=int(ss)
         h=ss/(60*60)
@@ -320,15 +351,6 @@ class RadioRough(Tk):
         if move_to and self.progress['value']!=v:
             self.progress['value']=v
 
-    def on_backspace(self,event):
-        self.back()
-        
-    def on_select_all(self,event):
-        self.select_all()
-
-    def on_deselect_all(self,event):
-        self.deselect_all()
-            
     def on_progress_motion(self,event):
         m=self.progress['maximum']
         wx =self.progress.winfo_x()
@@ -346,6 +368,7 @@ class RadioRough(Tk):
         new_tm=((ex+2)*m)/w
         self.browser.seek(new_tm*1000)
     
+    # volume slider
     def on_vol_slide_after(self):
         vol=self.volume.get()
         self.browser.set_volume(vol)
@@ -358,16 +381,15 @@ class RadioRough(Tk):
             self.after_cancel(self._vol_delay)
         self._vol_delay=self.after(500, self.on_vol_slide_after)        
         
-    def on_list_popup_focus_out(self,evt):
-        self.list_popup.unpost()    
-    
-    def on_list_popup(self,evt):
-        nearest=self.the_list.nearest(evt.y)
-        self.the_list.select_set(nearest)
-        if not self.browser.is_top_level():
-            nearest-=1
-        self.configure_list_popup(nearest)
-        self.list_popup.post(evt.x_root,evt.y_root)
+    # other events
+    def on_backspace(self,event):
+        self.back()
+        
+    def on_select_all(self,event):
+        self.select_all()
+
+    def on_deselect_all(self,event):
+        self.deselect_all()
 
     def select_all(self):
         if self.browser.is_top_level():
@@ -385,15 +407,18 @@ class RadioRough(Tk):
         self.destroy()
         self.quit()
     
+    # start the loop that checks out queue and tk main loop
     def startloops(self):
         self.q_loop()
         self.update_list()
         self.mainloop()
-    
-    def current_info(self):
-        self.status_message(self.browser.format_current_track_info())
-    
+
+    # queue loop
+    # handles messages from other threads    
     def q_loop(self):
+        def current_info(self):
+            self.status_message(self.browser.format_current_track_info())
+    
         while not self.q.empty():
             msg=self.q.get()
             (evnt, args)=msg
@@ -454,6 +479,7 @@ class RadioRough(Tk):
     
         self.after(100,self.q_loop)
    
+    # updates the main list
     def update_list(self):
         if self.browser is None: return
         self.browser.refresh_list()
@@ -471,8 +497,8 @@ class RadioRough(Tk):
             self.the_list.insert(0,'<--')
         self.the_list.insert(END,*curr)
         self.ignore_next_select=True
-        #self.send_deselect()    
     
+    # list navigation
     def browse_list(self,i):
         if self.browser is None: return
         sel=self.the_list.get(i)
@@ -512,6 +538,7 @@ class RadioRough(Tk):
         else:
             return [i-1 for i in self.the_list.curselection()]
    
+    # playing and tracks
     def play_now(self):
         self._waiting()
         self.browser.play_now(self.__curindices())
@@ -530,16 +557,6 @@ class RadioRough(Tk):
     def add_to_tracks(self):
         self._waiting()
         self.browser.add_to_tracks(self.__curindices())
-        self._normal()
-
-    def add_to_favourites(self):
-        self._waiting()
-        self.browser.add_to_favourites(self.__curindices())
-        self._normal()
-  
-    def remove_from_favourites(self):
-        self._waiting()
-        self.browser.remove_from_favourites(self.__curindices())
         self._normal()
   
     def on_prev(self):
@@ -562,6 +579,18 @@ class RadioRough(Tk):
         else:
             self.play_pause_btn['text']='play'
 
+    # favourites
+    def add_to_favourites(self):
+        self._waiting()
+        self.browser.add_to_favourites(self.__curindices())
+        self._normal()
+  
+    def remove_from_favourites(self):
+        self._waiting()
+        self.browser.remove_from_favourites(self.__curindices())
+        self._normal()
+
+    # searching
     def on_search(self):
         self._waiting()
         d=Search(self)
@@ -570,6 +599,7 @@ class RadioRough(Tk):
             self.update_list()
         self._normal()
  
+    # status messages
     def clear_status(self):
         self.status.config(state=NORMAL)
         self.status.delete(1.0,END)
@@ -588,6 +618,7 @@ class RadioRough(Tk):
             self.status.insert(END,enc(delint(msg)))
             self.status.config(state=DISABLED)
 
+# GuiThread controls the thread that runs the tk inter frame
 class GuiThread:
     def __init__(self, core):
         self.q=Queue()
@@ -611,7 +642,7 @@ class GuiThread:
     def stop(self):
         self.send_to_gui('stop')
 
-       
+# once radio rough is installed launching mopidy automatically starts it       
 if __name__=='__main__':
     from subprocess import call
     call('mopidy')

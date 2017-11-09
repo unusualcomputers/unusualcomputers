@@ -5,6 +5,8 @@ from rough import GuiThread
 
 logger = logging.getLogger()
 
+# main mopidy extension class
+# starts the gui thread stops it and passes on events to it
 class MopidyRadioRough(pykka.ThreadingActor, core.CoreListener):
     def __init__(self,config,core):
         super(MopidyRadioRough, self).__init__()

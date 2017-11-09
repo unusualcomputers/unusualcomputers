@@ -3,6 +3,7 @@ from ttkthemes import themed_tk as tk
 from tkinter import ttk
 import os
 
+# search input dialog
 class Search(Toplevel):
 
     def __init__(self,parent,title='search'):

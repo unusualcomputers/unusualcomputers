@@ -14,7 +14,7 @@ def get_version(filename):
 setup(
     name='Mopidy-Radio-Rough',
     version=get_version('mopidy_radio_rough/__init__.py'),
-    url='https://github.com/unusual.computers/mopidyroughradio',
+    url='https://github.com/unusualcomputers/unusualcomputers/tree/master/code/mopidy/mopidyradiorough',
     license='Apache License, Version 2.0',
     author='Unusual Computers',
     author_email='unusual.computers@gmail.com',
