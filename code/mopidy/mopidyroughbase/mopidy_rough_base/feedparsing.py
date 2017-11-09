@@ -9,6 +9,9 @@ from util import *
 import sys
 import traceback
 
+# parsing of podcast feeds
+# for rss 2 elements tree is used, it is faster
+# for everything else we fall back to feedparser
 ITUNES_PREFIX = '{http://www.itunes.com/dtds/podcast-1.0.dtd}'
 
 def _i_tag(tag):#format i tunes tag
@@ -24,6 +27,7 @@ def _get_attrib(el,n,a):#get nodes attribute value if there
     if e is None: return None
     else: return e.attrib.get(a).strip()
 
+# parsed feeds are cached
 class CachedFeedParser():
 
     def __init__(self):

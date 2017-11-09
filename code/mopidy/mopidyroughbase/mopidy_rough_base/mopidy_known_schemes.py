@@ -1,3 +1,6 @@
+# it helps dynamic browsing and menus to know what we are looking at
+# in mopidy this is most easily found by looking at uri schemes
+
 youtube_scheme = 'youtube:'
 spotify_scheme = 'spotify:'
 file_scheme = 'file:'

@@ -1,5 +1,8 @@
 from mopidy.models import Ref,Track,Album,Artist,Playlist
 
+# searching is slow compared to other things
+# we cache the results in object that look like mopidy references
+
 class RefWithData:
     def __init__(self, ref, data):
         self.uri = ref.uri
@@ -27,6 +30,7 @@ def make_ref(data):
         
     return RefWithData(ref,data)
 
+# cached mopidy search
 class MopidySearch:
 
     def __init__(self,core):

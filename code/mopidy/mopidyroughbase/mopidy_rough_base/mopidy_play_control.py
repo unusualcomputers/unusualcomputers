@@ -1,6 +1,7 @@
 from mopidy.core import PlaybackState
 from mopidy.models import Ref
 
+# controls for playback
 class MopidyPlayControl:
 
     def __init__(self, core):

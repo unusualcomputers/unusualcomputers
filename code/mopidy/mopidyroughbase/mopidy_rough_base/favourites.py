@@ -3,8 +3,11 @@ from util import file_exists
 import os
 import pdb
 
+# file name for saving favourites
 _favourites_data='.rough.favourites'
 
+# favourites handling
+# simple dictionary of mopidy uris saved to a file
 class Favourites(Jsonable):
     @classmethod
     def _config_path(cls):

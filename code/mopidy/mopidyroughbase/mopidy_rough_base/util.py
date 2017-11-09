@@ -3,6 +3,7 @@ import os
 import pathlib
 from mopidy.models import Ref
 
+# a bunch of smaller utility functions used all over
 _not_allowed='<>:"/|\?* \t\n'
 
 def defined(x): return x is not None

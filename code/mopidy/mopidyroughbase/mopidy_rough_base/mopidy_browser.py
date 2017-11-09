@@ -12,6 +12,9 @@ from util import *
 import threading
 import pdb
 
+# interface to mopidy used by various rough front ends
+
+# some refs and uris are created by us, makes browsing easier
 _subscriptions_ref=Ref.directory(name = 'Subscriptions',
             uri = 'podcast+subscriptions')
 _favourites_ref=Ref.directory(name = 'Favourites',
@@ -25,6 +28,7 @@ _youtube_ref=Ref.directory(name = 'YouTube (searching)',
 _channels_scheme='channel+'
 _search_scheme='searchres:'
 
+# main interface class to be used by rough ucc guis
 class MopidyBrowser:
     def __init__(self, core, status_func, single_thread): 
         self.core = core
@@ -49,7 +53,7 @@ class MopidyBrowser:
         self.update_timer=threading.Timer(5,self.auto_update)
         self.update_timer.start()
 
-
+    # status
     def set_status(self,msg):
         self.status=msg
         if self.status_func is not None:
