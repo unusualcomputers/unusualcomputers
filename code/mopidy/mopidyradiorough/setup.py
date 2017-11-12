@@ -47,4 +47,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Topic :: Multimedia :: Sound/Audio :: Players',
     ],
+    data_files=[
+        ('/usr/share/applications','mopidy_radio_rough/radio_rough.desktop'),
+        ('/usr/share/pixmaps/ucc.gif',mopidy_radio_rough/ucc.gif'),
+    ],
 )

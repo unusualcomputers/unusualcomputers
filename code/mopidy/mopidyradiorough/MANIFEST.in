@@ -4,4 +4,5 @@ include MANIFEST.in
 include README.rst
 include mopidy_radio_rough/ext.conf
 include mopidy_radio_rough/ucc.gif
+include mopidy_radio_rough/radio_rough.desktop
 include tox.ini
