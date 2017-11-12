@@ -14,7 +14,6 @@ from mopidy_rough_base.mopidy_play_control import MopidyPlayControl
 from mopidy_rough_base.util import *
 from mopidy.models import Ref
 from Queue import Queue
-import psutil
 import re
 import logging
 from tooltip import ToolTip
@@ -407,9 +406,7 @@ class RadioRough(Tk):
         self.the_list.select_clear(0,END)
 
     def on_close(self):
-        for proc in psutil.process_iter():
-            if 'mopidy' in proc.name():
-                proc.kill()
+        os.system('pkill mopidy')
         self.destroy()
         self.quit()
     
