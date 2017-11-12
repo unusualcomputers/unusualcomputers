@@ -63,7 +63,7 @@ def _download_status(description,update_func,path):
             else:
                 return '{} bytes'.format(bytes)
 
-        def update(self):
+        def update(self, t=None):
             if self.remaining is None:
                 rem=''
             elif self.remaining==-1:

@@ -406,7 +406,7 @@ class RadioRough(Tk):
         self.the_list.select_clear(0,END)
 
     def on_close(self):
-        os.system('pkill mopidy')
+        os.system('pkill -9 mopidy')
         self.destroy()
         self.quit()
     
