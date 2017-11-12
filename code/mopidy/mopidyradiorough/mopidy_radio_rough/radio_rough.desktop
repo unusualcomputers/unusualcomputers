@@ -4,5 +4,5 @@ Name=Radio Rough
 Exec=sudo mopidy
 Comment=Listen to the internet
 StartupNotify=true
-Icon=/usr/share/pixmaps/ucc.gif
+Icon=/usr/share/pixmaps/ucc.png
 Categories=AudioVideo
