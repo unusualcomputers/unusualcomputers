@@ -32,6 +32,7 @@ setup(
         'feedparser',
         'jsonpickle',
         'mutagen',
+        'pathlib',
     ],
     classifiers=[
         'Environment :: No Input/Output (Daemon)',
