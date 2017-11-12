@@ -49,6 +49,6 @@ setup(
     ],
     data_files=[
         ('/usr/share/applications','mopidy_radio_rough/radio_rough.desktop'),
-        ('/usr/share/pixmaps/ucc.gif',mopidy_radio_rough/ucc.gif'),
+        ('/usr/share/pixmaps/ucc.gif','mopidy_radio_rough/ucc.gif'),
     ],
 )
