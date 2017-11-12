@@ -434,7 +434,7 @@ class RadioRough(Tk):
             elif evnt=='stop':
                 self.on_close()
             elif evnt=='stream_title_changed':
-                self.current_info()
+                current_info()
             elif evnt=='volume_changed':
                 v=args['volume']
                 self.volume.set(v)
@@ -457,7 +457,7 @@ class RadioRough(Tk):
                 status = self.browser.format_current_track_info()
                 if status is None:
                     status=self.browser.format_track_info(track)
-                    self.after(15000,self.current_info)
+                    self.after(15000,current_info)
                 self.status_message(status)
                 if self.browser.is_queue():
                     self.update_list()
@@ -474,9 +474,9 @@ class RadioRough(Tk):
             elif evnt=='status':
                 if args=='Updated': 
                     self.update_list()
-                    self.current_info()    
+                    current_info()    
                 elif args is None:
-                    self.current_info()
+                    current_info()
                 else:
                     self.status_message(args)
     

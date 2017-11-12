@@ -41,6 +41,7 @@ setup(
         'Mopidy-Podcast-iTunes',
         'Mopidy-Youtube',
         'Mopidy-Rough-Base',
+        'Mopidy-TuneIn',
         'Pykka >= 1.1',
         'feedparser',
         'jsonpickle',
