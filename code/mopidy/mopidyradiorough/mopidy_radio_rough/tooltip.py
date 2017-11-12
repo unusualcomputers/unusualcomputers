@@ -1,7 +1,11 @@
 # tooltip class fro tkinter
 # from activestate
 # http://code.activestate.com/recipes/576688-tooltip-for-tkinter/
-from Tkinter import *
+try:
+    from Tkinter import *
+except ImportError:
+    from tkinter import *
+
 from time import time, localtime, strftime
 
 class ToolTip( Toplevel ):

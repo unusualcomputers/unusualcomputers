@@ -1,6 +1,12 @@
-from tkinter import *
-from ttkthemes import themed_tk as tk 
-from tkinter import ttk
+try:
+    from Tkinter import *
+except ImportError:
+    from tkinter import *
+try:
+    import ttk
+except ImportError:
+    from tkinter import ttk
+
 import os
 
 # search input dialog

@@ -1,5 +1,11 @@
-from tkinter import *
-from tkinter import ttk
+try:
+    from Tkinter import *
+except ImportError:
+    from tkinter import *
+try:
+    import ttk
+except ImportError:
+    from tkinter import ttk
 import threading
 from search_dialog import Search
 from mopidy_rough_base.mopidy_browser import MopidyBrowser
