@@ -420,8 +420,6 @@ class MopidyBrowser:
                 self.set_status('Searching YouTube for '.format(q))
                 self.yt_default=self.searching.search_any(q,uris=['youtube:'])
             self.set_status(None)
-        for p in self.yt_default:
-            print p
         self.current_list = self.yt_default
 
     def add_level(self,ref):

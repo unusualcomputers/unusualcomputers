@@ -418,23 +418,24 @@ class RadioRough(Tk):
 
     # queue loop
     # handles messages from other threads    
+    def current_info(self):
+        self.status_message(self.browser.format_current_track_info())
+
     def q_loop(self):
-        def current_info(self):
-            self.status_message(self.browser.format_current_track_info())
     
         while not self.q.empty():
             msg=self.q.get()
             (evnt, args)=msg
             
-            if evnt!='status' and 'Downloading' not in args:
-                self.logger.info('event: {}, args: {}'.format(evnt,args))   
+            #if evnt!='status' and 'Downloading' not in args:
+            #    self.logger.info('event: {}, args: {}'.format(evnt,args))   
             
             if evnt=='deselect-list':
                 self.deselect_all()
             elif evnt=='stop':
                 self.on_close()
             elif evnt=='stream_title_changed':
-                current_info()
+                self.current_info()
             elif evnt=='volume_changed':
                 v=args['volume']
                 self.volume.set(v)
@@ -457,7 +458,7 @@ class RadioRough(Tk):
                 status = self.browser.format_current_track_info()
                 if status is None:
                     status=self.browser.format_track_info(track)
-                    self.after(15000,current_info)
+                    self.after(15000,self.current_info)
                 self.status_message(status)
                 if self.browser.is_queue():
                     self.update_list()
@@ -474,9 +475,9 @@ class RadioRough(Tk):
             elif evnt=='status':
                 if args=='Updated': 
                     self.update_list()
-                    current_info()    
+                    self.current_info()    
                 elif args is None:
-                    current_info()
+                    self.current_info()
                 else:
                     self.status_message(args)
     
