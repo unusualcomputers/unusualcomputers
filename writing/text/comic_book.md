@@ -25,12 +25,12 @@ Once that was out of the way I spent about ten minutes checking, re-checking and
 
 #### Usb hub
 
-This was a £2 pound one from ebay, I opened up the casing and threw it away, then soldered it onto pi zero, as described [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero). 
+This was a £2 one from ebay, I opened up the casing and threw it away, then soldered it onto pi zero, as described [here](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/usbnotes.md#soldering-the-hub-to-pi-zero). 
 
 
 #### Power 
 
-I used an anonymous powerbank from ebay, when opened it had a small printed board and a big battery pack. The board is used for charging and converting power to 5V. It was marked as being able to supply 2A of power, plenty for pi zero and the 7 inch screen.
+I used an anonymous powerbank from ebay, when opened it had a small board and a big battery pack. The board is used for charging and converting power to 5V. It was marked as being able to supply 2A of power, plenty for pi zero and the 7 inch screen.
 
 I desoldered the battery pack, attached longer wires to it and glued it on the back cover, protecting it with some black duct tape.
 
