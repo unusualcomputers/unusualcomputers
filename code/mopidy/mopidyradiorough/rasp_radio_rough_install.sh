@@ -22,9 +22,18 @@ sudo apt-get install mopidy
 echo Installing radio rough
 sudo pip install Mopidy-Radio-Rough
 
+ 
 ## Setup the start menu
 echo Copying desktop and icon files
-sudo cp /usr/lib/python2.7/dist-packages/mopidy_radio_rough/ucc.png  /usr/share/pixmaps/ucc.gif
-sudo cp /usr/lib/python2.7/dist-packages/mopidy_radio_rough/radio_rough.desktop  /usr/share/applications/radio_rough.desktop
+sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/radio_rough.desktop -O /usr/share/applications/radio_rough.desktop
 
-echo radio rough is installed, run it from the start menu or type sudo mopidy on the command line
+sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.png -O /usr/share/pixmaps/ucc.png
+
+sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.gif -O /usr/share/pixmaps/ucc.gif
+
+echo
+echo **********************************************************************
+echo * radio rough is installed                                           *
+echo * run it from the start menu or type sudo mopidy on the command line *
+echo **********************************************************************
+echo
