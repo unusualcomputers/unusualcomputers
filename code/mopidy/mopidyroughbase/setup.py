@@ -33,6 +33,7 @@ setup(
         'jsonpickle',
         'mutagen',
         'pathlib',
+        'python-dateutil',
     ],
     classifiers=[
         'Environment :: No Input/Output (Daemon)',
