@@ -412,7 +412,6 @@ class MopidyBrowser:
         self.add_level(_youtube_ref)
         if self.yt_default is None:
             if self.searching.last_query is None:
-                self.set_status('Searching YouTube for trending music')
                 self.yt_default=self.searching.search_any(
                     'take five',uris=['youtube:'])
             else:

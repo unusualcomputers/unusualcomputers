@@ -19,14 +19,18 @@ def _i_tag(tag):#format i tunes tag
 
 def _get_e(el,n):#get element text if there
     e=el.find(n)
-    if e is not None: return e.text.strip()
+    if e is not None: 
+        if e.text is not None:
+            return e.text.strip()
     return None
 
 def _get_attrib(el,n,a):#get nodes attribute value if there
     e=el.find(n)
-    if e is None: return None
-    else: return e.attrib.get(a).strip()
-
+    if e is not None:
+        if e.attrib.get(a) is not None:
+            return e.attrib.get(a).strip()
+    return None
+    
 # parsed feeds are cached
 class CachedFeedParser():
 
@@ -141,15 +145,18 @@ class CachedFeedParser():
         return self.update(uri)
 
     def parse_channel_desc(self,uri):
-        desc=self.channel_desc_cache.get(uri)
-        if desc is not None: return desc
-        else:
-            rss=urllib2.urlopen(uri).read()
-            root=et.fromstring(rss)
-            channel_e=root.find('channel')
-            desc=_get_e(channel_e,'description')
-            self.channel_desc_cache[uri]=desc
-            return desc
+        try:
+            desc=self.channel_desc_cache.get(uri)
+            if desc is not None: return desc
+            else:
+                rss=urllib2.urlopen(uri).read()
+                root=et.fromstring(rss)
+                channel_e=root.find('channel')
+                desc=_get_e(channel_e,'description')
+                self.channel_desc_cache[uri]=desc
+                return desc
+        finally:
+            return ""
             
     def update(self,uri):
         c=self.parse_etree(uri)

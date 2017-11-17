@@ -236,18 +236,20 @@ class Channel(Jsonable):
             p=next((x for x in self.podcasts if x.guid==guid),None)
         return p
 
-    def update(self,deleted,response_func):
-        status='Getting new episodes for {}'.format(self.name)
+    def update(self,deleted,response_func,ignore_existing = False):
+        status='Getting new episodes for {}'.format(enc(self.name))
         _status(status,response_func)
         new_p=_feedparser.update(self.uri.decode('utf-8')).podcasts
-        new_p=[p for p in new_p if not self.has(p)]        
+        if not ignore_existing:
+            new_p=[p for p in new_p if not self.has(p)]        
         self.podcasts=new_p+self.podcasts
         self.podcasts=sorted(self.podcasts,key=lambda p: p.date,reverse=True)
-        
+
         def downloadable(p):
             return p.hash not in deleted and not p.exists_on_disk()
         
         new_p=[p for p in new_p if downloadable(p)][:_new_to_get]
+
         i=1
         n=len(new_p)
         ch_path=_channel_path(p.channel_name)
@@ -386,7 +388,7 @@ class Subscriptions(Jsonable):
                 status='Channel not found\n{} '.format(uri)
                 _status(status,update_func)
                 continue
-            c.update(self.deleted,update_func)
+            c.update(self.deleted,update_func,True)
             self.channels.append(c)
             self.save()
             _status(None,update_func)    
