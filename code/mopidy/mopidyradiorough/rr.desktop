@@ -1,11 +1,12 @@
 #!/usr/bin/env xdg-open
+
+# kicks off installation of radio rough and dependencies
+# link to this file: https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/rr.desktop
+# or short: https://goo.gl/gBdWGw
 [Desktop Entry]
 Type=Application
 Name=Radio Rough test
 Exec=lxterminal -t "Installing radio rough" -e sh -c "cd ~/Desktop ; wget https://goo.gl/sKhgsG -O ~/Desktop/rasp_radio_rough_install.sh ; sudo chmod a+x ./rasp_radio_rough_install.sh ; ./rasp_radio_rough_install.sh ; sudo rm ./rasp_radio_rough_install.sh ; sleep 20"
-#Exec=lxterminal -t "Installing radio rough" -e sh -c "cd ~/Desktop ; sudo chmod a+x ./rasp_radio_rough_install.sh ; ./rasp_radio_rough_install.sh ; sudo rm ./rasp_radio_rough_install.sh ; sudo rm ./ rr.desktop ; sleep 20"
-#Exec=lxterminal --working-directory=~/Desktop/ -e sh -c "echo starting && pwd && sudo chmod a+x ./test_script.sh ; sleep 5 && ./test_script.sh"
-#Exec=lxterminal --working-directory=/usr/share/applications -e ./rasp_radio_rough_install.sh
 Terminal=True
 Comment=Listen to the internet
 StartupNotify=true
