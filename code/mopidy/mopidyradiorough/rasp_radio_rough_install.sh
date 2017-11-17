@@ -6,7 +6,7 @@
 
 # 1. Add the archive’s GPG key:
 echo Adding mopidy GPG key
-wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
+sudo wget -q -O - https://apt.mopidy.com/mopidy.gpg | sudo apt-key add -
 
 # 2. Add the APT repo to your package sources:
 echo Adding mopidy repo
