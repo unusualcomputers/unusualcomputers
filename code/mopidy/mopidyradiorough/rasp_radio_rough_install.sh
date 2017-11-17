@@ -20,7 +20,7 @@ sudo apt-get install mopidy
 
 ## Then radio rough
 echo Installing radio rough
-sudo pip install Mopidy-Radio-Rough
+sudo pip install -U Mopidy-Radio-Rough
 
  
 ## Setup the start menu
