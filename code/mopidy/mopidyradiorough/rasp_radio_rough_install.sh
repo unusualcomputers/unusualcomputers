@@ -31,6 +31,9 @@ sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/m
 
 sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.gif -O /usr/share/pixmaps/ucc.gif
 
+## Update the start menu
+sudo lxpanelctl restart
+
 echo
 echo **********************************************************************
 echo * radio rough is installed                                           *
