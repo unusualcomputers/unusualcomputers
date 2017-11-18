@@ -11,6 +11,7 @@ from favourites import Favourites
 from util import *
 import threading
 import pdb
+import time
 
 # interface to mopidy used by various rough front ends
 
@@ -30,7 +31,7 @@ _search_scheme='searchres:'
 
 # main interface class to be used by rough ucc guis
 class MopidyBrowser:
-    def __init__(self, core, status_func, single_thread): 
+    def __init__(self, core, status_func): 
         self.core = core
         self.logger = logging.getLogger(__name__) 
         self.logger.setLevel(logging.DEBUG)
@@ -49,7 +50,7 @@ class MopidyBrowser:
         self.status=None
         self.yt_default=yt_default
         self.__fix_current_list()
-        self.single_thread=single_thread
+        
         self.update_timer=threading.Timer(5,self.auto_update)
         self.update_timer.start()
 
@@ -112,7 +113,13 @@ class MopidyBrowser:
         podcast_name=ref.name.strip()
         return self.subscriptions.is_on_disk(channel_name,podcast_name)
 
-    # names of current list to display
+    # current level name
+    def current_title(self):
+        cl = self.__current_level()
+        if cl is None: return ''
+        else: return cl.name
+
+    # names in current list to display
     def current_names(self,decorate=True):
         ret = []
         cl=self.__current_level()
@@ -303,21 +310,15 @@ class MopidyBrowser:
             
     def download_podcasts(self, indices):
         refs=[self.__podcast_details_at(i) for i in indices]
-        if self.single_thread:
-            self.subscriptions.download_podcasts(refs,self.set_status)
-        else:
-            threading.Thread(
-                target=self.subscriptions.download_podcasts,
-                args=(refs,self.set_status)).start()
+        threading.Thread(
+            target=self.subscriptions.download_podcasts,
+            args=(refs,self.set_status)).start()
             
     def keep_podcasts(self, indices):
         refs=[self.__podcast_details_at(i) for i in indices]
-        if self.single_thread:
-            self.subscriptions.keep_podcasts(refs,self.set_status)
-        else:
-            threading.Thread(
-                target=self.subscriptions.keep_podcasts,
-                args=(refs,self.set_status)).start()
+        threading.Thread(
+            target=self.subscriptions.keep_podcasts,
+            args=(refs,self.set_status)).start()
                     
     def delete_podcasts(self,indices):
         if self.__current_level() is None: return
@@ -333,35 +334,26 @@ class MopidyBrowser:
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
 
-        if self.single_thread:
-            self.subscriptions.subscribe(channel_uris,self.set_status)
-        else:
-            threading.Thread(
-                target=self.subscriptions.subscribe,
-                args=(channel_uris,self.set_status)).start()
+        threading.Thread(
+            target=self.subscriptions.subscribe,
+            args=(channel_uris,self.set_status)).start()
 
     def unsubscribe(self, indices):
         refs=self.__filter_refs(indices)
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
 
-        if self.single_thread:
-            self.subscriptions.unsubscribe(channel_uris,self.set_status)
-        else:
-            threading.Thread(
-                target=self.subscriptions.unsubscribe,
-                args=(channel_uris,self.set_status)).start()
+        threading.Thread(
+            target=self.subscriptions.unsubscribe,
+            args=(channel_uris,self.set_status)).start()
                 
     def update(self, indices):
         refs=self.__filter_refs(indices)
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
-        if self.single_thread:
-            self.subscriptions.update(channel_uris,self.set_status)
-        else:
-            threading.Thread(
-                target=self.subscriptions.update,
-                args=(channel_uris,self.set_status)).start()
+        threading.Thread(
+            target=self.subscriptions.update,
+            args=(channel_uris,self.set_status)).start()
     
     def auto_update(self):
         self.update([])

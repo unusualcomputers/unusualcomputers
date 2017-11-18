@@ -48,10 +48,10 @@ class MopidySearch:
     # search with a simple string that matches a given field
     def search_single_field( self, q, field, uris = None):
         query = { field : [q] }
-        self.last_query=q
-        self.last_res = self.core.library.search(query, uris).get()
+        if q!=self.last_query:
+            self.last_query=q
+            self.last_res = self.core.library.search(query, uris).get()
         if len(self.last_res) == 0: return []
-        
         return self.flat_res() 
     
     def search_any( self, q, uris = None):

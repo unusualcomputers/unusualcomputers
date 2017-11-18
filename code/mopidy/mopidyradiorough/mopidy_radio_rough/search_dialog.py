@@ -12,10 +12,10 @@ import os
 # search input dialog
 class Search(Toplevel):
 
-    def __init__(self,parent,title='search'):
+    def __init__(self,parent, searchtext=''):
 
         Toplevel.__init__(self,parent)
-        self.title(title)
+        self.title('search')
         self.transient(parent)
         self.searchtext=''
         self.parent=parent

@@ -40,12 +40,14 @@ class RadioRough(Tk):
         self.logger = logging.getLogger(__name__)
         
         # browser is the interface to mopidy functions
-        self.browser=MopidyBrowser(core,self.send_status,False)
+        self.browser=MopidyBrowser(core,self.send_status)
         self.browser.set_volume(50)
         
         # loop tracks, or not
         self.loop = BooleanVar()
-
+        
+        # last search string
+        self.last_search=''
         # ingnore _next_selet used to synchronise list updates as they  
         # are sometimes required by mopidy events on other threads
         self.ignore_next_select=False
@@ -86,6 +88,7 @@ class RadioRough(Tk):
         self.bind('<BackSpace>',self.on_backspace)
         self.bind('<Control-a>',self.on_select_all)
         self.bind('<Control-A>',self.on_deselect_all)
+        self.bind('<space>',self.on_play_pause)
         
         tooltip=ToolTip(self.the_list, 
             None, self.the_list_tooltip, 0.5, False) 
@@ -123,6 +126,7 @@ class RadioRough(Tk):
         self.progress=ttk.Progressbar(mid_frame,orient='horizontal',
             mode='determinate',style='orange.Horizontal.TProgressbar')
         self.progress_update=None
+        self.info_update=None
         self.t0=StringVar()
         self.label_t0=Label(mid_frame,text='0:00',font=('',6),
             textvariable=self.t0)
@@ -345,7 +349,7 @@ class RadioRough(Tk):
             tm=self.browser.get_current_tm()
             if tm:
                 self.set_progress_val(tm/1000)
-        self.after(1000,self.update_progress)
+        self.progress_update=self.after(1000,self.update_progress)
 
     def set_progress_val(self,v,move_to=True):
         m=self.progress['maximum']
@@ -427,9 +431,6 @@ class RadioRough(Tk):
             msg=self.q.get()
             (evnt, args)=msg
             
-            #if evnt!='status' and 'Downloading' not in args:
-            #    self.logger.info('event: {}, args: {}'.format(evnt,args))   
-            
             if evnt=='deselect-list':
                 self.deselect_all()
             elif evnt=='stop':
@@ -458,7 +459,9 @@ class RadioRough(Tk):
                 status = self.browser.format_current_track_info()
                 if status is None:
                     status=self.browser.format_track_info(track)
-                    self.after(15000,self.current_info)
+                    if self.info_update is not None:
+                        self.after_cancel(self.info_update)
+                    self.info_update=self.after(15000,self.current_info)
                 self.status_message(status)
                 if self.browser.is_queue():
                     self.update_list()
@@ -494,11 +497,16 @@ class RadioRough(Tk):
             curr_list=self.the_list.get(0,END)
             if curr_list==tuple(curr): return
             self.the_list.delete(0,END)
+            self.title('radio rough')
         else:
             curr_list=self.the_list.get(1,END)
             if curr_list==tuple(curr): return
             self.the_list.delete(0,END)
             self.the_list.insert(0,'<--')
+            title=self.browser.current_title()
+            if title is None: self.title('radio rough')
+            else: self.title('radio rough - {}'.format(title))
+
         self.the_list.insert(END,*curr)
         self.ignore_next_select=True
     
@@ -569,7 +577,7 @@ class RadioRough(Tk):
     def on_next(self):
         self.browser.next()
     
-    def on_play_pause(self):
+    def on_play_pause(self,evt=None):
         if self.browser.is_stopped():
             if len(self.browser.tracks())==0:
                 self.play_now()
@@ -597,12 +605,20 @@ class RadioRough(Tk):
     # searching
     def on_search(self):
         self._waiting()
-        d=Search(self)
+        d=Search(self,self.last_search)
         if d.searchtext!='':
-            self.browser.search(d.searchtext)
-            self.update_list()
-        self._normal()
+            self.last_search=d.searchtext
+            self.status_message('Searching for {} ...'.format(d.searchtext))
+            self.after(100,self.browser.search,d.searchtext)
+        else:
+            self._normal()
  
+    def start_search(self,txt):
+        self.browser.search(d.searchtext)
+        self.update_list()
+        self.clear_status()
+        self._normal()
+        
     # status messages
     def clear_status(self):
         self.status.config(state=NORMAL)
@@ -610,7 +626,7 @@ class RadioRough(Tk):
         self.status.config(state=DISABLED)
 
     def send_status(self,status):
-        self.q.put(("status",status))
+        self.q.put(('status',status))
     
     def send_deselect(self):
         self.q.put(('deselect-list',''))
