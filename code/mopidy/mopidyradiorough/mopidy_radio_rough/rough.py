@@ -81,14 +81,21 @@ class RadioRough(Tk):
         self.the_list.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.the_list.yview)
         self.the_list.bind('<Double-Button-1>', self.on_list_dbl_clk)
-        self.the_list.bind('<Return>', self.on_list_dbl_clk)
-        self.the_list.bind('<Button-1>', self.on_list_click)
+        self.the_list.bind('<Return>', self.on_list_return)
         self.the_list.bind('<<ListboxSelect>>', self.on_list_select)
         self.the_list.bind('<Button-3>', self.on_list_popup)
+        self.the_list.bind('<Menu>', self.on_list_popup_key)
+        
         self.bind('<BackSpace>',self.on_backspace)
         self.bind('<Control-a>',self.on_select_all)
         self.bind('<Control-A>',self.on_deselect_all)
+        self.bind('<Control-s>',self.on_search)
+        self.bind('<Control-S>',self.on_search)
         self.bind('<space>',self.on_play_pause)
+        self.bind('<Up>',self.on_up_down)
+        self.bind('<Down>',self.on_up_down)
+        self.bind('<Left>',self.on_vol_down)
+        self.bind('<Right>',self.on_vol_up)
         
         tooltip=ToolTip(self.the_list, 
             None, self.the_list_tooltip, 0.5, False) 
@@ -150,6 +157,26 @@ class RadioRough(Tk):
         
         self.tl_view=None
 
+    # keyboard shortcuts
+    def on_up_down(self,evt):
+        focus = self.focus_get()
+        if focus != self.the_list:
+            self.the_list.focus_set()
+
+    def on_vol_up(self,e):
+        self.volume.focus_set()
+
+    def on_vol_down(self,e):
+        self.volume.focus_set()
+
+    def on_vol_slide(self,event):
+        if self._ignore_vol_slide: 
+            self._ignore_vol_slide=False
+            return
+        if self._vol_delay is not None:
+            self.after_cancel(self._vol_delay)
+        self._vol_delay=self.after(500, self.on_vol_slide_after)        
+            
     # popup menu is dynamic
     def configure_list_popup(self,index=-1):
         self.list_popup.delete(0,END)
@@ -226,7 +253,9 @@ class RadioRough(Tk):
 
     def on_list_popup_focus_out(self,evt):
         self.list_popup.unpost()    
-    
+        self.the_list.focus_set()
+        self.the_list.activate(self.last_list_active)
+        
     def on_list_popup(self,evt):
         nearest=self.the_list.nearest(evt.y)
         self.the_list.select_set(nearest)
@@ -234,7 +263,19 @@ class RadioRough(Tk):
             nearest-=1
         self.configure_list_popup(nearest)
         self.list_popup.post(evt.x_root,evt.y_root)
+        self.list_popup.focus_set()
+        self.last_list_active = nearest
 
+    def on_list_popup_key(self,evt):
+        selected = self.the_list.curselection()
+        if len(selected) == 0: return
+        selected=selected[-1]
+        self.configure_list_popup(selected)
+        self.list_popup.post(evt.x_root,evt.y_root)
+        self.list_popup.focus_set()
+        self.last_list_active = selected
+
+        
     # handling tracks queue
     def remove_from_queue(self):
         self.browser.remove_tracks(self.__curindices())
@@ -505,9 +546,14 @@ class RadioRough(Tk):
             self.the_list.insert(0,'<--')
             title=self.browser.current_title()
             if title is None: self.title('radio rough')
-            else: self.title('radio rough - {}'.format(title))
+            else: self.title('radio rough - {}'.format(enc(title)))
 
         self.the_list.insert(END,*curr)
+        if top or len(curr) < 2:
+            self.the_list.activate(0)
+        else:    
+            self.the_list.activate(1)
+
         self.ignore_next_select=True
     
     # list navigation
@@ -530,18 +576,31 @@ class RadioRough(Tk):
             self.deselect_all()
             self.ignore_next_select=False
         
-    def on_list_click(self,event):
+    def list_dbl_click_ret(self,i):
+        if self.browser.is_top_level():
+            if self.browser.is_track(i):
+                self.play_now()
+            else:
+                self.browse_list(i)
+        else:
+            if i==0: 
+                self.back()
+            else:
+                if self.browser.is_track(i-1):
+                    self.play_now()
+                else:
+                    self.browse_list(i)
+        
+    def on_list_return(self,event):
         self._waiting()
-        i=self.the_list.nearest(event.y)
-        self.browse_list(i)
-        self._normal()
+        i=self.the_list.index(ACTIVE)
+        self.list_dbl_click_ret(i)    
+        self._normal()    
   
     def on_list_dbl_clk(self,event):
         self._waiting()
         i=self.the_list.nearest(event.y)
-        if not self.browser.is_top_level(): i-=1
-        if self.browser.is_playable(i):
-            self.play_now()
+        self.list_dbl_click_ret(i)    
         self._normal()    
  
     def __curindices(self):
@@ -550,16 +609,29 @@ class RadioRough(Tk):
         else:
             return [i-1 for i in self.the_list.curselection()]
    
+    def __current_names(self):
+        names=[self.the_list.get(i) for i in self.the_list.curselection()]
+        return ','.join(names)
     # playing and tracks
+    def start_play(self, indices):
+        self.browser.play_now(indices)
+        self._normal()
+
+    def start_loop(self, indices):
+        self.browser.loop_now(indices)
+        self._normal()
+    
     def play_now(self):
         self._waiting()
-        self.browser.play_now(self.__curindices())
-        self._normal()
+        name=self.__current_names()
+        self.status_message('Getting {} from internet'.format(name))
+        self.after(100,self.start_play,self.__curindices())
  
     def loop_now(self):
         self._waiting()
-        self.browser.loop_now(self.__curindices())
-        self._normal()
+        name=self.__current_names()
+        self.status_message('Getting {} from internet'.format(name))
+        self.after(100,self.start_loop,self.__curindices())
  
     def play_next(self):
         self._waiting()
@@ -603,18 +675,18 @@ class RadioRough(Tk):
         self._normal()
 
     # searching
-    def on_search(self):
+    def on_search(self,e=None):
         self._waiting()
         d=Search(self,self.last_search)
         if d.searchtext!='':
             self.last_search=d.searchtext
             self.status_message('Searching for {} ...'.format(d.searchtext))
-            self.after(100,self.browser.search,d.searchtext)
+            self.after(100,self.start_search,d.searchtext)
         else:
             self._normal()
  
     def start_search(self,txt):
-        self.browser.search(d.searchtext)
+        self.browser.search(txt)
         self.update_list()
         self.clear_status()
         self._normal()

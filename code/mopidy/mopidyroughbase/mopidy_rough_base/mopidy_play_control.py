@@ -122,11 +122,13 @@ class MopidyPlayControl:
 
     def volume_up(self, step = 5):
         v = self.volume()
+        if v > (100-step): v=100
         self.set_volume(v+step)
         return v+step
     
     def volume_down(self, step = 5):
         v = self.volume()
+        if v < step: v=0
         self.set_volume(v-step)
         return v-step
 

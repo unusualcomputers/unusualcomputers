@@ -1,5 +1,5 @@
 from mopidy.models import Ref,Track,Album,Artist,Playlist
-
+import pdb
 # searching is slow compared to other things
 # we cache the results in object that look like mopidy references
 
@@ -36,7 +36,7 @@ class MopidySearch:
     def __init__(self,core):
         self.core = core
         self.last_res = None
-        self.last_query=None
+        self.last_query=''
         
     def flat_res(self):
         tmp = [[ make_ref(t) for t in s.tracks]

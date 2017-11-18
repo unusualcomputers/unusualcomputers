@@ -78,6 +78,12 @@ class MopidyBrowser:
         if not self.__index_ok(index): return False
         ref=self.current_list[index]
         return ref.type in self.playable_types
+
+    def is_track(self,index):
+        if not self.__index_ok(index): return False
+        ref=self.current_list[index]
+        return ref.type == Ref.TRACK
+
         
     def is_top_level(self):
         return self.current_sel is None
@@ -470,7 +476,6 @@ class MopidyBrowser:
             uris = None
         else:
             uris = [scheme]
-
         if scheme is not None and scheme.startswith(podcast_scheme):
             search_res = self.searching.search_album(query,uris)
         else:
@@ -586,6 +591,12 @@ class MopidyBrowser:
     # player controls
     def set_volume(self,volume):
         self.player.set_volume(volume)
+
+    def volume_up(self):
+        self.player.volume_up()
+    
+    def volume_down(self):
+        self.player.volume_down()
     
     def is_playing(self):
         return self.player.is_playing()
