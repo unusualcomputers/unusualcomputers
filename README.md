@@ -6,6 +6,7 @@ calls and enquiries: unusual.computers(at)gmail.com
 
 ## what we made 
 
+* [Radio Rough](unusualcomputers/code/mopidy/mopidyradiorough/README.rst)
 * [Kodi in a flower pot](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/flowerpot.md#kodi-in-a-flower-pot)
 * [Laptop in a comic book](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/comic_book.md)
 * [fshlb & gifko](https://github.com/unusualcomputers/unusualcomputers/blob/master/utilities/fshlb/windows/readme.md#fshlb--gifko)
