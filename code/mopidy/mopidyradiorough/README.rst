@@ -43,9 +43,10 @@ Radio rough looks like this
 
 .. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_start.png
 
-The most interesting part is the list. By clicking on it you navigate through sources of sound. Directories of things have square brackets around the name, albums have round brackets, files on your local disk have a star in front of them. 
+The most interesting part is the list. By double-clicking on it you navigate through sources of sound. Directories of things have square brackets around the name, albums have round brackets, files on your local disk have a star in front of them. 
 
 Right click opens up a menu that tells you what you can do, it changes a bit depending on where you are in the lists. 
+All this can be done using keyboard too, see the list of shortcuts below.
 
 .. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_menu.png
 
@@ -80,6 +81,7 @@ Control-Shift-a     Deselect all in the list
 Control-s           Search
 Up/Down             Move up/down in the list
 Left/Right          Volume up/down
+Menu button         Same as right-click
 ================    ========================
 
 Data
