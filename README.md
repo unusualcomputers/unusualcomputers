@@ -7,9 +7,20 @@ calls and enquiries: unusual.computers(at)gmail.com
 ## what we made 
 
 * [Radio Rough](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst)
+  
+  A computer program for listening to internet.
+  
 * [Kodi in a flower pot](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/flowerpot.md#kodi-in-a-flower-pot)
+
+  A fully functional kodi machine built into a fully functional flower pot.
+
 * [Laptop in a comic book](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/comic_book.md)
+
+  A pi zero based laptop packed inside old comic book covers.
+
 * [fshlb & gifko](https://github.com/unusualcomputers/unusualcomputers/blob/master/utilities/fshlb/windows/readme.md#fshlb--gifko)
+
+  Windows utilities create twitter friendly videos.
 
 ## what we learned
 
