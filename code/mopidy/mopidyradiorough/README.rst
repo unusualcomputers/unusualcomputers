@@ -4,7 +4,7 @@ Mopidy Radio Rough
 
 Radio rough is a computer program for listening to internet. 
 
-For those who care, it is based on the excellent `Mopidy <https://www.mopidy.com/>`_ framework, written in python 2.7, using tk inter for the front end. Mopidy does not seem to run easily on Windows, so radio rough has only been tested on linux based machines. Would love to hear from anyone who gets it working on Windows or OS.
+For those who care, it is based on the excellent `Mopidy <https://www.mopidy.com/>`_ framework, written in python 2.7, using tk inter for the front end. It has only been tested on linux based machines, would love to hear from anyone who gets it working on Windows or OIS.
 
 Once installed it will let you search YouTube, browse thousands of internet radio streams (via TuneIn) or podcasts published on iTunes. It will also support any additional Mopidy extensions you care to install (look here[LINK] for what's available, much interesting stuff like internet archive, spotify, soma fm ... ). 
 It's lightweight and perfect for Raspberry Pi and runs happily even on Pi Zero :) (tested extensively under Ubuntu too)
@@ -16,9 +16,9 @@ Installation
 ============
 
 On Raspbian machines download `installation script from here  <https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/rr.desktop>`_ (right click on the link and choose 'save as') and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way. 
-This will create an entry in the start menu in "Audio & Video" section.
+This will create an entry in the start menu in "Audio & Video" section, click on it and enjoy.
 
-To download the above scritp from the command line run:
+To download the above script from the command line run:
 ::
     wget https://goo.gl/gBdWGw -O ~/Desktop/rr.desktop
 
