@@ -41,25 +41,25 @@ How to use radio rough
 
 Radio rough looks like this 
 
-..image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_start.png
+.. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_start.png
 
 The most interesting part is the list. By clicking on it you navigate through sources of sound. Directories of things have square brackets around the name, albums have round brackets, files on your local disk have a star in front of them. 
 
 Right click opens up a menu that tells you what you can do, it changes a bit depending on where you are in the lists. 
 
-..image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_menu.png
+.. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_menu.png
 
 Double click plays the stream or the file (give it a couple of seconds, it needs to be fetched from somewhere on the internet). 
 If what you are listening to has a start and an end, once a playback starts the pretty orange line will show you where you are. You can click on it to skip or rewind. Buttons on the right do what you think they do, the small slider changes volume. 
 
 When you float the mouse pointer over something in the list radio rough will get what information it can about it and show it in a tool tip. Very handy when choosing podcasts.
 
-..image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_tooltip.png
+.. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_tooltip.png
 
 While playing tracks this information will also be shown in the bottom part of the screen. 
 
 
-..image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_podcast.png
+.. image:: https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/pics/radio_rough_podcast.png
 
 As long as it is connected to the internet it will happily stream content directly. 
 For when you are not it can download podcasts for you. 
