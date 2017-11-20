@@ -6,7 +6,7 @@ Radio rough is a computer program for listening to internet.
 
 For those who care, it is based on the excellent `Mopidy <https://www.mopidy.com/>`_ framework, written in python 2.7, using tk inter for the front end. It has only been tested on linux based machines, would love to hear from anyone who gets it working on Windows or OIS.
 
-Once installed it will let you search YouTube, browse thousands of internet radio streams (via TuneIn) or podcasts published on iTunes. It will also support any additional Mopidy extensions you care to install (look `here<https://docs.mopidy.com/en/latest/ext/backends/>`_ for what's available, much interesting stuff like internet archive, spotify, soma fm ... ). 
+Once installed it will let you search YouTube, browse thousands of internet radio streams (via TuneIn) or podcasts published on iTunes. It will also support any additional Mopidy extensions you care to install (look `here <https://docs.mopidy.com/en/latest/ext/backends/>`_ for what's available, much interesting stuff like internet archive, spotify, soma fm ... ). 
 It's lightweight and perfect for Raspberry Pi and runs happily even on Pi Zero :) (tested extensively under Ubuntu too)
 
 The look and feel are based on the principles of rough design. It serves its purpose without trying to sell anything, including itself.
