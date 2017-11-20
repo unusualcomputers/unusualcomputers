@@ -1,5 +1,5 @@
 ****************************
-Mopidy Radio Rough
+Radio Rough
 ****************************
 
 Radio rough is a computer program for listening to internet. 
