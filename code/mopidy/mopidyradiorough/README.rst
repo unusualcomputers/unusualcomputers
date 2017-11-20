@@ -95,4 +95,4 @@ Feedback
 We love to hear about bugs, poor solutions and missing features, write to us: unusual.computers(at)gmail.com. 
 It is also nice to hear about how well it works, just saying.
 
-`unusual computers collective <unusualcomputerscollective.com>`_
+`unusual computers collective <https://unusualcomputerscollective.org/>`_
