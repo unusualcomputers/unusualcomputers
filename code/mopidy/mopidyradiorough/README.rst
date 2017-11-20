@@ -7,7 +7,9 @@ Rough gui for listening to internet.
 Installation
 ============
 
-Install by running::
+On raspbian machines download installation script from here https://goo.gl/gBdWGw and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way.
+
+Install by running:
 
     pip install Mopidy-Radio-Rough
 
