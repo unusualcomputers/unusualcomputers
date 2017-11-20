@@ -7,7 +7,7 @@ Rough gui for listening to internet.
 Installation
 ============
 
-On raspbian machines download installation script from here https://goo.gl/gBdWGw and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way.
+On raspbian machines download installation script from here https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/rr.desktop and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way.
 
 Install by running:
 
