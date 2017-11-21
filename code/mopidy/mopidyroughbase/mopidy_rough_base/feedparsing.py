@@ -8,11 +8,14 @@ import feedparser
 from util import *
 import sys
 import traceback
+import logging
 
 # parsing of podcast feeds
 # for rss 2 elements tree is used, it is faster
 # for everything else we fall back to feedparser
 ITUNES_PREFIX = '{http://www.itunes.com/dtds/podcast-1.0.dtd}'
+
+logger = logging.getLogger(__name__) 
 
 def _i_tag(tag):#format i tunes tag
     return ITUNES_PREFIX+tag
@@ -90,54 +93,61 @@ class CachedFeedParser():
                 channel_img,parsed_podcasts)
             return channel
         except:
+            logger.error('Error while parsing rss data from {}'.format(channel_uri))    
             e = sys.exc_info()
             traceback.print_exception(*e)
             return None
     
     def parse_feedparser(self,channel_uri):
-        feed=feedparser.parse(channel_uri)
-        channel_name=feed.feed['title']
-        loaded=[]
-        for p in feed.entries:
-            uri=None
-            image_uri=None
-            for e in p.enclosures:
-                if e.type.startswith('audio'):
-                    uri=e.href
-                elif e.type.startswith('image'):
-                    image_uri=e.href
-                elif is_sound_file(e.href): uri=e.href
-            if uri is None and len(p.enclosures)==1:
-                uri=p.enclosures[0].href
-            title=p.get('title')
-            guid=p.get('guid')
-            if (uri is None) or (title is None):
-                continue#need at least these
-            pub=p.get('pubDate')
-            if pub is None:
-                date=datetime.date.today().isoformat()
+        try:
+            feed=feedparser.parse(channel_uri)
+            channel_name=feed.feed['title']
+            loaded=[]
+            for p in feed.entries:
+                uri=None
+                image_uri=None
+                for e in p.enclosures:
+                    if e.type.startswith('audio'):
+                        uri=e.href
+                    elif e.type.startswith('image'):
+                        image_uri=e.href
+                    elif is_sound_file(e.href): uri=e.href
+                if uri is None and len(p.enclosures)==1:
+                    uri=p.enclosures[0].href
+                title=p.get('title')
+                guid=p.get('guid')
+                if (uri is None) or (title is None):
+                    continue#need at least these
+                pub=p.get('pubDate')
+                if pub is None:
+                    date=datetime.date.today().isoformat()
+                else:
+                    date=parse_date(date).isoformat()
+                podcast=podcasts.Podcast( name=title,
+                    uri=uri,
+                    guid=guid,
+                    artist=p.get('author',p.get('authors')),
+                    description=p.get('summary'),
+                    date=date,
+                    length=p.get('itunes_duration'),
+                    image_uri=image_uri,
+                    channel_uri=channel_uri,
+                    channel_name=channel_name)
+                loaded.append(podcast)
+            feed=feed.feed
+            description=feed.get('description')
+            if feed.get('image') is None:
+                img=None
             else:
-                date=parse_date(date).isoformat()
-            podcast=podcasts.Podcast( name=title,
-                uri=uri,
-                guid=guid,
-                artist=p.get('author',p.get('authors')),
-                description=p.get('summary'),
-                date=date,
-                length=p.get('itunes_duration'),
-                image_uri=image_uri,
-                channel_uri=channel_uri,
-                channel_name=channel_name)
-            loaded.append(podcast)
-        feed=feed.feed
-        description=feed.get('description')
-        if feed.get('image') is None:
-            img=None
-        else:
-            img=feed.get('image').get('href')
-        loaded=sorted(loaded,key=lambda p: p.date,reverse=True)    
-        c = podcasts.Channel(channel_name,description,channel_uri,img,loaded)
-        return c
+                img=feed.get('image').get('href')
+            loaded=sorted(loaded,key=lambda p: p.date,reverse=True)    
+            c = podcasts.Channel(channel_name,description,channel_uri,img,loaded)
+            return c
+        except:
+            logger.error('Error while parsing feed data from {}'.format(channel_uri))    
+            e = sys.exc_info()
+            traceback.print_exception(*e)
+            return None
             
     def parse(self,uri):
         channel=self.cache.get(uri)
@@ -147,7 +157,8 @@ class CachedFeedParser():
     def parse_channel_desc(self,uri):
         try:
             desc=self.channel_desc_cache.get(uri)
-            if desc is not None: return desc
+            if desc is not None: 
+                return desc
             else:
                 rss=urllib2.urlopen(uri).read()
                 root=et.fromstring(rss)
@@ -155,12 +166,13 @@ class CachedFeedParser():
                 desc=_get_e(channel_e,'description')
                 self.channel_desc_cache[uri]=desc
                 return desc
-        finally:
+        except:
             return ""
             
     def update(self,uri):
         c=self.parse_etree(uri)
         if c is None:
+            logger.info('etree parsing for {} failed, trying feedparser'.format(uri))
             c=self.parse_feedparser(uri)
         self.cache[uri]=c
         return c

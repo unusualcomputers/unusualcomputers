@@ -237,28 +237,40 @@ class Channel(Jsonable):
         return p
 
     def update(self,deleted,response_func,ignore_existing = False):
-        status='Getting new episodes for {}'.format(enc(self.name))
-        _status(status,response_func)
-        new_p=_feedparser.update(self.uri.decode('utf-8')).podcasts
-        if not ignore_existing:
-            new_p=[p for p in new_p if not self.has(p)]        
-        self.podcasts=new_p+self.podcasts
-        self.podcasts=sorted(self.podcasts,key=lambda p: p.date,reverse=True)
+        try:
+            status='Getting new episodes for {}'.format(enc(self.name))
+            _status(status,response_func)
+            new_p=_feedparser.update(self.uri.decode('utf-8')).podcasts
+            if not ignore_existing:
+                new_p=[p for p in new_p if not self.has(p)]        
+            self.podcasts=new_p+self.podcasts
+            self.podcasts=sorted(self.podcasts,key=lambda p: p.date,reverse=True)
 
-        def downloadable(p):
-            return p.hash not in deleted and not p.exists_on_disk()
-        
-        new_p=[p for p in new_p if downloadable(p)][:_new_to_get]
+            def downloadable(p):
+                return p.hash not in deleted and not p.exists_on_disk()
+            
+            new_p=[p for p in new_p if downloadable(p)][:_new_to_get]
 
-        i=1
-        n=len(new_p)
-        ch_path=_channel_path(p.channel_name)
-        for p in new_p:
-            status='Downloading episode {} ({} of {}).'.format(p.name,i,n)
-            i+=1
-            updates=_download_status(status,response_func,ch_path)
-            p.download(response_func,updates)
-        
+            i=1
+            n=len(new_p)
+            ch_path=_channel_path(p.channel_name)
+            for p in new_p:
+                status='Downloading episode {} ({} of {}).'.format(p.name,i,n)
+                i+=1
+                updates=_download_status(status,response_func,ch_path)
+                p.download(response_func,updates)
+            
+            _status(None,response_func)    
+        except:
+            status='Error while getting new episodes for {}'.format(enc(self.name))
+            _status(status,response_func)
+            logger.error(status)    
+            e = sys.exc_info()
+            print e
+            traceback.print_exception(*e)
+            time.sleep(5)
+            _status(None,response_func)
+            
     def delete_all(self):
         for p in self.podcasts:
             if not p.keep: p.delete_from_disk()

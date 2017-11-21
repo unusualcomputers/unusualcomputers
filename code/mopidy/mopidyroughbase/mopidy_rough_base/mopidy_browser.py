@@ -161,19 +161,22 @@ class MopidyBrowser:
    
     # track information to display
     def format_track_info_by_idx(self,index,include_name=True):
-        if not self.__index_ok(index): return None
-        ref=self.current_list[index]
-        if ref.type == Ref.TRACK:
-            ts=self.core.library.lookup(ref.uri).get()
-            if len(ts)==0: return ref.name
-            t=ts[0]
-            return self.format_track_info(t,None,include_name)
-        elif self.is_channel_ref(ref):
-            uri=ref.uri[len(podcast_scheme):]
-            return self.subscriptions.channel_desc(uri)
-        else:
-            return ref.name
-        
+        try:
+            if not self.__index_ok(index): return None
+            ref=self.current_list[index]
+            if ref.type == Ref.TRACK:
+                ts=self.core.library.lookup(ref.uri).get()
+                if len(ts)==0: return ref.name
+                t=ts[0]
+                return self.format_track_info(t,None,include_name)
+            elif self.is_channel_ref(ref):
+                uri=ref.uri[len(podcast_scheme):]
+                return self.subscriptions.channel_desc(uri)
+            else:
+                return ref.name
+        except:
+            return self.current_list[index].name
+            
     def format_track_info(self,track,title=None,include_name=True):
         name=track.name+'\n'
         if title is None or (title+'\n')==name: title=''
