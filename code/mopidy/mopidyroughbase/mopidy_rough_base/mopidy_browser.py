@@ -334,7 +334,12 @@ class MopidyBrowser:
             if not self.__index_ok(i): continue
             ref=self.current_list[i]
             self.favourites.remove(ref.name)
-    
+    def add_to_favourites_uri(self,name,uri):
+        self.favourites.add(name,uri)
+
+    def remove_from_favourites_uri(self,name,uri):
+        self.favourites.remove(name,uri)
+
     # handling podcast subscriptions                
     def __podcast_details_at(self,index):
         if not self.__index_ok(index):
@@ -577,9 +582,20 @@ class MopidyBrowser:
         self.trace_tracks()
         if not self.player.is_playing(): 
             self.player.play()
+            
+    def add_to_tracks_uri(self,uri,pos = None):
+        self.tracklist.add(uri=uri,at_position = pos)
+        self.trace_tracks()
+        if not self.player.is_playing(): 
+            self.player.play()
     
     def play_next(self,indices):
         self.add_to_tracks(indices,1)
+        self.tracklist.set_repeat(False)
+        self.tracklist.set_consume(True)
+
+    def play_next_uri(self,uri):
+        self.add_to_tracks_uri(uri,1)
         self.tracklist.set_repeat(False)
         self.tracklist.set_consume(True)
     
@@ -591,10 +607,25 @@ class MopidyBrowser:
         self.tracklist.set_repeat(False)
         self.tracklist.set_consume(True)
 
+    def play_now_uri(self,uri):
+        self.player.stop()
+        if self.tracklist.get_length() > 0:
+            self.remove_tracks([0])
+        self.add_to_tracks_uri(uri,0)
+        self.tracklist.set_repeat(False)
+        self.tracklist.set_consume(True)
+
     def loop_now(self,indices):
         self.player.stop()
         self.clear_tracks()
         self.add_to_tracks(indices,0)
+        self.tracklist.set_repeat(True)
+        self.tracklist.set_consume(False) 
+
+    def loop_now_uri(self,uri):
+        self.player.stop()
+        self.clear_tracks()
+        self.add_to_tracks_uri(uri,0)
         self.tracklist.set_repeat(True)
         self.tracklist.set_consume(False) 
 
