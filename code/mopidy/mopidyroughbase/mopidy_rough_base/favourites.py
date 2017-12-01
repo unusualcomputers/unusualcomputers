@@ -42,3 +42,6 @@ class Favourites(Jsonable):
     def remove(self,name):
         self.favourites=[x for x in self.favourites if x[0]!=name]
         self.save()
+        
+    def is_favorited(self,uri):
+        return uri in self.favourites.values()    

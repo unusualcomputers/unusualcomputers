@@ -50,6 +50,20 @@ def delint(s):
     
     return re.sub('<[^<]+?>','',enc).replace("&nbsp;"," ").strip()
 
+def createRef(refType, name, uri):
+    if refType == Ref.TRACK:
+        return Ref.track(name=name, uri=uri)
+    elif refType == Ref.ALBUM:
+        return Ref.album(name=name, uri=uri)
+    elif refType == Ref.ARTIST:
+        return Ref.artist(name=name, uri=uri)
+    elif refType == Ref.DIRECTORY:
+        return Ref.directory(name=name, uri=uri)
+    elif refType == Ref.PLAYLIST:
+        return Ref.album(name=name, uri=uri)
+    else:
+        return None
+        
 def is_sound_file(s):        
     hl=s.lower()
     return hl.endswith('mp3') or hl.endswith('wav') or \

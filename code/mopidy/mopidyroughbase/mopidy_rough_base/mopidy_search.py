@@ -1,4 +1,5 @@
 from mopidy.models import Ref,Track,Album,Artist,Playlist
+import sys
 import pdb
 # searching is slow compared to other things
 # we cache the results in object that look like mopidy references

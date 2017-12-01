@@ -63,16 +63,19 @@ class MopidyBrowser:
                 
     # properties of references        
     def is_favourites(self):
-        return self.__current_level()==_favourites_ref
+        return self.current_level()==_favourites_ref
+
+    def is_favourited(self, uri):
+        return self.favorites.is_favorited(uri)
         
     def is_subscriptions(self):
-        return self.__current_level()==_subscriptions_ref
+        return self.current_level()==_subscriptions_ref
         
     def is_queue(self):
-        return self.__current_level()==_queue_ref    
+        return self.current_level()==_queue_ref    
 
     def is_history(self):
-        return self.__current_level()==_history_ref    
+        return self.current_level()==_history_ref    
     
     def is_playable(self,index):
         if not self.__index_ok(index): return False
@@ -83,7 +86,6 @@ class MopidyBrowser:
         if not self.__index_ok(index): return False
         ref=self.current_list[index]
         return ref.type == Ref.TRACK
-
         
     def is_top_level(self):
         return self.current_sel is None
@@ -113,22 +115,22 @@ class MopidyBrowser:
     
     def is_podcast_on_disk(self,index):
         if not self.__index_ok(index): return False
-        if self.__current_level() is None: return False
-        channel_name=self.__current_level().name
+        if self.current_level() is None: return False
+        channel_name=self.current_level().name
         ref=self.current_list[index]
         podcast_name=ref.name.strip()
         return self.subscriptions.is_on_disk(channel_name,podcast_name)
 
     # current level name
     def current_title(self):
-        cl = self.__current_level()
+        cl = self.current_level()
         if cl is None: return ''
         else: return cl.name
 
     # names in current list to display
     def current_names(self,decorate=True):
         ret = []
-        cl=self.__current_level()
+        cl=self.current_level()
         all_sources=set([name_from_scheme(p.uri) for p in self.current_list])
         add_src= len(all_sources)>1 and (cl is not None and cl.uri=='searchres:')
      
@@ -158,6 +160,17 @@ class MopidyBrowser:
             ret.append(name)            
 
         return ret
+
+    # ref data in current list, can be used for building GET parameters
+    def current_refs_data(self):
+        ret = []
+        cl=self.current_level()
+        
+        for c in self.current_list:
+            row = {'name':c.name,'type':c.type,'uri':c.uri}
+            ret.append(row)            
+
+        return ret
    
     # track information to display
     def format_track_info_by_idx(self,index,include_name=True):
@@ -176,7 +189,28 @@ class MopidyBrowser:
                 return ref.name
         except:
             return self.current_list[index].name
+
+    def get_current_track_info(self):
+        track=self.player.get_current_track()
+        if track is None: return None
+        
+        title=self.player.get_title()
+        if title is None:
+            title=track.name
             
+        if track.artists is not None and len(track.artists)>0:
+            artists=','.join([t.name for t in track.artists])
+        else:
+            artists=[]
+        album=track.album.name
+        if album=='YouTube\n' or artists=='YouTube\n' or track.comment is None:
+            comment=None
+        else:
+            comment=track.comment
+        length=track.length
+        current_tm=self.player.get_current_tm()
+        return {'title':title,'artists':artists,'album':album,'comment':comment,'length':length,'current_tm':current_tm}  
+              
     def format_track_info(self,track,title=None,include_name=True):
         name=track.name+'\n'
         if title is None or (title+'\n')==name: title=''
@@ -214,12 +248,12 @@ class MopidyBrowser:
         return self.format_track_info(track, title,include_name)
             
     # private helpers
-    def __current_level(self):
+    def current_level(self):
         if len(self.library_levels)==0: return None
         return self.library_levels[-1]
         
     def __current_scheme(self):
-        cl = self.__current_level()
+        cl = self.current_level()
         if cl is None: return None
         if cl.type == Ref.DIRECTORY:
             s = get_scheme(cl.uri,cl.name)
@@ -269,15 +303,15 @@ class MopidyBrowser:
     def __replace_downloaded(self):
         def repl(p):
             if p.type == Ref.TRACK and p.uri.startswith(podcast_scheme):
-                if self.__current_level() is not None:
-                    cname = self.__current_level().name
+                if self.current_level() is not None:
+                    cname = self.current_level().name
                     path=self.subscriptions.path_on_disk(cname,p.name)
                     if path is not None:
                         return Ref.track(name=p.name,uri=path)
                 
             return p
 
-        cl=self.__current_level()
+        cl=self.current_level()
         if cl is None: return
         else:    
             self.current_list=[repl(p) for p in self.current_list]    
@@ -288,7 +322,7 @@ class MopidyBrowser:
 
     # favourites
     def add_to_favourites(self,indices):
-        if self.__current_level() is None: return
+        if self.current_level() is None: return
         for i in indices:
             if not self.__index_ok(i): continue
             ref=self.current_list[i]
@@ -330,8 +364,8 @@ class MopidyBrowser:
             args=(refs,self.set_status)).start()
                     
     def delete_podcasts(self,indices):
-        if self.__current_level() is None: return
-        channel_name=self.__current_level().name
+        if self.current_level() is None: return
+        channel_name=self.current_level().name
         refs=[]
         for i in indices:
             if not self.__index_ok(i): continue
@@ -423,8 +457,46 @@ class MopidyBrowser:
         self.current_list = self.yt_default
 
     def add_level(self,ref):
-        if ref != self.__current_level():
+        if ref != self.current_level():
             self.library_levels.append(ref)
+    
+    def current_level_parameters(self):
+        cl = self.current_level()
+        if cl is None:
+            return {'type' : None, 'name' : None, 'uri' : None }
+        else:
+            return {'type' : cl.type, 'name' : cl.name, 'uri' : cl.uri }
+    
+    def request_from_parameters(self,p):
+        return self.request(p['type'],p['name'],p['name'])
+            
+    # request is used to deal with browser requests
+    # it could be browsing backwards so look for existing levels
+    def request(self,refType,name,uri):
+        if refType is not None and refType==Ref.TRACK:
+            return None
+
+        if uri is None:
+            self.library_levels=[]
+            self.select_ref(None)
+            return None
+
+        if self.current_sel.uri == uri:
+            return self.current_sel
+            
+        levels = len(self.library_levels)
+        r = range(1,levels)
+        r.reverse()
+        for i in r:
+            if self.library_levels[i].uri == uri:
+                ref = self.library_levels[i]
+                self.library_levels=self.library_levels[:i]
+                self.append_level(ref)
+                self.current_sel = ref
+                return ref
+        ref = createRef(refType,name, uri)
+        self.select_ref(ref)
+        return ref        
 
     def select_ref(self,ref):
         self.current_sel = ref
@@ -465,7 +537,7 @@ class MopidyBrowser:
             self.refresh_list()
         
     def refresh_list(self):
-        self.select_ref(self.__current_level())
+        self.select_ref(self.current_level())
 
     def select(self, index):
         if not self.__index_ok(index): return
@@ -493,7 +565,7 @@ class MopidyBrowser:
             uri = 'searchres:'))
         self.current_list = search_res
         self.__fix_current_list()    
-        self.current_sel = self.__current_level()
+        self.current_sel = self.current_level()
         self.set_status(None)
     
     # tracklist and playback

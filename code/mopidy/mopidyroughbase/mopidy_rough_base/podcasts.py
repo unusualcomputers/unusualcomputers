@@ -2,6 +2,7 @@ import jsonpickle
 import urllib
 import os
 import io
+import sys
 import hashlib
 import logging
 from feedparsing import CachedFeedParser
@@ -264,7 +265,7 @@ class Channel(Jsonable):
         except:
             status='Error while getting new episodes for {}'.format(enc(self.name))
             _status(status,response_func)
-            logger.error(status)    
+            _logger.error(status)    
             e = sys.exc_info()
             print e
             traceback.print_exception(*e)
