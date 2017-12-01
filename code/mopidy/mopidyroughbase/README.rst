@@ -10,8 +10,8 @@ Installation
 
 Install by running::
 
-    pip install Mopidy-Rough-Bae
-i
+    pip install Mopidy-Rough-Base
+
 
 Project resources
 =================
