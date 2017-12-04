@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 import logging
 import os
 import tornado.web
+from mopidy.models import Ref
 from mopidy import config, ext
 from mopidy_rough_base.mopidy_browser import MopidyBrowser
-
+from htmltemplates import *
+import urllib
 __version__ = '0.1.0'
 
 # TODO: If you need to log, use loggers named after the current Python module
@@ -15,11 +17,20 @@ browser = None
 def create_browser(core):
     global browser
     if browser is None:
-        browser = MopidyBrowser(core,None)
+        browser = MopidyBrowser(core,None,False)
     return browser
+
+refresh_html=''
+def flip_refresh():
+    global refresh_html
+    if len(refresh_html) == 0:
+        refresh_html='<meta http-equiv="refresh" content="10" >'
+    else:
+        refresh_html=''
+    
 # miliseconds to a time string
 def to_time_string(ms):
-    ssi=int(ms)/1000
+    ss=int(ms)/1000
     h=ss/(60*60)
     m=(ss-h*60*60)/60
     s=(ss-h*60*60-m*60)
@@ -28,43 +39,216 @@ def to_time_string(ms):
     else:
         return '{:02d}:{:02d}'.format(m,s)
 
-class ListHandler(tornado.web.RequestHandler):
-    list_html= """<!doctype html>
-<html>
-<head>
-    <title>Radio Rough [%TITLE%] </title>
-    <meta name="description" content"Radio Rough">
-</head>
-<body>
-
-<h1>Radio Rough [%TITLE%] </h1>
-<br><br>
-[%SEARCH%]
-
-<hr>
-[%TRACKCONTROL%]
-<div align="left"><pre><a href="/volume&vol=0"><img src="icons/volume_mute.png" alt="mute" title="mute" height="20"></a>   <a href="/volume&vol=25"><img src="icons/volume-1.png" alt="quiet" title="quiet" height="20"></a>   <a href="/volume&vol=50"><img src="icons/volume-2.png" alt="a bit louder" title="a bit louder" height="20"></a>   <a href="/volume&vol=75"><img src="icons/volume-3.png" alt="louder" title="louder" height="20"></a>   <a href="/volume&vol=100"><img src="icons/volume-4.png" alt="loud" title="loud" height="20"></a></pre></div>
-<br>
-
-</body>
-"""
-    search_html="""<div align="left">
-<form align="center" action="/action_page.php">
-<input type="text" name="query" value="">
-<input type="submit" value="Search">
-</form></div>
-"""
-
-    track_control_html="""<table width="100%">
-<tr>
-<td>[%TRACKTITLE%]<br>[%TRACKTIMES%]</td>
-<td>
-<div align="right"><pre><a href="/previous"><img src="icons/previous.png" alt="previous" title="restart/previous" height="20"></a>   <a href="/rewind&by=10m"><img src="icons/rewind-4.png" alt="skip back 10m" title="skip back 10m" height="20"></a>   <a href="/rewind&by=3m"><img src="icons/rewind-3.png" alt="skip back 3m" title="skip back 3m" height="20"></a>   <a href="/rewind&by=20s"><img src="icons/rewind-2.png" alt="skip back 20s" title="skip back 20s" height="20"></a>   <a href="/play_pause"><img src="icons/play_pause.png" alt="play/pause" title="play/pause" height="20"></a>   <a href="/ffwd&by=20s"><img src="icons/ffwd-2.png" alt="skip forward 20s" title="skip forward 20s" height="20"></a>   <a href="/ffwd&by=3m"><img src="icons/ffwd-3.png" alt="skip forward 3m" title="skip forward 3m" height="20"></a>   <a href="/ffwd&by=10m"><img src="icons/ffwd-4.png" alt="skip fowrard 10m" title="skip forward 10m" height="20"></a>   <a href="/next"><img src="icons/next.png" alt="next" title="next" height="20"></a></pre></div>
-</td></tr></table>
-<hr>
-"""
+def dec(s):
+    return s.decode('utf-8','replace')
     
 
+class GlobalsHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        ref = self.request.headers['Referer']
+        action=self.get_argument('action',None)
+        if action=='refresh_onoff':
+            flip_refresh()
+        self.redirect(ref)
+
+class TrackHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        ref = self.request.headers['Referer']
+        action=self.get_argument('action',None)
+        uri=self.get_argument('uri',None)
+        if action=='play_now':
+            self.browser.play_now_uri(uri)
+        elif action=='play_next':
+            self.browser.play_next_uri(uri)
+        elif action=='add_to_queue':
+            self.browser.add_to_tracks_uri(uri)
+        elif action=='loop_this':
+            self.browser.loop_now_uri(uri)
+        self.redirect(ref)
+
+#   playback( action = "prev" | "rew10m" | "rew3m" | "rew20s" | "playpause" | "ffwd20s" | "ffwd3m" | "ffwd10m" | "next" )
+
+class PlaybackHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        ref = self.request.headers['Referer']
+        action=self.get_argument('action',None)
+        if action == 'prev': 
+            self.browser.prev()
+        elif action == 'rew10m': 
+            self.browser.skip_back(10*60*1000)
+        elif action == 'rew3m': 
+            self.browser.skip_back(3*60*1000)
+        elif action == 'rew20s': 
+            self.browser.skip_back(20*1000)
+        elif action == 'playpause': 
+            self.browser.play_pause()
+        elif action == 'ffwd20s': 
+            self.browser.skip_fwd(20*1000)
+        elif action == 'ffwd3m': 
+            self.browser.skip_fwd(3*60*1000)
+        elif action == 'ffwd10m':
+            self.browser.skip_fwd(10*60*1000)
+        elif action == 'next':
+            self.browser.next()
+        
+        
+        if action=='play_now':
+            self.browser.play_now_uri(uri)
+        elif action=='play_next':
+            self.browser.play_next_uri(uri)
+        elif action=='add_to_queue':
+            self.browser.add_to_tracks_uri(uri)
+        elif action=='loop_this':
+            self.browser.loop_now_uri(uri)
+        self.redirect(ref)
+
+
+class FavouritesHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        ref = self.request.headers['Referer']
+        action=self.get_argument('action',None)
+        uri=self.get_argument('uri',None)
+        name=self.get_argument('name',None)
+        if action=='add':
+            self.browser.add_to_favourites_uri(name,uri)
+        elif action=='remove':
+            self.browser.remove_from_favourites_uri(name,uri)
+        self.redirect(ref)
+    
+class VolumeHandler(tornado.web.RequestHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        ref = self.request.headers['Referer']
+        vol=int(self.get_argument('vol',None))
+        self.browser.set_volume(vol)
+        self.redirect(ref)
+
+class BrowsingHandler(tornado.web.RequestHandler):
+    def process(self):
+        title = self.browser.current_title()
+        if title == '':
+            html=main_html.replace(u'[%TITLE%]','').\
+                replace('[%REFRESH%]',refresh_html)
+        else:
+            html=main_html.replace(u'[%TITLE%]',u'- {}'.format(title)).\
+                replace('[%REFRESH%]',refresh_html)
+                
+        if uri is not None: # no searching on top level
+            uri=urllib.unquote(uri)
+            html=html.replace(u'[%SEARCH%]',search_html)
+        else:
+            html=html.replace(u'[%SEARCH%]','')
+                
+        current_track=self.browser.get_current_track_info()
+        if current_track is not None:
+            title=current_track['title']
+            if current_track['artists'] is not None:
+                title=title+' - ' + current_track['artists']
+            playback_html=playback_control_html.replace(u'[%TRACKTITLE%]',dec(title))
+            if current_track['length'] is not None \
+                and current_track['current_tm'] is not None \
+                and len(refresh_html)!=0:
+                l=to_time_string(current_track['length'])
+                c=to_time_string(current_track['current_tm'])
+                t=u'{}/{}'.format(c,l)
+                playback_html=playback_html.replace(u'[%TRACKTIMES%]',t)
+            else:
+                playback_html=playback_html.replace(u'[%TRACKTIMES%]',u'')
+            html=html.replace(u'[%PLAYCONTROL%]',playback_html)        
+        else:
+            html=html.replace(u'[%PLAYCONTROL%]',playback_tools_html)       
+        html=html.replace(u'[%VOLUMECONTROL%]', volume_html)
+        
+        items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
+        itemshtml=[]
+        has_tracks=False    
+        for i in items:
+            is_track=i['type'] == Ref.TRACK
+            if is_track:
+                info=self.browser.get_track_info_uri(i['uri'])
+            # {'title':_,'artists':_,'album':_,'comment':_,'length':_,'favorited':_}  
+                iuri=urllib.quote(i['uri'],'')
+                name=i['name']
+                #title=info['title']
+                title=name #titles look too long and ugly
+                if info['favorited']:
+                  ihtml=playable_item_html_favorited
+                else:
+                  ihtml=playable_item_html
+                ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(title)).\
+                    replace(u'[%NAME%]',dec(name))
+                comment=info['comment']
+                if comment is None and title is not None and \
+                    info['title'] !=name:
+                    comment=info['title']
+                if comment is not None:
+                    chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment)
+                    ihtml=ihtml+chtml    
+                itemshtml.append(ihtml)
+                has_tracks=True
+            else:
+                params=urllib.urlencode(i)
+                ihtml=non_playable_item_html.replace(u'[%TITLE%]',dec(i['name'])).\
+                    replace(u'[%TYPENAMEURI%]',params)
+                itemshtml.append(ihtml)
+
+            
+        if has_tracks:
+            html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
+                    u''.join(itemshtml)+u'</table>')        
+        else:
+            html=html.replace(u'[%ITEMS%]',u''.join(itemshtml))        
+            
+        gth=global_toolbar_html
+        if self.browser.is_queue():
+            gth=gth.replace(u'[%LOOPALL%]',loop_all_html)
+        else:
+            gth=gth.replace(u'[%LOOPALL%]',u'')
+        html=html.replace(u'[%GLOBAL%]',gth)          
+        self.write(html)
+        self.flush()
+        
+class SearchHandler(BrowsingHandler):
+    def initialize(self, core):
+        self.core = core
+        self.browser = create_browser(core)
+        
+
+    def get(self):
+        query=self.get_argument('query',None)
+        if query is None or query == '': 
+            ref = self.request.headers['Referer']
+            self.redirect(ref)
+            return
+
+        self.browser.search(query)
+        self.process()
+        
+class ListHandler(tornado.web.RequestHandler):
     def initialize(self, core):
         self.core = core
         self.browser = create_browser(core)
@@ -75,44 +259,25 @@ class ListHandler(tornado.web.RequestHandler):
         if refType == 'track': return # this should never happen
         name = self.get_argument('name',None)
         uri=self.get_argument('uri',None)
+
         self.browser.request(refType,name,uri)
-                
-        title = self.browser.current_title()
-        if title == '':
-            html=self.list_html.replace('[%TITLE%]','')
-        else:
-            html=self.list_html.replace('[%TITLE%]',title)
-
-        if uri is not None: # no searching on top level
-            html=html.replace('[%SEARCH%]',self.search_html)
-        
-        current_track=self.browser.get_current_track_info()
-        if current_track is not None:
-            title=current_track['title']
-            if current_track['artists'] is not None:
-                title=title+' - ' + current_track['artists']
-            track_html=replace(track_control_html,'[%TRACKTITLE%]',title)
-            if current_track['length'] is not None and current_track['current_tm'] is not None:
-                l=to_time_string(current_track['length'])
-                c=to_time_string(current_track['current_tm'])
-                t='{}/{}'.format(l,c)
-                track_html=self.track_html.replace('[%TRACKTIMES%]',t)
-            else:
-                track_html=self.track_html.replace('[%TRACKTIMES%]','')
-            html=html.replace('[%TRACKCONTROL%]',track_html)        
-        else:
-            html=html.replace('[%TRACKCONTROL%]','')        
-        #args = self.get_argument('first')
-        #print('args: {} {}'.format(self.get_argument('first'),self.get_argument('second')))
-        print(self.browser.current_refs_data())
-        
-        self.write(html)
-        self.flush()
+        self.process()            
 
 
+path = os.path.abspath(__file__)
+dir_path = os.path.dirname(__file__)
 def rough_factory(config, core):
+    print dir_path
     return [
-        ('/', ListHandler, {'core': core})
+        ('/', ListHandler, {'core': core}),
+        (r'/request.*', ListHandler, {'core': core}),
+        (r'/search.*', SearchHandler, {'core': core}),
+        (r'/favorites.*', FavouritesHandler, {'core': core}),
+        (r'/volume.*', VolumeHandler, {'core': core}),
+        (r'/track.*', TrackHandler, {'core': core}),
+        (r'/playback.*', PlaybackHandler, {'core': core}),
+        (r'/global.*', GlobalsHandler, {'core': core}),
+        (r'/icons/(.*)', tornado.web.StaticFileHandler, {'path': dir_path+"/icons"})#/home/sheridan/unusual/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/icons"})
     ]
 
 

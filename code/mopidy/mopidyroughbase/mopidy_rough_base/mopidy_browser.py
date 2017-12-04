@@ -31,12 +31,13 @@ _search_scheme='searchres:'
 
 # main interface class to be used by rough ucc guis
 class MopidyBrowser:
-    def __init__(self, core, status_func): 
+    def __init__(self, core, status_func,include_subscriptions=True): 
         self.core = core
         self.logger = logging.getLogger(__name__) 
-        self.logger.setLevel(logging.DEBUG)
+        #self.logger.setLevel(logging.DEBUG)
         self.status_func=status_func
 
+        self.include_subscriptions=include_subscriptions
         self.available_schemes=self.core.get_uri_schemes().get()
         self.library_levels = [None] 
         self.refresh_list()
@@ -44,8 +45,9 @@ class MopidyBrowser:
         self.searching = MopidySearch(core)
         self.playable_types = [Ref.TRACK, Ref.ALBUM, Ref.ARTIST, Ref.PLAYLIST]
         self.tracklist = core.tracklist
-        self.tracklist.set_consume(True) 
-        self.subscriptions=Subscriptions.load()
+        self.tracklist.set_consume(True)
+        if self.include_subscriptions: 
+            self.subscriptions=Subscriptions.load()
         self.favourites=Favourites.load()
         self.status=None
         self.yt_default=yt_default
@@ -66,11 +68,14 @@ class MopidyBrowser:
         return self.current_level()==_favourites_ref
 
     def is_favourited(self, uri):
-        return self.favorites.is_favorited(uri)
+        return self.favourites.is_favourited(uri)
         
     def is_subscriptions(self):
-        return self.current_level()==_subscriptions_ref
-        
+        if self.include_subscriptions:
+            return self.current_level()==_subscriptions_ref
+        else:
+            return False
+            
     def is_queue(self):
         return self.current_level()==_queue_ref    
 
@@ -100,6 +105,7 @@ class MopidyBrowser:
         return self.is_channel_ref(ref)
     
     def is_subscribed(self,index):
+        if not self.include_subscriptions: return False
         if not self.__index_ok(index): return False
         ref=self.current_list[index]
         return self.subscriptions.is_subscribed(ref.name)
@@ -114,6 +120,7 @@ class MopidyBrowser:
         ref.uri.startswith(podcast_scheme))
     
     def is_podcast_on_disk(self,index):
+        if not self.include_subscriptions: return False
         if not self.__index_ok(index): return False
         if self.current_level() is None: return False
         channel_name=self.current_level().name
@@ -143,7 +150,7 @@ class MopidyBrowser:
                 elif name=='iTunes Store: Podcasts': name='iTunes Podcasts'
                 if decorate:
                     name=u'[{}]'.format(name)
-            elif c.type == Ref.ALBUM and \
+            elif self.include_subscriptions and c.type == Ref.ALBUM and \
                 self.subscriptions.is_subscribed(name):
                 if decorate:
                     name=u'*({})'.format(name) 
@@ -167,7 +174,9 @@ class MopidyBrowser:
         cl=self.current_level()
         
         for c in self.current_list:
-            row = {'name':c.name,'type':c.type,'uri':c.uri}
+            row = {u'name':c.name.encode('utf-8'),\
+                u'type':c.type,\
+                u'uri':c.uri.encode('utf-8')}
             ret.append(row)            
 
         return ret
@@ -189,6 +198,29 @@ class MopidyBrowser:
                 return ref.name
         except:
             return self.current_list[index].name
+    
+    def get_track_info_uri(self,uri):
+        tracks=self.core.library.lookup(uri).get()
+        if len(tracks)==0: return None
+        track=tracks[0]
+        title=track.name
+            
+        if track.artists is not None and len(track.artists)>0:
+            artists=','.join([t.name for t in track.artists])
+        else:
+            artists=[]
+        album=track.album.name
+        if len(artists)!=0:
+            title=u'{} - {}'.format(title, artists)
+        
+        if album=='YouTube\n' or artists=='YouTube\n' or track.comment is None:
+            comment=None
+        else:
+            comment=track.comment
+        length=track.length
+        fav=self.is_favourited(uri)
+        return {'title':title,'artists':artists,'album':album,
+            'comment':comment,'length':length, 'favorited':fav}  
 
     def get_current_track_info(self):
         track=self.player.get_current_track()
@@ -279,6 +311,7 @@ class MopidyBrowser:
         def _file_time(ref):
             return os.path.getmtime(urllib.unquote(ref.uri[7:]))
         def _is_subscribed(ref):
+            if not self.include_subscriptions: return False
             return self.subscriptions.is_subscribed(ref.name)
         def _dir_order(ref):
             name=ref.name
@@ -301,6 +334,7 @@ class MopidyBrowser:
             self.current_list.sort(key=_dir_order)
             
     def __replace_downloaded(self):
+        if not self.include_subscriptions: return
         def repl(p):
             if p.type == Ref.TRACK and p.uri.startswith(podcast_scheme):
                 if self.current_level() is not None:
@@ -342,6 +376,7 @@ class MopidyBrowser:
 
     # handling podcast subscriptions                
     def __podcast_details_at(self,index):
+        if not self.include_subscriptions: return (None,None)
         if not self.__index_ok(index):
             return (None,None)
         ref=self.current_list[index]
@@ -357,18 +392,21 @@ class MopidyBrowser:
 
             
     def download_podcasts(self, indices):
+        if not self.include_subscriptions: return
         refs=[self.__podcast_details_at(i) for i in indices]
         threading.Thread(
             target=self.subscriptions.download_podcasts,
             args=(refs,self.set_status)).start()
             
     def keep_podcasts(self, indices):
+        if not self.include_subscriptions: return
         refs=[self.__podcast_details_at(i) for i in indices]
         threading.Thread(
             target=self.subscriptions.keep_podcasts,
             args=(refs,self.set_status)).start()
                     
     def delete_podcasts(self,indices):
+        if not self.include_subscriptions: return
         if self.current_level() is None: return
         channel_name=self.current_level().name
         refs=[]
@@ -378,6 +416,7 @@ class MopidyBrowser:
         self.subscriptions.delete_podcasts(refs,self.set_status)
 
     def subscribe(self, indices):
+        if not self.include_subscriptions: return
         refs=self.__filter_refs(indices)
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
@@ -387,6 +426,7 @@ class MopidyBrowser:
             args=(channel_uris,self.set_status)).start()
 
     def unsubscribe(self, indices):
+        if not self.include_subscriptions: return
         refs=self.__filter_refs(indices)
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
@@ -396,6 +436,7 @@ class MopidyBrowser:
             args=(channel_uris,self.set_status)).start()
                 
     def update(self, indices):
+        if not self.include_subscriptions: return
         refs=self.__filter_refs(indices)
         channel_uris=[r.uri[len(podcast_scheme):] for r in refs \
             if self.is_channel_ref(r)]
@@ -404,6 +445,7 @@ class MopidyBrowser:
             args=(channel_uris,self.set_status)).start()
     
     def auto_update(self):
+        if not self.include_subscriptions: return
         self.update([])
         self.update_timer.cancel()
         self.update_timer=threading.Timer(86400,self.auto_update)
@@ -411,6 +453,7 @@ class MopidyBrowser:
     
     # navigation
     def select_channel(self,ref):
+        if not self.include_subscriptions: return
         self.add_level(ref)
         channel=self.subscriptions.channel_by_name(ref.name)
         if channel is None: raise 'Channel {} not found in subscriptions'.format(ref.name)
@@ -425,6 +468,7 @@ class MopidyBrowser:
         self.current_list = refs
     
     def select_subscriptions(self):
+        if not self.include_subscriptions: return
         self.add_level(_subscriptions_ref)
         refs=[Ref.album(name=c.name,
             uri='{}{}'.format(_channels_scheme,c.uri)) for c in \
@@ -486,7 +530,9 @@ class MopidyBrowser:
             self.select_ref(None)
             return None
 
-        if self.current_sel.uri == uri:
+        if (self.current_sel is None and uri is None) or \
+                (self.current_sel is not None and \
+                    self.current_sel.uri == uri):
             return self.current_sel
             
         levels = len(self.library_levels)
@@ -496,7 +542,7 @@ class MopidyBrowser:
             if self.library_levels[i].uri == uri:
                 ref = self.library_levels[i]
                 self.library_levels=self.library_levels[:i]
-                self.append_level(ref)
+                self.add_level(ref)
                 self.current_sel = ref
                 return ref
         ref = createRef(refType,name, uri)
@@ -510,7 +556,8 @@ class MopidyBrowser:
         if ref is None:
             self.add_level(None)
             self.current_list = self.core.library.browse(None).get()
-            self.current_list.insert(0,_subscriptions_ref)
+            if self.include_subscriptions:
+                self.current_list.insert(0,_subscriptions_ref)
             self.current_list.insert(0,_favourites_ref)
             self.current_list.insert(0,_queue_ref)
             self.current_list.insert(0,_history_ref)
