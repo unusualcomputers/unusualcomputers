@@ -28,7 +28,7 @@ class Favourites(Jsonable):
         full_path=os.path.join(_base_path,_favourites_data)        
         self.to_file(full_path)
     
-    def __init__(self,favourites={}):
+    def __init__(self,favourites=[]):
         self.favourites=favourites
         
     def add(self,name,uri):
@@ -43,5 +43,6 @@ class Favourites(Jsonable):
         self.favourites=[x for x in self.favourites if x[0]!=name]
         self.save()
         
-    def is_favorited(self,uri):
-        return uri in self.favourites.values()    
+    def is_favourited(self,uri):
+        uris = [u for u in self.favourites if u[1] == uri]
+        return len(uris)>0

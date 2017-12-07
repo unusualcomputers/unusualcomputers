@@ -98,6 +98,10 @@ class MopidyBrowser:
     def is_channel_ref(self,ref):
         return ref.type==Ref.ALBUM and \
             (ref.uri.startswith(podcast_scheme) or ref.uri.startswith(_channels_scheme))
+
+    def is_channel_uri(self,uri):
+        return (uri.startswith(podcast_scheme) or uri.startswith(_channels_scheme))
+
     
     def is_channel(self, index):
         if not self.__index_ok(index): return False
@@ -209,7 +213,10 @@ class MopidyBrowser:
             artists=','.join([t.name for t in track.artists])
         else:
             artists=[]
-        album=track.album.name
+        if track.album is None:
+            album=None
+        else:
+            album=track.album.name
         if len(artists)!=0:
             title=u'{} - {}'.format(title, artists)
         
@@ -233,15 +240,19 @@ class MopidyBrowser:
         if track.artists is not None and len(track.artists)>0:
             artists=','.join([t.name for t in track.artists])
         else:
-            artists=[]
-        album=track.album.name
+            artists=''
+        if track.album is not None:    
+            album=track.album.name
+        else: 
+            album=None
         if album=='YouTube\n' or artists=='YouTube\n' or track.comment is None:
             comment=None
         else:
             comment=track.comment
         length=track.length
         current_tm=self.player.get_current_tm()
-        return {'title':title,'artists':artists,'album':album,'comment':comment,'length':length,'current_tm':current_tm}  
+        uri=track.uri
+        return {'title':title,'artists':artists,'album':album,'comment':comment,'length':length,'current_tm':current_tm,'uri':uri}  
               
     def format_track_info(self,track,title=None,include_name=True):
         name=track.name+'\n'
@@ -372,7 +383,7 @@ class MopidyBrowser:
         self.favourites.add(name,uri)
 
     def remove_from_favourites_uri(self,name,uri):
-        self.favourites.remove(name,uri)
+        self.favourites.remove(name)
 
     # handling podcast subscriptions                
     def __podcast_details_at(self,index):
@@ -517,7 +528,7 @@ class MopidyBrowser:
             return {'type' : cl.type, 'name' : cl.name, 'uri' : cl.uri }
     
     def request_from_parameters(self,p):
-        return self.request(p['type'],p['name'],p['name'])
+        return self.request(p['type'],p['name'],p['uri'])
             
     # request is used to deal with browser requests
     # it could be browsing backwards so look for existing levels
@@ -530,21 +541,14 @@ class MopidyBrowser:
             self.select_ref(None)
             return None
 
-        if (self.current_sel is None and uri is None) or \
-                (self.current_sel is not None and \
-                    self.current_sel.uri == uri):
-            return self.current_sel
             
         levels = len(self.library_levels)
         r = range(1,levels)
         r.reverse()
         for i in r:
             if self.library_levels[i].uri == uri:
-                ref = self.library_levels[i]
                 self.library_levels=self.library_levels[:i]
-                self.add_level(ref)
-                self.current_sel = ref
-                return ref
+                break
         ref = createRef(refType,name, uri)
         self.select_ref(ref)
         return ref        
@@ -629,12 +633,16 @@ class MopidyBrowser:
         self.trace_tracks()
         if not self.player.is_playing(): 
             self.player.play()
+        self.tracklist.set_repeat(False)
+        self.tracklist.set_consume(True)
             
     def add_to_tracks_uri(self,uri,pos = None):
-        self.tracklist.add(uri=uri,at_position = pos)
+        self.tracklist.add(uris=[uri],at_position = pos)
         self.trace_tracks()
         if not self.player.is_playing(): 
             self.player.play()
+        self.tracklist.set_repeat(False)
+        self.tracklist.set_consume(True)
     
     def play_next(self,indices):
         self.add_to_tracks(indices,1)
@@ -739,7 +747,10 @@ class MopidyBrowser:
         tlids = [tls[i].tlid for i in filtered_indices]
         filt = {'tlid' : tlids}
         self.tracklist.remove(filt)
-        self.trace_tracks()
+        
+    def remove_from_tracks_uri(self,uri):
+        self.tracklist.remove({'uri':[uri]})
+    
     
     # player controls
     def set_volume(self,volume):

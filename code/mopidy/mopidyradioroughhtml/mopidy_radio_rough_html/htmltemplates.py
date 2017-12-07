@@ -9,8 +9,8 @@ main_html= u"""<!doctype html>
 <body>
 
 <h1>Radio Rough [%TITLE%] </h1>
+[%COMMENTTEXT%]
 [%SEARCH%]
-<hr>
 [%PLAYCONTROL%]
 [%VOLUMECONTROL%]
 [%ITEMS%]
@@ -44,7 +44,7 @@ playback_control_html=u"""<table width="100%">
 <hr>
 """
 playback_tools_html="""
-<div align="right"><pre><a href="/radiorough/playback?action=previous"><img src="/radiorough/icons/previous.png" alt="previous" title="restart/previous" height="20"></a>   <a href="/radiorough/playback?action=rew10m"><img src="/radiorough/icons/rewind-4.png" alt="skip back 10m" title="skip back 10m" height="20"></a>   <a href="/radiorough/playback?action=rew3m"><img src="/radiorough/icons/rewind-3.png" alt="skip back 3m" title="skip back 3m" height="20"></a>   <a href="/radiorough/playback?action=rew20s"><img src="/radiorough/icons/rewind-2.png" alt="skip back 20s" title="skip back 20s" height="20"></a>   <a href="/radiorough/playback?action=playpause"><img src="/radiorough/icons/play_pause.png" alt="play/pause" title="play/pause" height="20"></a>   <a href="/radiorough/playback?action=ffwd20s"><img src="/radiorough/icons/ffwd-2.png" alt="skip forward 20s" title="skip forward 20s" height="20"></a>   <a href="/radiorough/playback?action=ffwd3m"><img src="/radiorough/icons/ffwd-3.png" alt="skip forward 3m" title="skip forward 3m" height="20"></a>   <a href="/radiorough/playback?action=ffwd10m"><img src="/radiorough/icons/ffwd-4.png" alt="skip fowrard 10m" title="skip forward 10m" height="20"></a>   <a href="/radiorough/playback?action=next"><img src="/radiorough/icons/next.png" alt="next" title="next" height="20"></a></pre></div>
+<div align="left"><pre><a href="/radiorough/playback?action=previous"><img src="/radiorough/icons/previous.png" alt="previous" title="restart/previous" height="20"></a>   <a href="/radiorough/playback?action=rew10m"><img src="/radiorough/icons/rewind-4.png" alt="skip back 10m" title="skip back 10m" height="20"></a>   <a href="/radiorough/playback?action=rew3m"><img src="/radiorough/icons/rewind-3.png" alt="skip back 3m" title="skip back 3m" height="20"></a>   <a href="/radiorough/playback?action=rew20s"><img src="/radiorough/icons/rewind-2.png" alt="skip back 20s" title="skip back 20s" height="20"></a>   <a href="/radiorough/playback?action=playpause"><img src="/radiorough/icons/play_pause.png" alt="play/pause" title="play/pause" height="20"></a>   <a href="/radiorough/playback?action=ffwd20s"><img src="/radiorough/icons/ffwd-2.png" alt="skip forward 20s" title="skip forward 20s" height="20"></a>   <a href="/radiorough/playback?action=ffwd3m"><img src="/radiorough/icons/ffwd-3.png" alt="skip forward 3m" title="skip forward 3m" height="20"></a>   <a href="/radiorough/playback?action=ffwd10m"><img src="/radiorough/icons/ffwd-4.png" alt="skip fowrard 10m" title="skip forward 10m" height="20"></a>   <a href="/radiorough/playback?action=next"><img src="/radiorough/icons/next.png" alt="next" title="next" height="20"></a></pre></div>
 <hr>"""
 
 ## volume
@@ -71,7 +71,7 @@ non_playable_item_html=u"""
 # 	TITLE should look like "name - artists" or "name - album" or "name"
 # 	NAME - playable ref name
 # requests defined:
-#	track(action = "play_now" | "play_next" | "add_to_queue" | "loop_this", uri)
+#	track(action = "play_now" | "play_next" | "remove_from_queue" | "add_to_queue" | "loop_this", uri)
 #	favorites(action= "add" | "remove", name, uri)
 playable_item_html=u"""<tr>
 <td>
@@ -87,7 +87,7 @@ playable_item_html_favorited=u"""<tr>
 <h4><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></h4>
 </td>
 <td>
-<div align="left"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>   <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href=" href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href=" href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a></pre></div>
+<div align="left"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>   <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a></pre></div>
 </td>
 </tr>"""
 
@@ -108,5 +108,5 @@ global_toolbar_html=u"""<hr>
 <div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   <a href="/radiorough/request?type=directory&name=Queue&uri=rough%2Bqueue"><img src="/radiorough/icons/queue_show.png" alt="show queue" title="show queue" height="20"></a>   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/settings.png" alt="show settings" title="show settings" height="20"></a>[%LOOPALL%]</pre></div>
 
 <hr>"""
-loop_all_html=u"""   <a href="/radiorough/loopall"><img src="/radiorough/icons/loop_this.png" alt="loop all" title="loop all" height="20"></a>"""
+loop_all_html=u"""   <a href="/radiorough/global?action=loopall"><img src="/radiorough/icons/loop_this.png" alt="loop all" title="loop all" height="20"></a>"""
 

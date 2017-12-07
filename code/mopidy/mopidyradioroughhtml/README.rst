@@ -1,62 +1,25 @@
 ****************************
-Radio-Rough-HTML
+Radio Rough HTML
 ****************************
 
-.. image:: https://img.shields.io/pypi/v/Radio-Rough-HTML.svg?style=flat
-    :target: https://pypi.python.org/pypi/Radio-Rough-HTML/
-    :alt: Latest PyPI version
+Radio rough HTML is a rough and simple interface for Mopidy. It is intended to provide a usable interface to excellent Mopidy via simpler devices and browsers that do not support fanciness that is java script.
+Or you can use it if you like things simple and as fast as can be. I will work on pretty much anything with any sort of browser - tried it on an old IPod, pi zero with dillo, a ubuntu box ...
 
-.. image:: https://img.shields.io/travis//radio-rough-html/master.svg?style=flat
-    :target: https://travis-ci.org//radio-rough-html
-    :alt: Travis CI build status
+Once installed it will let you search YouTube, browse thousands of internet radio streams (via TuneIn) or podcasts published on iTunes. It will also support any additional Mopidy extensions you care to install (look `here <https://docs.mopidy.com/en/latest/ext/backends/>`_ for what's available, much interesting stuff like internet archive, spotify, soma fm ... ). 
 
-.. image:: https://img.shields.io/coveralls//radio-rough-html/master.svg?style=flat
-   :target: https://coveralls.io/r//radio-rough-html
-   :alt: Test coverage
-
-Mopidy extension for Foobar mechanics
+The look and feel are based on the principles of rough design. It serves its purpose without trying to sell anything, including itself.
 
 
 Installation
 ============
 
-Install by running::
+If you already have `mopidy installed <https://docs.mopidy.com/en/latest/installation/>`_ and running, you can install just by running on a command line:
+::
+    sudo pip install Mopidy-Radio-Rough-HTML
 
-    pip install Radio-Rough-HTML
-
-Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
-<http://apt.mopidy.com/>`_.
-
+On Raspberries, probably the ideal setup is to run it with Pi Music Box. It will run just fine even on a pi zero and once installed you will find in at musicbox.local/radiorough.
 
 Configuration
 =============
 
-Before starting Mopidy, you must add configuration for
-Radio-Rough-HTML to your Mopidy configuration file::
-
-    [radio-rough-html]
-    # TODO: Add example of extension config
-
-
-Project resources
-=================
-
-- `Source code <https://github.com//radio-rough-html>`_
-- `Issue tracker <https://github.com//radio-rough-html/issues>`_
-
-
-Credits
-=======
-
-- Original author: `unusual computers <https://github.com/`__
-- Current maintainer: `unusual computers <https://github.com/`__
-- `Contributors <https://github.com//radio-rough-html/graphs/contributors>`_
-
-
-Changelog
-=========
-
-v0.1.0 (UNRELEASED)
-----------------------------------------
-
-- Initial release.
+Once installed it will work, you can disable it by setting enabled=false in [radio_rough_html] section of `mopidy.conf <https://docs.mopidy.com/en/latest/config/>`_.

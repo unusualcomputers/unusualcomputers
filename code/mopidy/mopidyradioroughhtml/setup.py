@@ -12,7 +12,7 @@ def get_version(filename):
 
 
 setup(
-    name='Radio-Rough-HTML',
+    name='Mopidy-Radio-Rough-HTML',
     version=get_version('mopidy_radio_rough_html/__init__.py'),
     url='https://github.com/unusualcomputers/unusualcomputers/tree/master/code/mopidy/mopidyradioroughhtml',
     license='Apache License, Version 2.0',

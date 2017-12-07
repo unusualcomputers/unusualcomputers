@@ -6,13 +6,15 @@ import tornado.web
 from mopidy.models import Ref
 from mopidy import config, ext
 from mopidy_rough_base.mopidy_browser import MopidyBrowser
+from mopidy_rough_base.feedparsing import CachedFeedParser
+import datetime
 from htmltemplates import *
 import urllib
-__version__ = '0.1.0'
 
-# TODO: If you need to log, use loggers named after the current Python module
+__version__ = '1.0.0'
+
 logger = logging.getLogger(__name__)
-
+_feedparser = CachedFeedParser()
 browser = None
 def create_browser(core):
     global browser
@@ -54,6 +56,8 @@ class GlobalsHandler(tornado.web.RequestHandler):
         action=self.get_argument('action',None)
         if action=='refresh_onoff':
             flip_refresh()
+        elif action=='loopall':
+            self.browser.flip_loop()
         self.redirect(ref)
 
 class TrackHandler(tornado.web.RequestHandler):
@@ -66,12 +70,15 @@ class TrackHandler(tornado.web.RequestHandler):
         ref = self.request.headers['Referer']
         action=self.get_argument('action',None)
         uri=self.get_argument('uri',None)
+        uri=urllib.unquote(uri)
         if action=='play_now':
             self.browser.play_now_uri(uri)
         elif action=='play_next':
             self.browser.play_next_uri(uri)
         elif action=='add_to_queue':
             self.browser.add_to_tracks_uri(uri)
+        elif action=='remove_from_queue':
+            self.browser.remove_from_tracks_uri(uri)
         elif action=='loop_this':
             self.browser.loop_now_uri(uri)
         self.redirect(ref)
@@ -90,23 +97,25 @@ class PlaybackHandler(tornado.web.RequestHandler):
         if action == 'prev': 
             self.browser.prev()
         elif action == 'rew10m': 
-            self.browser.skip_back(10*60*1000)
+            self.browser.player.skip_back(10*60*1000)
         elif action == 'rew3m': 
-            self.browser.skip_back(3*60*1000)
+            self.browser.player.skip_back(3*60*1000)
         elif action == 'rew20s': 
-            self.browser.skip_back(20*1000)
+            self.browser.player.skip_back(20*1000)
         elif action == 'playpause': 
             self.browser.play_pause()
         elif action == 'ffwd20s': 
-            self.browser.skip_fwd(20*1000)
+            self.browser.player.skip_fwd(20*1000)
         elif action == 'ffwd3m': 
-            self.browser.skip_fwd(3*60*1000)
+            self.browser.player.skip_fwd(3*60*1000)
         elif action == 'ffwd10m':
-            self.browser.skip_fwd(10*60*1000)
+            self.browser.player.skip_fwd(10*60*1000)
         elif action == 'next':
             self.browser.next()
         
-        
+        uri=self.get_argument('uri',None)
+        if uri is not None:
+            uri=urllib.unquote(uri)
         if action=='play_now':
             self.browser.play_now_uri(uri)
         elif action=='play_next':
@@ -148,7 +157,7 @@ class VolumeHandler(tornado.web.RequestHandler):
         self.redirect(ref)
 
 class BrowsingHandler(tornado.web.RequestHandler):
-    def process(self):
+    def process(self, uri=None):
         title = self.browser.current_title()
         if title == '':
             html=main_html.replace(u'[%TITLE%]','').\
@@ -156,17 +165,26 @@ class BrowsingHandler(tornado.web.RequestHandler):
         else:
             html=main_html.replace(u'[%TITLE%]',u'- {}'.format(title)).\
                 replace('[%REFRESH%]',refresh_html)
-                
-        if uri is not None: # no searching on top level
+        
+        if uri is not None and not uri.startswith('rough+queue') \
+            and not uri.startswith('rough+history') and not uri.startswith('rough+favourites'): # no searching on top level
             uri=urllib.unquote(uri)
-            html=html.replace(u'[%SEARCH%]',search_html)
+            if self.browser.is_channel_uri(uri) and uri.strip()!='podcast+itunes:':
+                comment = _feedparser.parse_channel_desc(uri[len('podcast+'):])
+                if comment is not None and len(comment) > 0: comment = comment+'<hr>'
+                html=html.replace(u'[%COMMENTTEXT%]',comment)
+                html=html.replace(u'[%SEARCH%]','')
+            else:
+                html=html.replace(u'[%SEARCH%]',search_html)
+                html=html.replace(u'[%COMMENTTEXT%]','')
         else:
+            html=html.replace(u'[%COMMENTTEXT%]','')
             html=html.replace(u'[%SEARCH%]','')
                 
         current_track=self.browser.get_current_track_info()
         if current_track is not None:
             title=current_track['title']
-            if current_track['artists'] is not None:
+            if current_track['artists'] is not None and current_track['artists']!='':
                 title=title+' - ' + current_track['artists']
             playback_html=playback_control_html.replace(u'[%TRACKTITLE%]',dec(title))
             if current_track['length'] is not None \
@@ -179,19 +197,40 @@ class BrowsingHandler(tornado.web.RequestHandler):
             else:
                 playback_html=playback_html.replace(u'[%TRACKTIMES%]',u'')
             html=html.replace(u'[%PLAYCONTROL%]',playback_html)        
+            current_track_uri=current_track['uri']
         else:
-            html=html.replace(u'[%PLAYCONTROL%]',playback_tools_html)       
-        html=html.replace(u'[%VOLUMECONTROL%]', volume_html)
+            html=html.replace(u'[%PLAYCONTROL%]',playback_tools_html)
+            current_track_uri=None       
+        vol=self.browser.player.volume()
+        vol_html=volume_html
+        if vol == 0:
+            vol_html=vol_html.replace(u'volume_mute.png',u'volume_mute_sel.png')
+        elif vol == 25:
+            vol_html=vol_html.replace(u'volume-1.png',u'volume-1_sel.png')
+        elif vol == 50:
+            vol_html=vol_html.replace(u'volume-2.png',u'volume-2_sel.png')
+        elif vol == 75:
+            vol_html=vol_html.replace(u'volume-3.png',u'volume-3_sel.png')
+        elif vol == 100:
+            vol_html=vol_html.replace(u'volume-4.png',u'volume-4_sel.png')
+                    
+        html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
         
         items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
         itemshtml=[]
         has_tracks=False    
         for i in items:
+            if i['name']=='Podcasts': continue
             is_track=i['type'] == Ref.TRACK
             if is_track:
-                info=self.browser.get_track_info_uri(i['uri'])
-            # {'title':_,'artists':_,'album':_,'comment':_,'length':_,'favorited':_}  
                 iuri=urllib.quote(i['uri'],'')
+                if i['uri'].startswith('youtube:'):
+                    info={'title':i['name'],'artists':None,'album':None,
+                        'comment':None,'length':None, 'favorited':self.browser.is_favourited(i['uri'])} 
+                else:
+                    info=self.browser.get_track_info_uri(i['uri'])
+                if info is None: continue
+            # {'title':_,'artists':_,'album':_,'comment':_,'length':_,'favorited':_}  
                 name=i['name']
                 #title=info['title']
                 title=name #titles look too long and ugly
@@ -199,12 +238,21 @@ class BrowsingHandler(tornado.web.RequestHandler):
                   ihtml=playable_item_html_favorited
                 else:
                   ihtml=playable_item_html
+                if self.browser.is_queue():
+                    ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
+                        replace(u'queue_add.png',u'queue_remove.png').\
+                        replace(u'alt="add to queue" title="add to queue"',u'alt="remove from queue" title="remove from queue"')
                 ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(title)).\
                     replace(u'[%NAME%]',dec(name))
-                comment=info['comment']
-                if comment is None and title is not None and \
-                    info['title'] !=name:
-                    comment=info['title']
+                if current_track_uri is not None and current_track_uri==iuri:
+                    ihtml=ihtml.replace(u'play.png', u'playing.png')
+                if not iuri.startswith('youtube:'):
+                    comment=None
+                else:
+                    comment=info['comment']
+                    if comment is None and \
+                        title is not None and info['title'] !=name:
+                            comment=info['title']
                 if comment is not None:
                     chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment)
                     ihtml=ihtml+chtml    
@@ -228,6 +276,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
             gth=gth.replace(u'[%LOOPALL%]',loop_all_html)
         else:
             gth=gth.replace(u'[%LOOPALL%]',u'')
+
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
         self.flush()
@@ -248,7 +297,7 @@ class SearchHandler(BrowsingHandler):
         self.browser.search(query)
         self.process()
         
-class ListHandler(tornado.web.RequestHandler):
+class ListHandler(BrowsingHandler):
     def initialize(self, core):
         self.core = core
         self.browser = create_browser(core)
@@ -259,15 +308,15 @@ class ListHandler(tornado.web.RequestHandler):
         if refType == 'track': return # this should never happen
         name = self.get_argument('name',None)
         uri=self.get_argument('uri',None)
-
+        if uri is not None: 
+            uri =urllib.unquote(uri)
         self.browser.request(refType,name,uri)
-        self.process()            
+        self.process(uri)            
 
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(__file__)
 def rough_factory(config, core):
-    print dir_path
     return [
         ('/', ListHandler, {'core': core}),
         (r'/request.*', ListHandler, {'core': core}),
