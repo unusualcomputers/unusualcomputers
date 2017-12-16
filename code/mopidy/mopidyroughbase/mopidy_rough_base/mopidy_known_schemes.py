@@ -9,6 +9,7 @@ itunes_podcast_scheme = 'podcast+itunes:'
 podcast_scheme = 'podcast+'
 internet_archive_scheme = 'internetarchive:'
 soundcloud_scheme = 'soundcloud:'
+mixcloud_scheme = 'mixcloud:'
 
 known_schemes = {
     'YouTube' : youtube_scheme,
@@ -18,7 +19,8 @@ known_schemes = {
     'TuneIn' : tunein_scheme,
     'iTunes Store: Podcasts' : itunes_podcast_scheme,
     'Internet Archive' : internet_archive_scheme,
-    'SoundCloud' : soundcloud_scheme
+    'SoundCloud' : soundcloud_scheme,
+    'Mixcloud' : mixcloud_scheme
 }
 
 

@@ -11,7 +11,7 @@ import datetime
 from htmltemplates import *
 import urllib
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 logger = logging.getLogger(__name__)
 _feedparser = CachedFeedParser()
@@ -42,9 +42,14 @@ def to_time_string(ms):
         return '{:02d}:{:02d}'.format(m,s)
 
 def dec(s):
-    return s.decode('utf-8','replace')
-    
-
+    try:
+        return s.decode('utf-8','replace')
+    except:
+        try:
+            return s.decode('utf-8','ignore')
+        except:
+            return s
+            
 class GlobalsHandler(tornado.web.RequestHandler):
     def initialize(self, core):
         self.core = core
@@ -158,6 +163,7 @@ class VolumeHandler(tornado.web.RequestHandler):
 
 class BrowsingHandler(tornado.web.RequestHandler):
     def process(self, uri=None):
+        print '1: {}'.format(datetime.datetime.now())
         title = self.browser.current_title()
         if title == '':
             html=main_html.replace(u'[%TITLE%]','').\
@@ -170,7 +176,11 @@ class BrowsingHandler(tornado.web.RequestHandler):
             and not uri.startswith('rough+history') and not uri.startswith('rough+favourites'): # no searching on top level
             uri=urllib.unquote(uri)
             if self.browser.is_channel_uri(uri) and uri.strip()!='podcast+itunes:':
+                print '1.5: {}'.format(datetime.datetime.now())
+
                 comment = _feedparser.parse_channel_desc(uri[len('podcast+'):])
+                print '1.6: {}'.format(datetime.datetime.now())
+                
                 if comment is not None and len(comment) > 0: comment = comment+'<hr>'
                 html=html.replace(u'[%COMMENTTEXT%]',comment)
                 html=html.replace(u'[%SEARCH%]','')
@@ -180,8 +190,11 @@ class BrowsingHandler(tornado.web.RequestHandler):
         else:
             html=html.replace(u'[%COMMENTTEXT%]','')
             html=html.replace(u'[%SEARCH%]','')
+        print '2: {}'.format(datetime.datetime.now())
                 
         current_track=self.browser.get_current_track_info()
+        print '3: {}'.format(datetime.datetime.now())
+
         if current_track is not None:
             title=current_track['title']
             if current_track['artists'] is not None and current_track['artists']!='':
@@ -195,7 +208,12 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 t=u'{}/{}'.format(c,l)
                 playback_html=playback_html.replace(u'[%TRACKTIMES%]',t)
             else:
-                playback_html=playback_html.replace(u'[%TRACKTIMES%]',u'')
+                if current_track['length'] is not None:
+                    c=to_time_string(current_track['current_tm'])
+                    t=u'{}'.format(c)
+                    playback_html=playback_html.replace(u'[%TRACKTIMES%]',t)
+                else:    
+                    playback_html=playback_html.replace(u'[%TRACKTIMES%]',u'')
             html=html.replace(u'[%PLAYCONTROL%]',playback_html)        
             current_track_uri=current_track['uri']
         else:
@@ -216,7 +234,11 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     
         html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
         
+        print '4: {}'.format(datetime.datetime.now())
+
         items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
+        print '5: {}'.format(datetime.datetime.now())
+
         itemshtml=[]
         has_tracks=False    
         for i in items:
@@ -246,7 +268,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     replace(u'[%NAME%]',dec(name))
                 if current_track_uri is not None and current_track_uri==iuri:
                     ihtml=ihtml.replace(u'play.png', u'playing.png')
-                if not iuri.startswith('youtube:'):
+                if iuri.startswith('youtube:'):
                     comment=None
                 else:
                     comment=info['comment']
@@ -264,7 +286,8 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     replace(u'[%TYPENAMEURI%]',params)
                 itemshtml.append(ihtml)
 
-            
+        print '6: {}'.format(datetime.datetime.now())
+    
         if has_tracks:
             html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
                     u''.join(itemshtml)+u'</table>')        
@@ -279,6 +302,8 @@ class BrowsingHandler(tornado.web.RequestHandler):
 
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
+        print '7: {}'.format(datetime.datetime.now())
+        
         self.flush()
         
 class SearchHandler(BrowsingHandler):
@@ -342,9 +367,6 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        # TODO: Comment in and edit, or remove entirely
-        #schema['username'] = config.String()
-        #schema['password'] = config.Secret()
         return schema
 
     def setup(self, registry):
