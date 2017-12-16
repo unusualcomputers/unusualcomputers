@@ -1,8 +1,8 @@
-# fshlb & gifko
+# fshlb, gifko & subsYeah
 
 Windows utilities used to create twitter friendly videos. 
 
-All utilities here use ffmpeg for processing so you have to install that first, there is a very nice guide for this [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
+All utilities here use __ffmpeg__ for processing so you have to install that first, there is a very nice guide for this [here](http://adaptivesamples.com/how-to-install-ffmpeg-on-windows/).
 
 Optimal video sizes for twitter are 320x180, 640x360 and 1280x720. The quality of outputs will be best if pictures or video inputs are one of these.
 
@@ -15,6 +15,7 @@ The usage is simple, when you run it, it should all be quite intuitive, but ther
 
 __gifkoPro__ takes as input an existing video (something you made or downloaded, mayeb from youtube or wherever) and creates a short snippet of it (you choose from and to values) in a format that works nicely with twitter.
 
+__subsYeah__ takes as input a video and an .srt subtitles file and hardcodes the subtitles into the video so that it's only one file, suitable for uploading to social networks.
 
 Note that twitter imposes limits on video sizes - they must be shorter than 2m20s and smaller than 512Mb (more details [here](https://support.twitter.com/articles/20172128#video-formats) ).
 
