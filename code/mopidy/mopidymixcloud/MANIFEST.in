@@ -1,0 +1,7 @@
+include .travis.yml
+include LICENSE
+include MANIFEST.in
+include README.rst
+include mopidy_mixcloud/ext.conf
+include tox.ini
+
