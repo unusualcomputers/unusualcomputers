@@ -1,0 +1,94 @@
+<html>
+<head>
+<title>subs yeah</title>
+<HTA:APPLICATION
+    APPLICATIONNAME="gifko pro"
+    ID="hta_utility"
+    border            = "thin"
+    borderStyle        = "tool"
+    caption            = "yes"
+    contextMenu        = "no"
+    maximizeButton    = "no"
+    minimizeButton    = "yes"
+    navigable        = "no"
+    showInTaskbar    = "yes"
+    singleInstance    = "yes"
+    scroll = "no"
+    sysmenu            = "yes"
+    windowState        = "normal"  
+    VERSION="1.0"/>
+</head>
+ 
+<script language="VBScript">
+Dim SourceDir, FullName, arrFN
+Dim ToolFileName
+Dim CommandFile
+Const Width = 400
+Const Height = 450
+ 
+' get the directory of the HTA
+FullName = Replace(hta_utility.commandLine, Chr(34), "")  
+arrFN = Split(FullName, "\")  
+FileName = arrFN(Ubound(arrFN))  
+SourceDir = Replace(FullName, FileName, "")  
+ 
+ 
+Sub DoResize
+    'resize   
+    window.resizeTo Width, Height
+    screenWidth = Document.ParentWindow.Screen.AvailWidth
+    screenHeight = Document.ParentWindow.Screen.AvailHeight
+    posLeft = (screenWidth - Width) / 2
+    posTop = (screenHeight - Height) / 2     
+    'move to centerscreen
+    window.moveTo posLeft, posTop
+End Sub
+  
+Sub Window_OnLoad
+  DoResize
+End Sub
+
+' process the file
+Sub OnClickButtonButton1()
+	s = subs.value
+	s=replace(s,"\","\\")
+	s=replace(s,":","\:")
+	s=replace(s,"\","\\")
+	f=fontsize.value
+	command = "ffmpeg -i " & film.value & " -vf subtitles=""" & s & """:force_style='Fontsize=" & f & "' " & output.value
+	CommandLine.value = command
+	Set obj = CreateObject("WScript.Shell")
+	obj.Run command
+	MsgBox "Done"
+	Set obj = Nothing
+End Sub
+</script>
+ 
+<body>
+	<table style="width:100%; height:100%;">
+	<tr>
+	<td><label for="film">the film</label></td>
+    <td><input type="file" name="film" value="" title="file that goes in, best if it has no spaces in the name"/></td>
+	</tr>
+	<tr>
+	<tr>
+	<td><label for="subs">the subtitles</label></td>
+    <td><input type="file" name="subs" value="" title="subtitles to add to the film, a .srt file"/></td>
+	</tr>
+	<tr>
+	<td><label for="output">output</label></td>
+    <td><input type="text" name="output" value=".mp4" title=".gif will be silent, .mp4 will be modern"/></td>
+	</tr>
+	<tr>
+	<td><label for="fontsize">font size</label></td>
+    <td><input type="text" name="fontsize" value="24" title="size of subtitles font"/></td>
+	</tr>	
+    <tr>
+	<td><input type="button" name="Button1" id="Button1" value="Create" onclick="OnClickButtonButton1" title = ":)">
+	<tr>
+	<th colspan=2><textarea readonly id="CommandLine" style="border: none;overflow:auto;width=100%;" rows="3" title="this is to send to habibi when things go wrong"></textarea></th>
+	</tr>
+	</tr>
+	
+</body>
+</html>
