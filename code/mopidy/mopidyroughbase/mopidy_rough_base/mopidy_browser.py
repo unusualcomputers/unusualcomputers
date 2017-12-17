@@ -37,6 +37,7 @@ class MopidyBrowser:
         #self.logger.setLevel(logging.DEBUG)
         self.status_func=status_func
 
+        self.current_sel=None
         self.include_subscriptions=include_subscriptions
         self.available_schemes=self.core.get_uri_schemes().get()
         self.library_levels = [None] 
@@ -55,7 +56,7 @@ class MopidyBrowser:
         
         self.update_timer=threading.Timer(5,self.auto_update)
         self.update_timer.start()
-
+        
     # status
     def set_status(self,msg):
         self.status=msg
@@ -554,6 +555,7 @@ class MopidyBrowser:
         return ref        
 
     def select_ref(self,ref):
+        if self.current_sel is not None and ref==self.current_sel: return
         self.current_sel = ref
         if ref is not None and ref.type == Ref.TRACK: 
             return
