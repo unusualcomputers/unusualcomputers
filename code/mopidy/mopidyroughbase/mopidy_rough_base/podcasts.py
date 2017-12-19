@@ -267,7 +267,6 @@ class Channel(Jsonable):
             _status(status,response_func)
             _logger.error(status)    
             e = sys.exc_info()
-            print e
             traceback.print_exception(*e)
             time.sleep(5)
             _status(None,response_func)

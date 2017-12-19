@@ -11,7 +11,7 @@ import datetime
 from htmltemplates import *
 import urllib
 
-__version__ = '1.0.1'
+__version__ = '1.1.1'
 
 logger = logging.getLogger(__name__)
 _feedparser = CachedFeedParser()
@@ -75,7 +75,7 @@ class TrackHandler(tornado.web.RequestHandler):
         ref = self.request.headers['Referer']
         action=self.get_argument('action',None)
         uri=self.get_argument('uri',None)
-        uri=urllib.unquote(uri)
+        #uri=urllib.unquote(uri)
         if action=='play_now':
             self.browser.play_now_uri(uri)
         elif action=='play_next':
@@ -163,7 +163,6 @@ class VolumeHandler(tornado.web.RequestHandler):
 
 class BrowsingHandler(tornado.web.RequestHandler):
     def process(self, uri=None):
-        print '1: {}'.format(datetime.datetime.now())
         title = self.browser.current_title()
         if title == '':
             html=main_html.replace(u'[%TITLE%]','').\
@@ -176,11 +175,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
             and not uri.startswith('rough+history') and not uri.startswith('rough+favourites'): # no searching on top level
             uri=urllib.unquote(uri)
             if self.browser.is_channel_uri(uri) and uri.strip()!='podcast+itunes:':
-                print '1.5: {}'.format(datetime.datetime.now())
-
                 comment = _feedparser.parse_channel_desc(uri[len('podcast+'):])
-                print '1.6: {}'.format(datetime.datetime.now())
-                
                 if comment is not None and len(comment) > 0: comment = comment+'<hr>'
                 html=html.replace(u'[%COMMENTTEXT%]',comment)
                 html=html.replace(u'[%SEARCH%]','')
@@ -190,11 +185,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
         else:
             html=html.replace(u'[%COMMENTTEXT%]','')
             html=html.replace(u'[%SEARCH%]','')
-        print '2: {}'.format(datetime.datetime.now())
-                
         current_track=self.browser.get_current_track_info()
-        print '3: {}'.format(datetime.datetime.now())
-
         if current_track is not None:
             title=current_track['title']
             if current_track['artists'] is not None and current_track['artists']!='':
@@ -234,11 +225,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     
         html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
         
-        print '4: {}'.format(datetime.datetime.now())
-
         items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
-        print '5: {}'.format(datetime.datetime.now())
-
         itemshtml=[]
         has_tracks=False    
         for i in items:
@@ -281,19 +268,25 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 itemshtml.append(ihtml)
                 has_tracks=True
             else:
-                params=urllib.urlencode(i)
+                translated={}
+                for k in i.keys():
+                    if k=='name':
+                        try:
+                            translated[k]=i[k].encode('utf-8')
+                        except:
+                            translated[k]=i[k]
+                    else:
+                        translated[k]=i[k]
+                params=urllib.urlencode(translated)
                 ihtml=non_playable_item_html.replace(u'[%TITLE%]',dec(i['name'])).\
                     replace(u'[%TYPENAMEURI%]',params)
                 itemshtml.append(ihtml)
 
-        print '6: {}'.format(datetime.datetime.now())
-    
         if has_tracks:
             html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
                     u''.join(itemshtml)+u'</table>')        
         else:
             html=html.replace(u'[%ITEMS%]',u''.join(itemshtml))        
-            
         gth=global_toolbar_html
         if self.browser.is_queue():
             gth=gth.replace(u'[%LOOPALL%]',loop_all_html)
@@ -302,8 +295,6 @@ class BrowsingHandler(tornado.web.RequestHandler):
 
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
-        print '7: {}'.format(datetime.datetime.now())
-        
         self.flush()
         
 class SearchHandler(BrowsingHandler):

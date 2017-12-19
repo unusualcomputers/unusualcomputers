@@ -150,21 +150,25 @@ class MopidyBrowser:
             if add_src: name=u'{} ({})'.format(c.name.strip(),name_from_scheme(c.uri))
             else: name = c.name.strip()
 
+            try:
+                decoded=name.decode('utf-8')
+            except:
+                decoded=name
             if c.type == Ref.DIRECTORY:
                 if name=='Podcasts': name='Mopidy Podcasts'
                 elif name=='iTunes Store: Podcasts': name='iTunes Podcasts'
                 if decorate:
-                    name=u'[{}]'.format(name)
+                    name=u'[{}]'.format(decoded)
             elif self.include_subscriptions and c.type == Ref.ALBUM and \
                 self.subscriptions.is_subscribed(name):
                 if decorate:
-                    name=u'*({})'.format(name) 
+                    name=u'*({})'.format(decoded) 
             elif c.type in [Ref.ALBUM, Ref.ARTIST, Ref.PLAYLIST]:
                 if decorate:
-                    name=u'({})'.format(name)
+                    name=u'({})'.format(decoded)
             else: # track
                 if decorate and c.uri.startswith(file_scheme):
-                    name=u'*{}'.format(name)
+                    name=u'*{}'.format(decoded)
                 elif c.uri.startswith(tunein_scheme):
                     if isinstance(c,RefWithData):
                         if c.data.album.name is not None:
@@ -179,9 +183,9 @@ class MopidyBrowser:
         cl=self.current_level()
         
         for c in self.current_list:
-            row = {u'name':c.name.encode('utf-8'),\
+            row = {u'name':c.name,\
                 u'type':c.type,\
-                u'uri':c.uri.encode('utf-8')}
+                u'uri':c.uri}
             ret.append(row)            
 
         return ret

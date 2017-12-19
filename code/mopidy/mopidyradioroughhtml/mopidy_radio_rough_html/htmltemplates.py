@@ -62,7 +62,7 @@ volume_html=u"""<div align="left"><pre><a href="/radiorough/volume?vol=0"><img s
 # 	request(reftype, name, uri)
 
 non_playable_item_html=u"""
-<h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4>
+<tr><td colspan="4"><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td></tr>
 """
 
 # playable list items

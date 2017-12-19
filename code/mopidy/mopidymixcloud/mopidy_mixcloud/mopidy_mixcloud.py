@@ -3,24 +3,32 @@ from mopidy.models import Ref,Track,Album,SearchResult,Artist,Image
 from mopidy.backend import *
 import pykka
 import pdb
-
+import time
 logger = logging.getLogger(__name__)
+import urllib
 
 search_max=100
-uri_scheme='mixcloud'
+uri_scheme=u'mixcloud'
 uri_prefix=uri_scheme+':'
-api_prefix='https://api.mixcloud.com'
+api_prefix=u'https://api.mixcloud.com'
 #downloader_prefix='http://www.mixcloud-downloader.com/dl/mixcloud'
-downloader_prefix='http://download.mixcloud-downloader.com/d/mixcloud'
-uri_categories='https://api.mixcloud.com/categories/'
-uri_popular='https://api.mixcloud.com/popular/'
-uri_hot='https://api.mixcloud.com/popular/hot/'
-uri_new='https://api.mixcloud.com/new/'
-uri_users='users:'
-uri_user='user:'
-
+downloader_prefix=u'http://download.mixcloud-downloader.com/d/mixcloud'
+uri_categories=u'https://api.mixcloud.com/categories/'
+uri_popular=u'https://api.mixcloud.com/popular/'
+uri_hot=u'https://api.mixcloud.com/popular/hot/'
+uri_new=u'https://api.mixcloud.com/new/'
+uri_users=u'users:'
+uri_user=u'user:'
+uri_cloudcasts=u'cloudcasts/'
+uri_favorites=u'favorites/'
+uri_playlists=u'playlists/'
+uri_following=u'following/'
+uri_followers=u'followers/'
+uri_listens=u'listens/'
+uri_track=u'track:'
 users=[]
 default_users=[]
+
 
 class MixcloudException(Exception):
     def __init__(self, value):
@@ -37,11 +45,11 @@ def strip_uri(uri):
     else:
         return uri
 
-root_list=[ Ref.directory(name='Categories',uri=make_uri(uri_categories)), 
-            Ref.directory(name='Popular',uri=make_uri(uri_popular)), 
-            Ref.directory(name='Hot',uri=make_uri(uri_hot)), 
-            Ref.directory(name='New',uri=make_uri(uri_new)),
-            Ref.directory(name='Users',uri=make_uri(uri_users))] 
+root_list=[ Ref.directory(name=u'Categories',uri=make_uri(uri_categories)), 
+            Ref.directory(name=u'Popular',uri=make_uri(uri_popular)), 
+            Ref.directory(name=u'Hot',uri=make_uri(uri_hot)), 
+            Ref.directory(name=u'New',uri=make_uri(uri_new)),
+            Ref.directory(name=u'Users',uri=make_uri(uri_users))] 
 
 # uri for users: https://api.mixcloud.com/FactionMix/cloudcasts/
 # search returns either:
@@ -76,15 +84,29 @@ images_cache=Cache() # uri -> Image
 tracks_cache=Cache() # uri -> Track
 refs_cache=Cache()   # uri -> list of Ref              
 searches_cache=Cache() # uri -> SearchResult
- 
+
+cache_refresh_period=900 #15 min
+last_refresh_time=0
+def refresh_cache():
+    global last_refresh_time
+    t=time.time()
+    if t==0 or (t-last_refresh_time) > cache_refresh_period:
+        last_refresh_time=t
+        clear_caches()
+        
 def clear_caches():
+    logger.info('Clearing mixcloud caches')
     tracks_cache.clear()
     refs_cache.clear()
     images_cache.clear()
     searches_cache.clear()
 
 def uri_json(uri):
-    r=requests.get(uri)
+    try:
+        decoded=uri.encode('utf-8')
+    except:
+        decoded=uri
+    r=requests.get(decoded)
     if not r.ok: raise MixcloudException('Request failed for uri '+uri)
     return r.json()
  
@@ -94,15 +116,18 @@ def get_next_page(json_dict):
     if 'next' not in paging: return None
     return Ref.directory(name='More...', uri=make_uri(paging['next']))
 
-def make_user_uri(user_key):
-    return uri_user+user_key
+def make_special_uri(user_key,uri_prefix):
+    return uri_prefix+user_key.encode('base64')
     
-def strip_user_uri(uri):
-    if uri.startswith(uri_user):
-        return uri[len(uri_user):]
+def strip_special_uri(uri,uri_prefix):
+    if uri.decode('utf-8').startswith(uri_prefix):
+        return uri[len(uri_prefix):].decode('base64')
     else:
         return None
-
+        
+def make_special_api(user_key,uri_prefix):
+    return api_prefix+user_key+uri_prefix
+    
 def list_playlists(uri):
     uri=strip_uri(uri)
     refs=refs_cache.get(uri)
@@ -112,9 +137,9 @@ def list_playlists(uri):
     playlists=json['data']
     refs=[]
     for playlist in playlists:
-        name=playlist['name']
+        user_name=playlist['name']
         key=playlist['key']
-        playlist_uri=api_prefix+key+'cloudcasts/'
+        playlist_uri=api_prefix+key+u'cloudcasts/'
         ref=Ref.directory(name=user_name,uri=make_uri(playlist_uri))
         refs.append(ref)
 
@@ -135,8 +160,9 @@ def list_fols(uri): # followers or following
     refs=[]
     for fol in fols:
         name=fol['username']
-        fol_uri=make_user_uri(name)
-        ref=Ref.directory(name=name,uri=make_uri(fol_uri))
+        key=fol['key']
+        fol_uri=make_special_uri(key,uri_user)
+        ref=Ref.directory(name=name.encode('utf-8'),uri=make_uri(fol_uri))
         refs.append(ref)
 
     more=get_next_page(json)
@@ -148,13 +174,22 @@ def list_fols(uri): # followers or following
     
 
 def list_user(user_name):
-    pre=u"{}'s ".format(user_name)
-    cloudcasts=Ref.directory(name=pre+'Cloudcasts',uri=make_uri(u'https://api.mixcloud.com/{}/cloudcasts/'.format(user_name)))
-    favorites=Ref.directory(name=pre+'Favorites',uri=make_uri(u'https://api.mixcloud.com/{}/favorites/'.format(user_name)))
-    playlists=Ref.directory(name=pre+'Playlists',uri=make_uri(u'https://api.mixcloud.com/{}/playlists/'.format(user_name)))
-    following=Ref.directory(name=pre+'Following',uri=make_uri(u'https://api.mixcloud.com/{}/following/'.format(user_name)))
-    followers=Ref.directory(name=pre+'Followers',uri=make_uri(u'https://api.mixcloud.com/{}/followers/'.format(user_name)))
-    listens=Ref.directory(name=pre+'Listens',uri=make_uri(u'https://api.mixcloud.com/{}/listens/'.format(user_name)))
+    
+    try:
+        name=user_name[1:-1].encode('utf-8')
+        decoded=urllib.unquote(name).decode('utf-8')
+        pre0=u'{} '.format(decoded)
+        pre=u"{}'s ".format(decoded)
+    except:
+        pre0=''
+        pre = u''
+        
+    cloudcasts=Ref.directory(name=pre+u'cloudcasts',uri=make_uri(make_special_uri(user_name,uri_cloudcasts)))
+    favorites=Ref.directory(name=pre+u'favorites',uri=make_uri(make_special_uri(user_name,uri_favorites)))
+    playlists=Ref.directory(name=pre+u'playlists',uri=make_uri(make_special_uri(user_name,uri_playlists)))
+    following=Ref.directory(name=pre0+u'follows',uri=make_uri(make_special_uri(user_name,uri_following)))
+    followers=Ref.directory(name=pre+u'followers',uri=make_uri(make_special_uri(user_name,uri_followers)))
+    listens=Ref.directory(name=pre0+u'listened to',uri=make_uri(make_special_uri(user_name,uri_listens)))
     return [cloudcasts,favorites,playlists,following,followers,listens]
                    
 def list_categories():
@@ -164,21 +199,25 @@ def list_categories():
     categories = uri_json(uri_categories)['data']
     cat_refs = []
     for category in categories:
-        uri=make_uri(api_prefix+category['key']+'cloudcasts/')
+        uri=make_uri(api_prefix+category['key']+u'cloudcasts/')
         name=category['name']
         cat_refs.append(Ref.directory(name=name,uri=uri))
     refs_cache.add(uri_categories, cat_refs)
     return cat_refs
 
 def track_uri(track_key):
-    return make_uri(downloader_prefix+track_key)
+    return make_uri(downloader_prefix+track_key).decode('utf-8')
     
 def make_track(track_key, name, user, time, length):
     uri=track_uri(track_key)
     date=time.split('T')[0]
-    album=Album(uri=api_prefix+'/'+user+'/',name=user)
+    album=Album(uri=api_prefix+u'/'+user+u'/',name=user)
     artist=Artist(uri=album.uri,name=user)
-    track=Track(uri=uri,name=name,album=album,artists=[artist],date=date,length=int(length)*1000)
+    if length is None:
+        l=None
+    else:
+        l=int(length)*1000
+    track=Track(uri=uri,name=name,album=album,artists=[artist],date=date,length=l)
     ref = Ref.track(name=track.name, uri=uri)
     tracks_cache.add(uri,track)
     return (ref,track)
@@ -190,8 +229,8 @@ def make_track_from_json(cloudcast):
     if track is None:
         name=cloudcast['name']
         user=cloudcast['user']['username']
-        time=cloudcast['created_time']
-        length=cloudcast['audio_length']
+        time=cloudcast.get('created_time','1943-11-29T13:13:13Z')
+        length=cloudcast.get('audio_length',None)
         (ref,track)=make_track(key,name,user, time, length)
         if 'pictures' in cloudcast and \
            'thumbnail' in cloudcast['pictures']:
@@ -199,34 +238,11 @@ def make_track_from_json(cloudcast):
     else:
         ref = Ref.track(name=track.name, uri=uri)
     return (ref,track)
-    
-def list_refs(uri):
-    uri=strip_uri(uri)
-    if uri == uri_categories: return list_categories()
-    refs=refs_cache.get(uri)
-    if refs is not None: return refs
-    refs = []
-    if uri == uri_users:
-        for user in users:
-            ref=Ref.directory(name=user,uri=make_uri(make_user_uri(user)))
-            refs.append(ref)# not caching these
-        return refs
-    user_key=strip_user_uri(uri)
-    if user_key is not None:
-        refs=list_user(user_key)
-        refs_cache.add(uri,refs)
-        return refs    
-    if 'playlists' in uri:
-        refs=list_playlists(uri)
-        refs_cache.add(uri,refs)
-        return refs    
-    if 'followers' in uri  or 'following' in uri:
-        refs=list_fols(uri)
-        refs_cache.add(uri,refs)
-        return refs    
+
+def list_cloudcasts(uri):
     json=uri_json(uri)
     cloudcasts=json['data']
-
+    refs=[]
     for cloudcast in cloudcasts:
         (ref,track)=make_track_from_json(cloudcast)
         refs.append(ref)
@@ -238,6 +254,62 @@ def list_refs(uri):
     refs_cache.add(uri,refs)
     return refs
     
+def list_refs(uri):
+    uri=strip_uri(uri)
+    if uri == uri_categories: return list_categories()
+    refs=refs_cache.get(uri)
+    if refs is not None: return refs
+    refs = []
+    if uri == uri_users:
+        for user in users:
+            ref=Ref.directory(name=user,uri=make_uri(make_special_uri(u'/{}/'.format(user),uri_user)))
+            refs.append(ref)# not caching these
+        return refs
+    user_key=strip_special_uri(uri,uri_user)
+    if user_key is not None:
+        refs=list_user(user_key)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_cloudcasts)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_cloudcasts)
+        refs=list_cloudcasts(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_listens)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_listens)
+        refs=list_cloudcasts(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_favorites)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_favorites)
+        refs=list_cloudcasts(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_playlists)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_playlists)
+        refs=list_playlists(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_following)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_following)
+        refs=list_fols(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    user_key=strip_special_uri(uri,uri_followers)
+    if user_key is not None:
+        urir=make_special_api(user_key,uri_followers)
+        refs=list_fols(urir)
+        refs_cache.add(uri,refs)
+        return refs    
+    refs=list_cloudcasts(uri)
+    refs_cache.add(uri,refs)
+    return refs    
+
 def get_track_for_uri(uri):
     track=tracks_cache.get(uri)
     if track is not None: return track
@@ -278,13 +350,14 @@ def list_albums(uri, max_albums=search_max):
     for album in albums_dict:
         key=album['key']
         name=album['name']
-        uri=make_uri(api_prefix+key+'cloudcasts/')
+        username=album['username']
+        uri=make_uri(api_prefix+key+u'cloudcasts/')
         ref=Album(name=name, uri=uri)
         if 'pictures' in album:
             if 'thumbnail' in album['pictures']:
                 images_cache.add(ref.uri, Image(uri=album['pictures']['thumbnail']))
         albums.append(ref)
-        if name not in users: users.append(name)
+        if username not in users: users.append(username)
         
     more=get_next_page(json)
     so_far = len(albums)
@@ -294,7 +367,7 @@ def list_albums(uri, max_albums=search_max):
     return albums
                
 class MopidyMixcloud(pykka.ThreadingActor, Backend):
-    uri_schemes = ['mixcloud','mixcloud:']
+    uri_schemes = [u'mixcloud']
  
     def __init__(self, config, audio):
         super(MopidyMixcloud, self).__init__()
@@ -312,7 +385,8 @@ class MixcloudLibrary(LibraryProvider):
         super(MixcloudLibrary, self).__init__(backend)
  
     def browse(self, uri):
-        if not uri.startswith(uri_scheme):
+        refresh_cache()
+        if not uri.decode('utf-8').startswith(uri_scheme):
             return []
                        
         if uri=='mixcloud:root':
@@ -335,23 +409,27 @@ class MixcloudLibrary(LibraryProvider):
             return ret
                        
     def search(self, query=None, uris=None, exact=False):
+        refresh_cache()
         if uris is not None:
             if next((uri for uri in uris if uri.startswith(uri_scheme)),None) is None:
                 return None
                    
-        if query is None: return None
+        if query is None or len(query)==0: return None
  
-        query_type='cloudcast'
-        query_val=''
+        query_type=u'cloudcast'
+        query_val=u''
                    
         # look for the first query key that we can deal with
         for k in query:
+            q=query[k]
+            if q[0].startswith('refresh:'):
+                clear_caches()
+                q[0]=q[0][len('refresh:'):]
             if k in ['artist','album','albumartist','composer','performer']:
                 query_type='user'
                 query_value=query[k][0]
                 break
             if k in ['any','track_name']:
-                q=query[k]
                 if q[0].startswith('user:'):
                     query_type='user'
                     query_value=q[0][len('user:'):]
@@ -361,7 +439,7 @@ class MixcloudLibrary(LibraryProvider):
                                
         if query_value=='': return None
  
-        search_uri=u'https://api.mixcloud.com/search/?type={}&q={}'.format(query_type,query_value)
+        search_uri=u'https://api.mixcloud.com/search/?type={}&q="{}"'.format(query_type,query_value)
         sr = searches_cache.get(search_uri)
         if sr is not None: return sr
         res=None

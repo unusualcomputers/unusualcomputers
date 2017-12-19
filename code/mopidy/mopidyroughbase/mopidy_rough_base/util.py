@@ -10,8 +10,14 @@ def defined(x): return x is not None
 
 def enc(s):
     if s is None: return 'None'
-    return s.encode('ascii','replace').strip()
-    
+    try:
+        return s.encode('ascii','replace').strip()
+    except:
+        try:
+            return s.encode('ascii','ignore').strip()
+        except:
+            return '?'*len(s)
+               
 def enc_for_file(s):#encodes a string to be used for a filename
     s=enc(s)
     for c in _not_allowed:
@@ -41,15 +47,19 @@ def set_delint(d=True):
 def delint(s):
     if __ignore_delint: return s
     if s is None: return ''
-    enc = s.replace(u'\u2019', u'\'').replace(u'\u2010',u'-').\
-       replace(u'\u2011', u'\'').replace(u'\u2012',u'-').\
-       replace(u'\u2013', u'\'').replace(u'\u2014',u'-').\
-       replace(u'%20', u' ')
-    enc=re.sub('<br[^<]+?>','\n',enc)
-    enc=re.sub('</p[^<]+?>','\n',enc)
-    
-    return re.sub('<[^<]+?>','',enc).replace("&nbsp;"," ").strip()
-
+    try:
+        enc = s.replace(u'\u2019', u'\'').replace(u'\u2010',u'-').\
+           replace(u'\u2011', u'\'').replace(u'\u2012',u'-').\
+           replace(u'\u2013', u'\'').replace(u'\u2014',u'-').\
+           replace(u'%20', u' ')
+        enc=re.sub('<br[^<]+?>','\n',enc)
+        enc=re.sub('</p[^<]+?>','\n',enc)
+        
+        enc=re.sub('<[^<]+?>','',enc).replace("&nbsp;"," ").strip()
+        return enc
+    except:    
+        return s
+        
 def createRef(refType, name, uri):
     if refType == Ref.TRACK:
         return Ref.track(name=name, uri=uri)
