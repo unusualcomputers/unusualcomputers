@@ -2,61 +2,41 @@
 Mopidy-Mixcloud
 ****************************
 
-.. image:: https://img.shields.io/pypi/v/Mopidy-Mixcloud.svg?style=flat
-    :target: https://pypi.python.org/pypi/Mopidy-Mixcloud/
-    :alt: Latest PyPI version
-
-.. image:: https://img.shields.io/travis/unusual.computers/mopidy-mixcloud/master.svg?style=flat
-    :target: https://travis-ci.org/unusual.computers/mopidy-mixcloud
-    :alt: Travis CI build status
-
-.. image:: https://img.shields.io/coveralls/unusual.computers/mopidy-mixcloud/master.svg?style=flat
-   :target: https://coveralls.io/r/unusual.computers/mopidy-mixcloud
-   :alt: Test coverage
-
-Mopidy extension for Foobar mechanics
-
 
 Installation
 ============
 
-Install by running::
+If you already have `mopidy installed <https://docs.mopidy.com/en/latest/installation/>`_ and running, you can install just by running on a command line:
+::
+    sudo pip install Mopidy-Mixcloud
 
-    pip install Mopidy-Mixcloud
 
-Or, if available, install the Debian/Ubuntu package from `apt.mopidy.com
-<http://apt.mopidy.com/>`_.
+Use
+===
+
+Once installed the addin behaves much like the rest of mopidy addins, with a couple of special tweaks. 
+In the browsing section there are directories for Categories, Popular, New and Hot cloudcasts as well as a User directory.
+_User_ directory is used for browsing users's cloudcasts, playlists, favorites etc. By default it is populated from the config file (see below). 
+
+Searching for users can be done by adding 'user:' in from of a search string (without quotes), for example:  user:factionmix. Once the search is completed the users's cloudcasts will be listed as abums.
+Additional user information for all dicovered users wil lbe automatically added to _User_ section in the browsing screen.
+To clear this search for string 'refresh:'. This will also clear internal caches so you will be able to get updated data from mixcloud. Caches are cleared automatically about every 10 minutes. 
 
 
 Configuration
 =============
 
-Before starting Mopidy, you must add configuration for
-Mopidy-Mixcloud to your Mopidy configuration file::
-
-    [mixcloud]
-    # TODO: Add example of extension config
-
+Once installed it will work, you can disable it by setting enabled=false in [mixcloud] section of `mopidy.conf <https://docs.mopidy.com/en/latest/config/>`_.
+You can also list your favorite users (including yourself) in a comma separated list under _users_ setting  in [mixcloud] section of `mopidy.conf <https://docs.mopidy.com/en/latest/config/>`_.
 
 Project resources
 =================
 
-- `Source code <https://github.com/unusual.computers/mopidy-mixcloud>`_
-- `Issue tracker <https://github.com/unusual.computers/mopidy-mixcloud/issues>`_
+- `Source code <https://github.com/unusualcomputers/unusualcomputers/tree/master/code/mopidy/mopidymixcloud>`_
 
 
 Credits
 =======
 
-- Original author: `unusual computers <https://github.com/unusual.computers`__
-- Current maintainer: `unusual computers <https://github.com/unusual.computers`__
-- `Contributors <https://github.com/unusual.computers/mopidy-mixcloud/graphs/contributors>`_
+- Original author: `unusual computers <unusualcomputerscollective.org>`__
 
-
-Changelog
-=========
-
-v0.1.0 (UNRELEASED)
-----------------------------------------
-
-- Initial release.
