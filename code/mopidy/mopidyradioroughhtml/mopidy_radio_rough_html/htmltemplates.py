@@ -102,10 +102,16 @@ comment_html=u"""<tr>
 # 	LOOPALL - loopall_html if currently looking at the queue empty string otherwise
 # requests defined
 #   global("refresh_onoff")
-global_toolbar_html=u"""<hr>
+global_toolbar_html_ref_off=u"""<hr>
 
 
-<div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   <a href="/radiorough/request?type=directory&name=Queue&uri=rough%2Bqueue"><img src="/radiorough/icons/queue_show.png" alt="show queue" title="show queue" height="20"></a>   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/settings.png" alt="show settings" title="show settings" height="20"></a>[%LOOPALL%]</pre></div>
+<div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   <a href="/radiorough/request?type=directory&name=Queue&uri=rough%2Bqueue"><img src="/radiorough/icons/queue_show.png" alt="show queue" title="show queue" height="20"></a>   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_off.png" alt="turn auto refresh on" title="turn auto refresh on" height="20"></a>[%LOOPALL%]</pre></div>
+
+<hr>"""
+global_toolbar_html_ref_on=u"""<hr>
+
+
+<div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   <a href="/radiorough/request?type=directory&name=Queue&uri=rough%2Bqueue"><img src="/radiorough/icons/queue_show.png" alt="show queue" title="show queue" height="20"></a>   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_on.png" alt="turn auto refresh off" title="turn auto refresh off" height="20"></a>[%LOOPALL%]</pre></div>
 
 <hr>"""
 loop_all_html=u"""   <a href="/radiorough/global?action=loopall"><img src="/radiorough/icons/loop_this.png" alt="loop all" title="loop all" height="20"></a>"""

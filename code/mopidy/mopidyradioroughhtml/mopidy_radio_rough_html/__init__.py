@@ -287,7 +287,11 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     u''.join(itemshtml)+u'</table>')        
         else:
             html=html.replace(u'[%ITEMS%]',u''.join(itemshtml))        
-        gth=global_toolbar_html
+        
+        if len(refresh_html)==0:
+            gth=global_toolbar_html_ref_off
+        else:
+            gth=global_toolbar_html_ref_on
         if self.browser.is_queue():
             gth=gth.replace(u'[%LOOPALL%]',loop_all_html)
         else:

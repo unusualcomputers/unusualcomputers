@@ -22,6 +22,7 @@ uri_hot=u'https://api.mixcloud.com/popular/hot/'
 uri_new=u'https://api.mixcloud.com/new/'
 uri_users=u'users:'
 uri_user=u'user:'
+uri_category=u'category:'
 uri_cloudcasts=u'cloudcasts/'
 uri_favorites=u'favorites/'
 uri_playlists=u'playlists/'
@@ -161,6 +162,28 @@ def list_playlists(uri):
     refs_cache.add(uri,refs)
     return refs
 
+def list_category_users(uri):
+    uri=strip_uri(uri)
+    refs=refs_cache.get(uri)
+    if refs is not None: return refs
+
+    json=uri_json(uri)
+    fols=json['data']
+    refs=[]
+    for fol in fols:
+        name=fol['username']
+        key=fol['key']
+        fol_uri=make_special_uri(key,uri_user)
+        ref=Ref.directory(name=enc(name),uri=fol_uri)
+        refs.append(ref)
+
+    more=get_next_page(json,u'users')
+    if more is not None:
+        refs.append(more)
+
+    refs_cache.add(uri,refs)
+    return refs
+    
 def list_fols(uri): # followers or following
     uri=strip_uri(uri)
     refs=refs_cache.get(uri)
@@ -220,7 +243,7 @@ def list_categories():
     categories = uri_json(uri_categories)['data']
     cat_refs = []
     for category in categories:
-        uri=make_uri(api_prefix+category['key']+u'cloudcasts/')
+        uri=make_uri(api_prefix+category['key']+u'users/')
         name=category['name']
         cat_refs.append(Ref.directory(name=name,uri=uri))
     refs_cache.add(uri_categories, cat_refs)
@@ -325,6 +348,10 @@ def list_refs(uri):
     refs=handle_special_uri(uri, uri_followers, list_fols)
     if refs is not None: return refs        
 
+    if 'users' in uri:
+        refs=list_category_users(uri)
+        refs_cache.add(uri,refs)
+        return refs
     refs=list_cloudcasts(uri)
     refs_cache.add(uri,refs)
     return refs    

@@ -558,8 +558,15 @@ class MopidyBrowser:
         self.select_ref(ref)
         return ref        
 
+    def is_refreshable(self,ref):
+        return (ref.uri==_subscriptions_ref.uri or \
+            ref.uri==_favourites_ref.uri or \
+            ref.uri==_queue_ref.uri or \
+            ref.uri==_history_ref.uri)
+            
     def select_ref(self,ref):
-        if self.current_sel is not None and ref==self.current_sel: return
+        if self.current_sel is not None and ref==self.current_sel and \
+            not self.is_refreshable(ref): return
         self.current_sel = ref
         if ref is not None and ref.type == Ref.TRACK: 
             return
