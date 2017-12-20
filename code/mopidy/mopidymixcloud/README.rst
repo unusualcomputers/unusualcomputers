@@ -40,3 +40,5 @@ Credits
 
 - Original author: `unusual computers <unusualcomputerscollective.org>`__
 
+I have learned a lot from `jackyNIX's <https://github.com/jackyNIX/xbmc-mixcloud-plugin>\__ code for kodi mopidy plugin. 
+
