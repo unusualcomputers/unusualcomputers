@@ -315,7 +315,8 @@ def list_refs(uri):
     uri=strip_uri(uri)
     if uri == uri_categories: return list_categories()
     refs=refs_cache.get(uri)
-    if refs is not None: return refs
+    if refs is not None: 
+        return refs
     refs = []
     if uri == uri_users:
         for user in users:
@@ -365,8 +366,13 @@ def get_track_for_uri(uri):
     return track
 
 def get_tracks_for_uri(uri,max_tracks=search_max):
+    track=tracks_cache.get(uri)
+    if track is not None: return [track]
+
     uri=strip_uri(uri)
     if uri == uri_categories: return []
+
+
     if downloader_prefix in uri: # this is a track
         return [get_track_for_uri(uri)]    
     

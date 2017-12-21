@@ -163,6 +163,7 @@ class VolumeHandler(tornado.web.RequestHandler):
 
 class BrowsingHandler(tornado.web.RequestHandler):
     def process(self, uri=None):
+        
         title = self.browser.current_title()
         if title == '':
             html=main_html.replace(u'[%TITLE%]','').\
@@ -224,8 +225,9 @@ class BrowsingHandler(tornado.web.RequestHandler):
             vol_html=vol_html.replace(u'volume-4.png',u'volume-4_sel.png')
                     
         html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
-        
+
         items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
+        
         itemshtml=[]
         has_tracks=False    
         for i in items:
@@ -331,8 +333,8 @@ class ListHandler(BrowsingHandler):
         if uri is not None: 
             uri =urllib.unquote(uri)
         self.browser.request(refType,name,uri)
-        self.process(uri)            
-
+        self.process(uri)   
+        
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(__file__)

@@ -540,7 +540,7 @@ class MopidyBrowser:
     def request(self,refType,name,uri):
         if refType is not None and refType==Ref.TRACK:
             return None
-
+        
         if uri is None:
             self.library_levels=[]
             self.select_ref(None)
