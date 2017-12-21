@@ -19,6 +19,9 @@ If you already have `mopidy installed <https://docs.mopidy.com/en/latest/install
 
 On Raspberries, probably the ideal setup is to run it with Pi Music Box. It will run just fine even on a pi zero and once installed you will find in at musicbox.local/radiorough.
 
+If you don't have Music Box set-up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough.
+
+
 Configuration
 =============
 
