@@ -11,7 +11,7 @@ import datetime
 from htmltemplates import *
 import urllib
 
-__version__ = '1.2.2'
+__version__ = '2.2.2'
 
 logger = logging.getLogger(__name__)
 _feedparser = CachedFeedParser()
