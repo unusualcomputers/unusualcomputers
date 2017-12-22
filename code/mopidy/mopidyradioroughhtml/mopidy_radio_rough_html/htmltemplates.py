@@ -65,6 +65,26 @@ non_playable_item_html=u"""
 <tr><td colspan="4"><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td></tr>
 """
 
+
+playlist_item_html=u"""<tr>
+<td>
+<h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4>
+</td>
+<td>
+<div align="left"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>   <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="remove from favorites" title="remove from favorites" height="16"></a></pre></div>
+</td>
+</tr>"""
+
+playlist_item_html_favorited=u"""<tr>
+<td>
+<h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4>
+</td>
+<td>
+<div align="left"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>   <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a></pre></div>
+</td>
+</tr>"""
+
+
 # playable list items
 # template parameters:
 # 	URI - playable ref uri

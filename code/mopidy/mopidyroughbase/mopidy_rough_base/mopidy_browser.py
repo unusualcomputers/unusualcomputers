@@ -22,6 +22,8 @@ _favourites_ref=Ref.directory(name = 'Favourites',
             uri = 'rough+favourites')
 _queue_ref=Ref.directory(name = 'Queue',
             uri = 'rough+queue')
+_playlists_ref=Ref.directory(name = 'Playlists',
+            uri = 'rough+playlists')
 _history_ref=Ref.directory(name = 'History',
             uri = 'rough+history')
 _youtube_ref=Ref.directory(name = 'YouTube (searching)',
@@ -82,6 +84,12 @@ class MopidyBrowser:
 
     def is_history(self):
         return self.current_level()==_history_ref    
+    
+    def is_playlists(self):
+        return self.current_level()==_playlists_ref
+        
+    def is_playlist(self):
+        self.current_sel.type==Ref.PLAYLIST
     
     def is_playable(self,index):
         if not self.__index_ok(index): return False
@@ -338,6 +346,7 @@ class MopidyBrowser:
             elif name=='Podcasts': return 90
             elif name=='iTunes Store: Podcasts': return -90
             elif name=='TuneIn': return -100
+            elif name==_playlists_ref.name: return -180
             elif name==_subscriptions_ref.name: return -200
             elif name==_favourites_ref.name: return -300
             else: return 0
@@ -507,7 +516,18 @@ class MopidyBrowser:
         refs=self.core.history.get_history().get()
         refs=[r[1] for r in refs]
         self.current_list = refs
-                        
+
+    def select_playlists(self):
+        self.add_level(_playlists_ref)
+        refs=self.core.playlists.as_list().get()
+        self.current_list = refs
+
+    def select_playlist(self,ref):
+        tracks=ref.tracks
+        refs=[Ref.track(name=t.name,uri=t.uri) for t in tracks]
+        self.add_level(ref)
+        self.current_list = refs
+        
     def select_youtube(self):
         self.add_level(_youtube_ref)
         if self.yt_default is None:
@@ -562,7 +582,8 @@ class MopidyBrowser:
         return (ref.uri==_subscriptions_ref.uri or \
             ref.uri==_favourites_ref.uri or \
             ref.uri==_queue_ref.uri or \
-            ref.uri==_history_ref.uri)
+            ref.uri==_history_ref.uri or\
+            ref.uri==_playlists_ref)
             
     def select_ref(self,ref):
         if self.current_sel is not None and ref==self.current_sel and \
@@ -578,6 +599,7 @@ class MopidyBrowser:
             self.current_list.insert(0,_favourites_ref)
             self.current_list.insert(0,_queue_ref)
             self.current_list.insert(0,_history_ref)
+            self.current_list.insert(0,_playlists_ref)
             if 'youtube' in self.available_schemes:
                 self.current_list.insert(0,_youtube_ref)
         elif ref.uri==_search_scheme:
@@ -590,6 +612,8 @@ class MopidyBrowser:
             self.select_queue()
         elif ref.uri==_history_ref.uri:
             self.select_history()
+        elif ref.uri==_playlists_ref.uri:
+            self.select_playlists()
         elif ref.uri==_youtube_ref.uri:
             self.select_youtube()
         elif ref.uri.startswith(_channels_scheme):

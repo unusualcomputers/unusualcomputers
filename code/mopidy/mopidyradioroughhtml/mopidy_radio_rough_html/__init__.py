@@ -11,7 +11,7 @@ import datetime
 from htmltemplates import *
 import urllib
 
-__version__ = '1.1.2'
+__version__ = '1.2.2'
 
 logger = logging.getLogger(__name__)
 _feedparser = CachedFeedParser()
@@ -23,12 +23,42 @@ def create_browser(core):
     return browser
 
 refresh_html=''
-def flip_refresh():
+def flip_refresh( l = 10):
     global refresh_html
     if len(refresh_html) == 0:
-        refresh_html='<meta http-equiv="refresh" content="10" >'
+        refresh_html='<meta http-equiv="refresh" content="{}" >'.format(l)
     else:
         refresh_html=''
+
+current_waiting_to_change=None
+first_pass_waiting=False
+def setup_waiting_for_change(browser):
+    if refresh_html != '': return
+    first_pass_waiting=True
+    global current_waiting_to_change
+    global refresh_html
+    info = browser.get_current_track_info()
+    if info is None:
+        current_waiting_to_change=None
+    else:
+        current_waiting_to_change=['uri']
+    flip_refresh(3)
+            
+def check_changed(browser):
+    if refresh_html == '': return
+    global current_waiting_to_change
+    global refresh_html
+    global first_pass_waiting
+    if first_pass_waiting:
+        first_pass_waiting=False
+        return
+    info = browser.get_current_track_info()
+    if info is None:
+            if current_waiting_to_change is None:
+                flip_refresh()
+    elif info['uri'] != current_waiting_to_change:
+        current_waiting_to_change=None
+        flip_refresh()
     
 # miliseconds to a time string
 def to_time_string(ms):
@@ -78,6 +108,7 @@ class TrackHandler(tornado.web.RequestHandler):
         #uri=urllib.unquote(uri)
         if action=='play_now':
             self.browser.play_now_uri(uri)
+            setup_waiting_for_change(self.browser)
         elif action=='play_next':
             self.browser.play_next_uri(uri)
         elif action=='add_to_queue':
@@ -86,6 +117,7 @@ class TrackHandler(tornado.web.RequestHandler):
             self.browser.remove_from_tracks_uri(uri)
         elif action=='loop_this':
             self.browser.loop_now_uri(uri)
+            setup_waiting_for_change(self.browser)
         self.redirect(ref)
 
 #   playback( action = "prev" | "rew10m" | "rew3m" | "rew20s" | "playpause" | "ffwd20s" | "ffwd3m" | "ffwd10m" | "next" )
@@ -101,6 +133,7 @@ class PlaybackHandler(tornado.web.RequestHandler):
         action=self.get_argument('action',None)
         if action == 'prev': 
             self.browser.prev()
+            setup_waiting_for_change(self.browser)
         elif action == 'rew10m': 
             self.browser.player.skip_back(10*60*1000)
         elif action == 'rew3m': 
@@ -117,18 +150,21 @@ class PlaybackHandler(tornado.web.RequestHandler):
             self.browser.player.skip_fwd(10*60*1000)
         elif action == 'next':
             self.browser.next()
-        
+            setup_waiting_for_change(self.browser)
         uri=self.get_argument('uri',None)
         if uri is not None:
             uri=urllib.unquote(uri)
         if action=='play_now':
+            setup_waiting_for_change(self.browser)
             self.browser.play_now_uri(uri)
         elif action=='play_next':
             self.browser.play_next_uri(uri)
+            setup_waiting_for_change(self.browser)
         elif action=='add_to_queue':
             self.browser.add_to_tracks_uri(uri)
         elif action=='loop_this':
             self.browser.loop_now_uri(uri)
+            setup_waiting_for_change(self.browser)
         self.redirect(ref)
 
 
@@ -163,7 +199,7 @@ class VolumeHandler(tornado.web.RequestHandler):
 
 class BrowsingHandler(tornado.web.RequestHandler):
     def process(self, uri=None):
-        
+        check_changed(self.browser)    
         title = self.browser.current_title()
         if title == '':
             html=main_html.replace(u'[%TITLE%]','').\
@@ -201,8 +237,8 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 playback_html=playback_html.replace(u'[%TRACKTIMES%]',t)
             else:
                 if current_track['length'] is not None:
-                    c=to_time_string(current_track['current_tm'])
-                    t=u'{}'.format(c)
+                    l=to_time_string(current_track['length'])
+                    t=u'{}'.format(l)
                     playback_html=playback_html.replace(u'[%TRACKTIMES%]',t)
                 else:    
                     playback_html=playback_html.replace(u'[%TRACKTIMES%]',u'')
@@ -270,19 +306,49 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 itemshtml.append(ihtml)
                 has_tracks=True
             else:
-                translated={}
-                for k in i.keys():
-                    if k=='name':
-                        try:
-                            translated[k]=i[k].encode('utf-8')
-                        except:
-                            translated[k]=i[k]
+                is_playlist=i['type'] == Ref.PLAYLIST
+                if is_playlist:
+                    name=i['name']
+                    title=name #titles look too long and ugly
+                    if self.browser.is_favourited(i['uri']):
+                      ihtml=playlist_item_html_favorited
                     else:
-                        translated[k]=i[k]
-                params=urllib.urlencode(translated)
-                ihtml=non_playable_item_html.replace(u'[%TITLE%]',dec(i['name'])).\
-                    replace(u'[%TYPENAMEURI%]',params)
-                itemshtml.append(ihtml)
+                      ihtml=playlist_item_html
+                    translated={}
+                    for k in i.keys():
+                        if k=='name':
+                            try:
+                                translated[k]=i[k].encode('utf-8')
+                            except:
+                                translated[k]=i[k]
+                        else:
+                            translated[k]=i[k]
+                    params=urllib.urlencode(translated)
+
+                    iuri=urllib.quote(i['uri'],'')
+                    ihtml=ihtml.replace(u'[%TYPENAMEURI%]',params)
+    
+                    ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(name)).\
+                        replace(u'[%NAME%]',dec(name))
+                    if current_track_uri is not None and current_track_uri==iuri:
+                        ihtml=ihtml.replace(u'play.png', u'playing.png')
+                    comment=None
+                    itemshtml.append(ihtml)
+                    has_tracks=True
+                else:
+                    translated={}
+                    for k in i.keys():
+                        if k=='name':
+                            try:
+                                translated[k]=i[k].encode('utf-8')
+                            except:
+                                translated[k]=i[k]
+                        else:
+                            translated[k]=i[k]
+                    params=urllib.urlencode(translated)
+                    ihtml=non_playable_item_html.replace(u'[%TITLE%]',dec(i['name'])).\
+                        replace(u'[%TYPENAMEURI%]',params)
+                    itemshtml.append(ihtml)
 
         if has_tracks:
             html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
