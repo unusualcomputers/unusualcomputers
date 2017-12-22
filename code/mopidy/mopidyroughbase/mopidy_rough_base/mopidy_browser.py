@@ -221,11 +221,11 @@ class MopidyBrowser:
         if len(tracks)==0: return None
         track=tracks[0]
         title=track.name
-            
         if track.artists is not None and len(track.artists)>0:
-            artists=','.join([t.name for t in track.artists])
+            artist_names=[t.name for t in track.artists if t is not None and t.name is not None]
+            artists=','.join(artist_names)
         else:
-            artists=[]
+            artists=''
         if track.album is None:
             album=None
         else:
