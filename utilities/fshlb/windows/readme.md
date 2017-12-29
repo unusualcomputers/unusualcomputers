@@ -15,9 +15,9 @@ The usage is simple, when you run it, it should all be quite intuitive, but ther
 
 __gifkoPro__ takes as input an existing video (something you made or downloaded, mayeb from youtube or wherever) and creates a short snippet of it (you choose from and to values) in a format that works nicely with twitter.
 
-__subsYeah__ takes as input a video and an .srt subtitles file and hardcodes the subtitles into the video so that it's only one file, suitable for uploading to social networks.
+__subsYeahPro__ takes as input a video and an .srt subtitles file and hardcodes the subtitles into the video so that it's only one file, suitable for uploading to social networks.
 
-Note that twitter imposes limits on video sizes - they must be shorter than 2m20s and smaller than 512Mb (more details [here](https://support.twitter.com/articles/20172128#video-formats) ).
+Note that twitter imposes limits on video sizes - they must be shorter than 2m20s and smaller than 512Mb (more details [here](https://support.twitter.com/articles/20172128#video-formats)).
 
 
 Please let us know if you used them and most certainly if they did not work ( unusual.computers(at)gmail.com ).
