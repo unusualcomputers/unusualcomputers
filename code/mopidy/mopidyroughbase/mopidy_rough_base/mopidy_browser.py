@@ -15,6 +15,28 @@ import time
 
 # interface to mopidy used by various rough front ends
 
+class Cache:
+    def __init__(self):
+        self.data=[]
+        self.max_size=250
+
+    def clear(self):
+        self.data=[]
+        
+    def add(self, uri, item):
+        i = self.get(uri)
+        if i is None:
+            if len(self.data) >= self.max_size: 
+                self.data=self.data[(self.max_size/2):]
+            self.data.append((uri,item))
+
+    def get(self,uri):
+        item = next((i for i in self.data if i[0]==uri),None)
+        if item is not None: return item[1]
+        else: return None
+
+_favourites_cache=Cache()
+
 # some refs and uris are created by us, makes browsing easier
 _subscriptions_ref=Ref.directory(name = 'Subscriptions',
             uri = 'podcast+subscriptions')
@@ -222,16 +244,16 @@ class MopidyBrowser:
         track=tracks[0]
         title=track.name
         if track.artists is not None and len(track.artists)>0:
-            artist_names=[t.name for t in track.artists if t is not None and t.name is not None]
-            artists=','.join(artist_names)
+            artists=[(t.name,t.uri) for t in track.artists \
+                if t is not None and t.name is not None and t.uri is not None]
         else:
-            artists=''
+            artists=None
         if track.album is None:
             album=None
         else:
-            album=track.album.name
-        if len(artists)!=0:
-            title=u'{} - {}'.format(title, artists)
+            album=(track.album.name,track.album.uri)
+        #if len(artists)!=0:
+        #    title=u'{} - {}'.format(title, artists)
         
         if album=='YouTube\n' or artists=='YouTube\n' or track.comment is None:
             comment=None
@@ -386,18 +408,23 @@ class MopidyBrowser:
             if not self.__index_ok(i): continue
             ref=self.current_list[i]
             self.favourites.add(ref.name,ref.uri)
-
+            _favourites_cache.clear()
+            
     def remove_from_favourites(self,indices):
-        if self.current_sel!=_favourites_ref: return
+        #if self.current_sel!=_favourites_ref: return
         for i in indices:
             if not self.__index_ok(i): continue
             ref=self.current_list[i]
             self.favourites.remove(ref.name)
+            _favourites_cache.clear()
+            
     def add_to_favourites_uri(self,name,uri):
         self.favourites.add(name,uri)
+        _favourites_cache.clear()
 
     def remove_from_favourites_uri(self,name,uri):
         self.favourites.remove(name)
+        _favourites_cache.clear()
 
     # handling podcast subscriptions                
     def __podcast_details_at(self,index):
@@ -503,7 +530,28 @@ class MopidyBrowser:
     def select_favourites(self):
         self.add_level(_favourites_ref)
         favs=self.favourites.favourites
-        refs=[Ref.track(name=f[0],uri=f[1]) for f in favs]
+        refs=[]
+        for f in favs:
+            name=f[0]
+            uri=f[1]
+            ref=_favourites_cache.get(uri)
+            if ref is None:
+                ref=self.core.library.browse(uri).get()
+                if ref is not None:
+                    if len(ref) == 0:
+                        ref=self.core.library.lookup(uri).get()
+                        if len(ref)>0:ref=Ref.track(name=name,uri=uri)
+                        else: ref = None
+                    elif len(ref) == 1:
+                        ref=ref[0]
+                    elif all(r.type in self.playable_types for r in ref):
+                        ref=Ref.album(name=f[0],uri=f[1])
+                    else:
+                        ref=Ref.directory(name=f[0],uri=f[1])
+                    if ref is not None:
+                        _favourites_cache.add(uri,ref)
+            if ref is not None:
+                refs.append(ref)
         self.current_list = refs
     
     def select_queue(self):
@@ -674,7 +722,9 @@ class MopidyBrowser:
         self.tracklist.set_consume(True)
             
     def add_to_tracks_uri(self,uri,pos = None):
-        self.tracklist.add(uris=[uri],at_position = pos)
+        tracks=self.core.library.lookup(uri).get()
+        uris=[t.uri for t in tracks]
+        self.tracklist.add(uris=uris,at_position = pos)
         self.trace_tracks()
         if not self.player.is_playing(): 
             self.player.play()
@@ -835,6 +885,6 @@ class MopidyBrowser:
         self.logger.debug('current sel: {}'.format(self.current_sel))
         
     def trace_tracks(self):
-        self.logger.info('tracks: {}'.format(self.tracks()))
+        self.logger.debug('tracks: {}'.format(self.tracks()))
 
         

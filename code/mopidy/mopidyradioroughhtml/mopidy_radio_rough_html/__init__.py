@@ -14,6 +14,7 @@ import urllib
 __version__ = '2.2.2'
 
 logger = logging.getLogger(__name__)
+refresh_html=''
 _feedparser = CachedFeedParser()
 browser = None
 def create_browser(core):
@@ -22,7 +23,6 @@ def create_browser(core):
         browser = MopidyBrowser(core,None,False)
     return browser
 
-refresh_html=''
 def flip_refresh( l = 10):
     global refresh_html
     if len(refresh_html) == 0:
@@ -33,30 +33,24 @@ def flip_refresh( l = 10):
 current_waiting_to_change=None
 first_pass_waiting=False
 def setup_waiting_for_change(browser):
-    if refresh_html != '': return
-    first_pass_waiting=True
     global current_waiting_to_change
     global refresh_html
-    info = browser.get_current_track_info()
-    if info is None:
+    if refresh_html != '': 
         current_waiting_to_change=None
-    else:
-        current_waiting_to_change=['uri']
-    flip_refresh(3)
-            
-def check_changed(browser):
-    if refresh_html == '': return
-    global current_waiting_to_change
-    global refresh_html
-    global first_pass_waiting
-    if first_pass_waiting:
-        first_pass_waiting=False
         return
     info = browser.get_current_track_info()
     if info is None:
-            if current_waiting_to_change is None:
-                flip_refresh()
-    elif info['uri'] != current_waiting_to_change:
+        current_waiting_to_change='None'
+    else:
+        current_waiting_to_change=info['uri']
+    flip_refresh(3)
+            
+def check_changed(browser):
+    global current_waiting_to_change
+    if current_waiting_to_change is None: return
+    info = browser.get_current_track_info()
+    if (info is None and current_waiting_to_change != 'None') or \
+        (info is not None and info['uri'] != current_waiting_to_change):
         current_waiting_to_change=None
         flip_refresh()
     
@@ -93,6 +87,8 @@ class GlobalsHandler(tornado.web.RequestHandler):
             flip_refresh()
         elif action=='loopall':
             self.browser.flip_loop()
+        elif action=='clearqueue':
+            self.browser.clear_tracks()
         self.redirect(ref)
 
 class TrackHandler(tornado.web.RequestHandler):
@@ -197,17 +193,46 @@ class VolumeHandler(tornado.web.RequestHandler):
         self.browser.set_volume(vol)
         self.redirect(ref)
 
+def tryenc(s):
+    try:
+        return s.encode('utf-8')
+    except:
+        return s
+
+def trydec(s):
+    try:
+        return s.decode('utf-8')
+    except:
+        return s      
+
+def params_enc(i):
+    translated={}
+    for k in i.keys():
+        if k=='name':
+            translated[k]=tryenc(i[k])
+        #elif k=='uri':
+        #    translated[k]=urllib.unquote(i[k])
+        else:
+            translated[k]=i[k]
+    #return u'type={}&name={}&uri={}'.format(translated['type'],translated['name'],translated['uri'])        
+    try:
+        return urllib.urlencode(translated)
+    except:
+        for t in translated:
+            if t=='uri':
+                translated[t]=urllib.unquote(translated[t])
+            return urllib.urlencode(translated) 
+               
 class BrowsingHandler(tornado.web.RequestHandler):
-    def process(self, uri=None):
+    def process(self, page_title, uri=None):
         check_changed(self.browser)    
-        title = self.browser.current_title()
-        if title == '':
+        #title = self.browser.current_title()
+        if page_title is None or page_title == '':
             html=main_html.replace(u'[%TITLE%]','').\
                 replace('[%REFRESH%]',refresh_html)
         else:
-            html=main_html.replace(u'[%TITLE%]',u'- {}'.format(title)).\
+            html=main_html.replace(u'[%TITLE%]',u'- {}'.format(page_title)).\
                 replace('[%REFRESH%]',refresh_html)
-        
         if uri is not None and not uri.startswith('rough+queue') \
             and not uri.startswith('rough+history') and not uri.startswith('rough+favourites'): # no searching on top level
             uri=urllib.unquote(uri)
@@ -282,9 +307,9 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 #title=info['title']
                 title=name #titles look too long and ugly
                 if info['favorited']:
-                  ihtml=playable_item_html_favorited
+                  ihtml=track_item_html_favourited
                 else:
-                  ihtml=playable_item_html
+                  ihtml=track_item_html
                 if self.browser.is_queue():
                     ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
                         replace(u'queue_add.png',u'queue_remove.png').\
@@ -300,12 +325,59 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     if comment is None and \
                         title is not None and info['title'] !=name:
                             comment=info['title']
-                if comment is not None:
-                    chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment)
-                    ihtml=ihtml+chtml    
+                
+                if info['album'] is not None or info['artists'] is not None:
+                    if info['album'] is not None and info['album'][0] != page_title and \
+                        u'tunein' not in info['album'][1] and u'somafm' not in info['album'][1]:
+                        album_name=trydec(info['album'][0])
+                        album_uri=urllib.quote(info['album'][1],'')
+                        typenameuri=u'type=album&name={}&uri={}'.format(album_name,album_uri)
+                        album_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',album_name)
+                    else:
+                        album_name=''
+                        album_uri=None
+                        album_html=''
+                    
+                    if info['artists'] is not None:
+                        artists=info['artists']
+                        artists=[a for a in artists if a[0]!=album_name]
+                        if len(artists) > 0:
+                            artists_html=''
+                            for a in artists:
+                                artist_name=trydec(a[0])
+                                if artist_name!=page_title and u'tunein' not in a[1] and u'somafm' not in a[1]:
+                                    artist_uri=urllib.quote(a[1],'')
+                                    typenameuri=u'type=artist&name={}&uri={}'.format(artist_name,artist_uri)
+                                    artist_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',artist_name)
+                                    if artists_html=='': artists_html=artist_html
+                                    else: artists_html=artists_html+','+artist_html
+                        else:
+                            artists_html=''
+                    
+                    if album_html!='' and artists_html!='':
+                        albumartist_html=u'{} - {}'.format(artists_html, album_html)
+                    elif album_html!='':
+                        albumartist_html=album_html
+                    elif artists_html!='':
+                        albumartist_html=artists_html
+                    else:
+                        albumartist_html=''
+                else:
+                        albumartist_html=''
+                        
+                if comment is None: comment=u''        
+                if comment!='' or albumartist_html!='':
+                    if comment=='':
+                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',albumartist_html).replace(u'[%ARTISTALBUM%]','')
+                    elif albumartist_html=='':
+                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','')
+                    else:    
+                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','<br/>&nbsp;&nbsp;&nbsp;'+albumartist_html)
+                    ihtml=ihtml+chtml   
+                     
                 itemshtml.append(ihtml)
                 has_tracks=True
-            else:
+            else:# not track
                 is_playlist=i['type'] == Ref.PLAYLIST
                 if is_playlist:
                     name=i['name']
@@ -314,16 +386,8 @@ class BrowsingHandler(tornado.web.RequestHandler):
                       ihtml=playlist_item_html_favorited
                     else:
                       ihtml=playlist_item_html
-                    translated={}
-                    for k in i.keys():
-                        if k=='name':
-                            try:
-                                translated[k]=i[k].encode('utf-8')
-                            except:
-                                translated[k]=i[k]
-                        else:
-                            translated[k]=i[k]
-                    params=urllib.urlencode(translated)
+                    
+                    params=params_enc(i)
 
                     iuri=urllib.quote(i['uri'],'')
                     ihtml=ihtml.replace(u'[%TYPENAMEURI%]',params)
@@ -335,35 +399,45 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     comment=None
                     itemshtml.append(ihtml)
                     has_tracks=True
-                else:
-                    translated={}
-                    for k in i.keys():
-                        if k=='name':
-                            try:
-                                translated[k]=i[k].encode('utf-8')
-                            except:
-                                translated[k]=i[k]
+                else:# not playlist and not track
+                    params=params_enc(i)
+                    iuri=urllib.quote(i['uri'])
+                    name=dec(i['name'])
+                    is_playable = i['type']==Ref.ALBUM or i['type']==Ref.ARTIST
+                    if uri is None:
+                        ihtml=root_item_html.replace(u'[%TITLE%]',name).\
+                            replace(u'[%TYPENAMEURI%]',params)
+                    elif self.browser.is_favourited(i['uri']):
+                        if is_playable:
+                            ihtml=playable_item_html_favorited.replace(u'[%TITLE%]',name).\
+                                replace(u'[%TYPENAMEURI%]',params).\
+                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
                         else:
-                            translated[k]=i[k]
-                    params=urllib.urlencode(translated)
-                    ihtml=non_playable_item_html.replace(u'[%TITLE%]',dec(i['name'])).\
-                        replace(u'[%TYPENAMEURI%]',params)
+                            ihtml=non_playable_item_html_favorited.replace(u'[%TITLE%]',name).\
+                                replace(u'[%TYPENAMEURI%]',params).\
+                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                    else:
+                        if is_playable:
+                            ihtml=playable_item_html.replace(u'[%TITLE%]',name).\
+                                replace(u'[%TYPENAMEURI%]',params).\
+                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                        else:    
+                            ihtml=non_playable_item_html.replace(u'[%TITLE%]',name).\
+                                replace(u'[%TYPENAMEURI%]',params).\
+                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                    
                     itemshtml.append(ihtml)
-
-        if has_tracks:
-            html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
-                    u''.join(itemshtml)+u'</table>')        
-        else:
-            html=html.replace(u'[%ITEMS%]',u''.join(itemshtml))        
+        html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
+            u''.join(itemshtml)+u'</table>')        
         
         if len(refresh_html)==0:
             gth=global_toolbar_html_ref_off
         else:
             gth=global_toolbar_html_ref_on
         if self.browser.is_queue():
-            gth=gth.replace(u'[%LOOPALL%]',loop_all_html)
+            gth=gth.replace(u'[%LOOPALL%]',loop_all_html).replace(u'[%QUEUEHTML%]',clear_queue_html)
         else:
-            gth=gth.replace(u'[%LOOPALL%]',u'')
+            gth=gth.replace(u'[%LOOPALL%]',u'').replace(u'[%QUEUEHTML%]',show_queue_html)
 
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
@@ -383,7 +457,7 @@ class SearchHandler(BrowsingHandler):
             return
 
         self.browser.search(query)
-        self.process()
+        self.process('Search: '+query,'rough+search')
         
 class ListHandler(BrowsingHandler):
     def initialize(self, core):
@@ -396,10 +470,13 @@ class ListHandler(BrowsingHandler):
         if refType == 'track': return # this should never happen
         name = self.get_argument('name',None)
         uri=self.get_argument('uri',None)
-        if uri is not None: 
-            uri =urllib.unquote(uri)
-        self.browser.request(refType,name,uri)
-        self.process(uri)   
+        #if uri is not None: 
+        #    uri =urllib.unquote(uri)
+        try:
+            self.browser.request(refType,name,uri)
+        except:
+            self.browser.request(refType,name,urllib.unquote(uri))
+        self.process(name,uri)   
         
 
 path = os.path.abspath(__file__)
@@ -414,7 +491,7 @@ def rough_factory(config, core):
         (r'/track.*', TrackHandler, {'core': core}),
         (r'/playback.*', PlaybackHandler, {'core': core}),
         (r'/global.*', GlobalsHandler, {'core': core}),
-        (r'/icons/(.*)', tornado.web.StaticFileHandler, {'path': dir_path+"/icons"})#/home/sheridan/unusual/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/icons"})
+        (r'/icons/(.*)', tornado.web.StaticFileHandler, {'path': dir_path+"/icons"})
     ]
 
 
