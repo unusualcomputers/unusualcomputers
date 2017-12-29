@@ -61,34 +61,34 @@ volume_html=u"""<div align="left"><pre><a href="/radiorough/volume?vol=0"><img s
 
 root_item_html=u"""
 <tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
 <td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>
 """
 
 non_playable_item_html=u"""
 <tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
 <td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>
 """
 
 non_playable_item_html_favorited=u"""
 <tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
 <td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>
 """
 
 
 playlist_item_html=u"""<tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all" title="play all tracks" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all" title="play all tracks" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 playlist_item_html_favorited=u"""<tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 
@@ -101,23 +101,23 @@ playlist_item_html_favorited=u"""<tr>
 #	track(action = "play_now" | "play_next" | "remove_from_queue" | "add_to_queue" | "loop_this", uri)
 #	favorites(action= "add" | "remove", name, uri)
 playable_item_html=u"""<tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add all to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 playable_item_html_favorited=u"""<tr>
-<td><h4><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/request?[%TYPENAMEURI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/request?[%TYPENAMEURI%]"><img src="/radiorough/icons/file_folder.png" alt="browse [%TITLE%]" title="browse [%TITLE%]" height="16"></a>   <a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play all tracks" title="play all tracks" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add all to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 track_item_html=u"""<tr>
-<td><h4><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 track_item_html_favourited=u"""<tr>
-<td><h4><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></h4></td>
-<td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a href="/radiorough/track?action=play_next&uri=[%URI%]"><img src="/radiorough/icons/play_next.png" alt="play next" title="play next" height="16"></a>   <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
+<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font></td>
+<td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 named_link_html="""<a href="/radiorough/request?[%TYPENAMEURI%]">[%NAME%]</a>"""

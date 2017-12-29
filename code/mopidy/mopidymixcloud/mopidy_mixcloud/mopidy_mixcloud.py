@@ -21,9 +21,9 @@ uri_categories=u'https://api.mixcloud.com/categories/'
 uri_popular=u'https://api.mixcloud.com/popular/'
 uri_hot=u'https://api.mixcloud.com/popular/hot/'
 uri_new=u'https://api.mixcloud.com/new/'
-uri_users=u'users:'
-uri_user=u'user:'
-uri_category=u'category:'
+uri_users=u'users'
+uri_user=u'user'
+uri_category=u'category'
 uri_cloudcasts=u'cloudcasts/'
 uri_favorites=u'favorites/'
 uri_playlists=u'playlists/'
@@ -31,7 +31,6 @@ uri_playlist=u'playlist/'
 uri_following=u'following/'
 uri_followers=u'followers/'
 uri_listens=u'listens/'
-uri_track=u'track:'
 uri_search=u'https://api.mixcloud.com/search/?type={}&q="{}"'
 users=[]
 default_users=[]
@@ -136,19 +135,42 @@ def get_next_page(json_dict, name):
     name = u'More {}...'.format(name)
     return Ref.directory(name=name, uri=make_uri(paging['next']))
 
-def make_special_uri(user_key,uri_prefix):
-    return make_uri(uri_prefix+user_key.encode('base64'))
-    
+def get_next_page_uri(json_dict):
+    if 'paging' not in json_dict: return None
+    paging = json_dict['paging']
+    if 'next' not in paging: return None
+    return paging['next']
+
+
+def make_special_uri(user_key,uri_prefix,more=''):
+    special=make_uri(uri_prefix+':'+user_key.encode('base64'))
+    return u'{}:more:{}'.format(special,more)
+        
 def strip_special_uri(uri,uri_prefix):
+    uri=strip_uri(uri)
     if dec(uri).startswith(uri_prefix):
-        return uri[len(uri_prefix):].decode('base64')
+        elements=uri.split(':')
+        user_key=elements[1]
+        special=user_key.decode('base64')
+#        special=front[len(uri_prefix):].decode('base64')
+        more=elements[-1]
+        return (special,more)
     else:
-        return None
+        return (None,None)
         
 def make_special_api(user_key,uri_prefix):
     return api_prefix+user_key+uri_prefix
     
-def list_playlists(uri):
+def make_more_name(user_key,group):
+    try:
+        name=enc(user_name[1:-1])
+        decoded=dec(urllib.unquote(name))
+        pre0=u'{} '.format(decoded)
+        return u"More {}'s {}...".format(decoded,group)
+    except:
+        return u"More {}...".format(group)
+
+def list_playlists(uri,user_key):
     uri=strip_uri(uri)
     refs=refs_cache.get(uri)
     if refs is not None: return refs
@@ -163,9 +185,12 @@ def list_playlists(uri):
         ref=Ref.playlist(name=user_name,uri=make_uri(playlist_uri))
         refs.append(ref)
 
-    more=get_next_page(json, u'playlists')
+    more=get_next_page_uri(json)
     if more is not None:
-        refs.append(more)
+        more_param=more.split('/')[-1]
+        more_uri=make_special_uri(user_key,uri_playlists,more_param)
+        ref=Ref.directory(name=make_more_name(user_key,u'playlists'), uri=make_uri(more_uri))
+        refs.append(ref)
 
     refs_cache.add(uri,refs)
     return refs
@@ -192,7 +217,7 @@ def list_category_users(uri):
     refs_cache.add(uri,refs)
     return refs
     
-def list_fols(uri): # followers or following
+def list_fols(uri,user_key): # followers or following
     uri=strip_uri(uri)
     refs=refs_cache.get(uri)
     if refs is not None: return refs
@@ -207,13 +232,19 @@ def list_fols(uri): # followers or following
         ref=Ref.directory(name=enc(name),uri=fol_uri)
         refs.append(ref)
 
-    if 'following' in uri:
-        more=get_next_page(json,u'following')
-    else:
-        more=get_next_page(json,u'followers')
-        
+    more=get_next_page_uri(json)
+
     if more is not None:
-        refs.append(more)
+        if 'following' in uri:
+            name_for_more=make_more_name(user_key,u'follows')
+            uri_for_more=uri_following
+        else:
+            name_for_more=make_more_name(user_key,u'followers')
+            uri_for_more=uri_followers
+        more_param=more.split('/')[-1]
+        more_uri=make_special_uri(user_key,uri_for_more,more_param)
+        ref=Ref.directory(name=name_for_more, uri=make_uri(more_uri))
+        refs.append(ref)
 
     refs_cache.add(uri,refs)
     return refs
@@ -263,7 +294,9 @@ def track_uri(track_key):
 def make_track(track_key, name, user, time, length,user_key):
     uri=track_uri(track_key)
     date=time.split('T')[0]
-    album_uri=make_uri(api_prefix+user_key+u'cloudcasts/')
+    
+    
+    album_uri=make_special_uri(user_key,uri_user)#make_uri(api_prefix+user_key+u'cloudcasts/')
     album=Album(uri=album_uri,name=user)
     artist=Artist(uri=album_uri,name=user)
     if length is None:
@@ -298,7 +331,7 @@ def make_track_from_json(cloudcast):
         ref=Ref.track(name=track.name, uri=uri)
     return (ref,track)
 
-def list_cloudcasts(uri):
+def list_cloudcasts(uri,user_key=''):
     suri=strip_uri(uri)
     if suri.startswith(downloader_prefix):
         key=strip_uri(uri)[len(downloader_prefix):]
@@ -322,10 +355,10 @@ def list_cloudcasts(uri):
     
 def list_refs(uri):
     def handle_special_uri(uri, special_uri, list_f):
-        user_key=strip_special_uri(uri,special_uri)
+        (user_key,more)=strip_special_uri(uri,special_uri)
         if user_key is None: return None
-        urir=make_special_api(user_key,special_uri)
-        refs=list_f(urir)
+        urir=make_special_api(user_key,special_uri)+more
+        refs=list_f(urir,user_key)
         refs_cache.add(uri,refs)
         return refs    
     uri=strip_uri(uri)
@@ -340,7 +373,7 @@ def list_refs(uri):
                 uri=make_special_uri(u'/{}/'.format(user),uri_user))
             refs.append(ref)
         return refs
-    user_key=strip_special_uri(uri,uri_user)
+    (user_key,more)=strip_special_uri(uri,uri_user)
     if user_key is not None:
         refs=list_user(user_key)
         refs_cache.add(uri,refs)
@@ -453,7 +486,7 @@ class MixcloudPlaylists(PlaylistsProvider):
             uri=u'{}/{}/{}'.format(api_prefix,u,uri_playlists)
             refs=refs_cache.get(uri)
             if refs is None: 
-                refs=list_playlists(uri)
+                refs=list_playlists(uri,'/'+u+'/')
             if refs is not None:
                 playlists=playlists+refs
         return playlists        
@@ -508,9 +541,9 @@ class MixcloudLibrary(LibraryProvider):
                        
     def lookup(self, uri, uris=None):
         if uri is None and uris is None: return []
-        username=strip_special_uri(strip_uri(uri),uri_cloudcasts)
+        (username,more)=strip_special_uri(strip_uri(uri),uri_cloudcasts)
         if username is not None:
-            uri=make_special_api(username,uri_cloudcasts)
+            uri=make_special_api(username,uri_cloudcasts)+more
         if uri is not None:
             return get_tracks_for_uri(uri)
         else:

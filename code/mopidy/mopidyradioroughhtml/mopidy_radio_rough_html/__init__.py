@@ -427,7 +427,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                                 replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
                     
                     itemshtml.append(ihtml)
-        html=html.replace(u'[%ITEMS%]',u'<table width="100%">'+\
+        html=html.replace(u'[%ITEMS%]',u'<table cellspacing="3" width="100%">'+\
             u''.join(itemshtml)+u'</table>')        
         
         if len(refresh_html)==0:
