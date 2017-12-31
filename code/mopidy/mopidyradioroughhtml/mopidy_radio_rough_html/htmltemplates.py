@@ -111,12 +111,12 @@ playable_item_html_favorited=u"""<tr>
 </tr>"""
 
 track_item_html=u"""<tr>
-<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font></td>
+<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font><font size="2" color="blue">[%DATE%]</font></td>
 <td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=add&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorites_add.png" alt="add to favorites" title="add to favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
 track_item_html_favourited=u"""<tr>
-<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font></td>
+<td><font size="3"><strong><a href="/radiorough/track?action=play_now&uri=[%URI%]">[%TITLE%]</a></strong></font><font size="2" color="blue">[%DATE%]</font></td>
 <td><div align="right"><pre><a href="/radiorough/track?action=play_now&uri=[%URI%]"><img src="/radiorough/icons/play.png" alt="play" title="play" height="16"></a>  <a  href="/radiorough/track?action=add_to_queue&uri=[%URI%]"><img src="/radiorough/icons/queue_add.png" alt="add to queue" title="add to queue" height="16"></a>   <a href="/radiorough/track?action=loop_this&uri=[%URI%]"><img src="/radiorough/icons/loop_this.png" alt="loop this" title="loop this" height="16"></a>   <a href="/radiorough/favorites?action=remove&name=[%NAME%]&uri=[%URI%]"><img src="/radiorough/icons/favorited.png" alt="remove from favorites" title="remove from favorites" height="16"></a>&nbsp;&nbsp;&nbsp;</pre></div></td>
 </tr>"""
 
@@ -135,7 +135,7 @@ comment_html=u"""<tr>
 global_toolbar_html_ref_off=u"""<hr>
 
 
-<div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   [%QUEUEHTML%]   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_off.png" alt="turn auto refresh on" title="turn auto refresh on" height="20"></a>[%LOOPALL%]</pre></div>
+<div align="center"><pre><a href="/radiorough/global?action=home"><img src="/radiorough/icons/home.png" alt="radio rough home" title="radio rough home" height="20"></a>    <a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   [%QUEUEHTML%]   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_off.png" alt="turn auto refresh on" title="turn auto refresh on" height="20"></a>[%LOOPALL%]   <a href="/radiorough/global?action=reboot"><img src="/radiorough/icons/reboot.png" alt="reboot" title="reboot" height="20"></a></pre></div>
 
 <hr>
 <div align="center"><small>built by <a href="http://unusualcomputerscollective.org">unusual computers collective</a></small></div>
@@ -143,7 +143,7 @@ global_toolbar_html_ref_off=u"""<hr>
 global_toolbar_html_ref_on=u"""<hr>
 
 
-<div align="center"><pre><a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   [%QUEUEHTML%]   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_on.png" alt="turn auto refresh off" title="turn auto refresh off" height="20"></a>[%LOOPALL%]</pre></div>
+<div align="center"><pre><a href="/radiorough/global?action=home"><img src="/radiorough/icons/home.png" alt="radio rough home" title="radio rough home" height="20"></a>    <a href="/radiorough/request?type=directory&name=Favourites&uri=rough%2Bfavourites"><img src="/radiorough/icons/favorited.png" alt="show favorites" title="show favorites" height="20"></a>   [%QUEUEHTML%]   <a href="/radiorough/request?type=directory&name=History&uri=rough%2Bhistory"><img src="/radiorough/icons/history.png" alt="show history" title="show history" height="20"></a>   <a href="/radiorough/global?action=refresh_onoff"><img src="/radiorough/icons/refresh_is_on.png" alt="turn auto refresh off" title="turn auto refresh off" height="20"></a>[%LOOPALL%]   <a href="/radiorough/global?action=reboot"><img src="/radiorough/icons/reboot.png" alt="reboot" title="reboot" height="20"></a></pre></div>
 
 <hr>
 <div align="center"><small>built by <a href="http://unusualcomputerscollective.org">unusual computers collective</a></small></div>
@@ -152,3 +152,4 @@ loop_all_html=u"""   <a href="/radiorough/global?action=loopall"><img src="/radi
 
 show_queue_html=u"""<a href="/radiorough/request?type=directory&name=Queue&uri=rough%2Bqueue"><img src="/radiorough/icons/queue_show.png" alt="show queue" title="show queue" height="20"></a>"""
 clear_queue_html=u"""<a href="/radiorough/global?action=clearqueue"><img src="/radiorough/icons/queue_remove.png" alt="clear queue" title="clear queue" height="20"></a>"""
+reboot_confirm_html=u"""<h1>Yes, really <a href="/radiorough/global?action=really_reboot">reboot.</a></h1><br/><br/>If not, just go back."""

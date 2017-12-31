@@ -10,6 +10,7 @@ from mopidy_rough_base.feedparsing import CachedFeedParser
 import datetime
 from htmltemplates import *
 import urllib
+from dateutil import parser
 
 __version__ = '2.2.2'
 
@@ -89,6 +90,19 @@ class GlobalsHandler(tornado.web.RequestHandler):
             self.browser.flip_loop()
         elif action=='clearqueue':
             self.browser.clear_tracks()
+        elif action=='reboot':
+            self.write(reboot_confirm_html)
+            self.flush()
+            return
+        elif action=='really_reboot':
+            logger.info('Rebooting NOW.')
+            import os
+            os.system('sudo reboot')
+            return
+        elif action=='home':
+            self.browser.refresh()
+            self.redirect('/radiorough/')
+            return
         self.redirect(ref)
 
 class TrackHandler(tornado.web.RequestHandler):
@@ -210,11 +224,8 @@ def params_enc(i):
     for k in i.keys():
         if k=='name':
             translated[k]=tryenc(i[k])
-        #elif k=='uri':
-        #    translated[k]=urllib.unquote(i[k])
         else:
             translated[k]=i[k]
-    #return u'type={}&name={}&uri={}'.format(translated['type'],translated['name'],translated['uri'])        
     try:
         return urllib.urlencode(translated)
     except:
@@ -286,9 +297,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
             vol_html=vol_html.replace(u'volume-4.png',u'volume-4_sel.png')
                     
         html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
-
         items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
-        
         itemshtml=[]
         has_tracks=False    
         for i in items:
@@ -296,20 +305,31 @@ class BrowsingHandler(tornado.web.RequestHandler):
             is_track=i['type'] == Ref.TRACK
             if is_track:
                 iuri=urllib.quote(i['uri'],'')
+
                 if i['uri'].startswith('youtube:'):
                     info={'title':i['name'],'artists':None,'album':None,
-                        'comment':None,'length':None, 'favorited':self.browser.is_favourited(i['uri'])} 
+                        'comment':None,'length':None, 
+                        'favorited':self.browser.is_favourited(i['uri']),
+                        'date':None} 
                 else:
                     info=self.browser.get_track_info_uri(i['uri'])
+
                 if info is None: continue
-            # {'title':_,'artists':_,'album':_,'comment':_,'length':_,'favorited':_}  
                 name=i['name']
-                #title=info['title']
                 title=name #titles look too long and ugly
+                pub_date=info['date']
+                if pub_date is None: pub_date=''
+                elif len(pub_date)==10:
+                    pub_date=parser.parse(pub_date).strftime(u' (%d %b %Y) ')
+                else:
+                    pub_date=u' ({}) '.format(pub_date)    
+
+
                 if info['favorited']:
                   ihtml=track_item_html_favourited
                 else:
                   ihtml=track_item_html
+                ihtml=ihtml.replace(u'[%DATE%]',pub_date)
                 if self.browser.is_queue():
                     ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
                         replace(u'queue_add.png',u'queue_remove.png').\
@@ -322,8 +342,8 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     comment=None
                 else:
                     comment=info['comment']
-                    if comment is None and \
-                        title is not None and info['title'] !=name:
+                    if comment is None:
+                        if title is not None and info['title'] !=name:
                             comment=info['title']
                 
                 if info['album'] is not None or info['artists'] is not None:
@@ -364,7 +384,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                         albumartist_html=''
                 else:
                         albumartist_html=''
-                        
+
                 if comment is None: comment=u''        
                 if comment!='' or albumartist_html!='':
                     if comment=='':
@@ -372,7 +392,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     elif albumartist_html=='':
                         chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','')
                     else:    
-                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','<br/>&nbsp;&nbsp;&nbsp;'+albumartist_html)
+                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','<br/>&nbsp;&nbsp;&nbsp;   '+albumartist_html)
                     ihtml=ihtml+chtml   
                      
                 itemshtml.append(ihtml)
@@ -438,7 +458,6 @@ class BrowsingHandler(tornado.web.RequestHandler):
             gth=gth.replace(u'[%LOOPALL%]',loop_all_html).replace(u'[%QUEUEHTML%]',clear_queue_html)
         else:
             gth=gth.replace(u'[%LOOPALL%]',u'').replace(u'[%QUEUEHTML%]',show_queue_html)
-
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
         self.flush()
@@ -464,7 +483,6 @@ class ListHandler(BrowsingHandler):
         self.core = core
         self.browser = create_browser(core)
         
-
     def get(self):
         refType=self.get_argument('type',None)
         if refType == 'track': return # this should never happen
@@ -477,7 +495,6 @@ class ListHandler(BrowsingHandler):
         except:
             self.browser.request(refType,name,urllib.unquote(uri))
         self.process(name,uri)   
-        
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(__file__)

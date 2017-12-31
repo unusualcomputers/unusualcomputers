@@ -80,7 +80,13 @@ class MopidyBrowser:
         
         self.update_timer=threading.Timer(5,self.auto_update)
         self.update_timer.start()
-        
+    
+    def refresh(self):
+        self.current_sel=None
+        self.library_levels = [None] 
+        self.core.library.refresh()
+        self.core.playlists.refresh()
+            
     # status
     def set_status(self,msg):
         self.status=msg
@@ -252,8 +258,6 @@ class MopidyBrowser:
             album=None
         else:
             album=(track.album.name,track.album.uri)
-        #if len(artists)!=0:
-        #    title=u'{} - {}'.format(title, artists)
         
         if album=='YouTube\n' or artists=='YouTube\n' or track.comment is None:
             comment=None
@@ -261,8 +265,10 @@ class MopidyBrowser:
             comment=track.comment
         length=track.length
         fav=self.is_favourited(uri)
+        date=track.date
         return {'title':title,'artists':artists,'album':album,
-            'comment':comment,'length':length, 'favorited':fav}  
+            'comment':comment,'length':length, 'favorited':fav, 
+            'date':date}  
 
     def get_current_track_info(self):
         track=self.player.get_current_track()
@@ -568,7 +574,11 @@ class MopidyBrowser:
     def select_playlists(self):
         self.add_level(_playlists_ref)
         refs=self.core.playlists.as_list().get()
-        self.current_list = refs
+        filtered=[]
+        for r in refs:
+            p=self.core.playlists.lookup(r.uri).get()
+            if p.length != 0: filtered.append(r)
+        self.current_list = filtered
 
     def select_playlist(self,ref):
         tracks=ref.tracks
@@ -672,6 +682,7 @@ class MopidyBrowser:
         self.__fix_current_list()
 
 
+
     def back(self):
         if len(self.library_levels) > 1:
             self.library_levels = self.library_levels[:-1]
@@ -687,7 +698,7 @@ class MopidyBrowser:
     
     def search(self,query):
         scheme = self.__current_scheme()
-        self.set_status('Searching for...{}'.format(query))
+        self.set_status('Searching for...{}'.format(enc(query)))
         if scheme is None:
             uris = None
         else:
@@ -702,7 +713,7 @@ class MopidyBrowser:
             self.set_status(None)
             return
         self.add_level(Ref.directory(
-            name = 'search: {}'.format(query),
+            name = u'search: {}'.format(enc(query)),
             uri = 'searchres:'))
         self.current_list = search_res
         self.__fix_current_list()    

@@ -11,7 +11,7 @@ from threading import Lock
 # I have learned a lot from jackyNIX's code for kodi mopidy plugin
 # https://github.com/jackyNIX/xbmc-mixcloud-plugin
 
-search_max=100
+search_max=150
 uri_scheme=u'mixcloud'
 uri_prefix=uri_scheme+':'
 api_prefix=u'https://api.mixcloud.com'
@@ -65,6 +65,7 @@ tracks_cache=Cache() # uri -> Track
 refs_cache=Cache()   # uri -> list of Ref              
 searches_cache=Cache() # uri -> SearchResult
 playlists_cache=Cache() #uri -> Playlist
+lookup_cache=Cache() #uri -> [Track]
 cache_refresh_period=600 #10 min
 last_refresh_time=0
 
@@ -76,13 +77,15 @@ def refresh_cache():
         clear_caches()
         
 def clear_caches(reset_users=False):
+    global users
     tracks_cache.clear()
     refs_cache.clear()
     images_cache.clear()
     searches_cache.clear()
     playlists_cache.clear()
+    lookup_cache.clear()
     if reset_users:
-        users=default_users
+        users=default_users[:]
         
     
 class MixcloudException(Exception):
@@ -143,7 +146,11 @@ def get_next_page_uri(json_dict):
 
 
 def make_special_uri(user_key,uri_prefix,more=''):
-    special=make_uri(uri_prefix+':'+user_key.encode('base64'))
+    try:
+        enc=user_key.encode('base64')
+    except:
+        enc=user_key.encode('utf-8').encode('base64')
+    special=make_uri(uri_prefix+':'+enc)
     return u'{}:more:{}'.format(special,more)
         
 def strip_special_uri(uri,uri_prefix):
@@ -342,10 +349,14 @@ def list_cloudcasts(uri,user_key=''):
     json=uri_json(uri)
     cloudcasts=json['data']
     refs=[]
+    tracks=[]
     for cloudcast in cloudcasts:
         (ref,track)=make_track_from_json(cloudcast)
         refs.append(ref)
-
+        tracks.append(track)
+    for t in tracks:
+        if tracks_cache.get(t.uri) is None:
+            tracks_cache.add(uri,t)
     more=get_next_page(json,u'tracks')
     if more is not None:
         refs.append(more)
@@ -446,7 +457,7 @@ def list_albums(uri, max_albums=search_max):
     albums = []
     #albums are in fact users
     global users
-    users=default_users
+    users=default_users[:]
     for album in albums_dict:
         key=album['key']
         name=album['name']
@@ -471,7 +482,7 @@ class MopidyMixcloud(pykka.ThreadingActor, Backend):
         super(MopidyMixcloud, self).__init__()
         global default_users,users
         default_users=config['mixcloud']['users'].split(',')
-        users=default_users
+        users=default_users[:]
         self.library = MixcloudLibrary(self)
         self.playback = MixcloudPlayback(audio=audio, backend=self)
         self.playlists = MixcloudPlaylists(self)
@@ -532,24 +543,45 @@ class MixcloudLibrary(LibraryProvider):
             return root_list
         else:
             try:
-                return list_refs(uri)
+                ret=list_refs(uri)
+                return ret
             except MixcloudException:#someone encoded our uris
-                return list_refs(urllib.unquote(uri))
+                ret=list_refs(uri)
+                return ret
                            
     def refresh(self, uri=None):
-        clear_caches()
-                       
+        clear_caches(True)
+        
     def lookup(self, uri, uris=None):
         if uri is None and uris is None: return []
-        (username,more)=strip_special_uri(strip_uri(uri),uri_cloudcasts)
-        if username is not None:
-            uri=make_special_api(username,uri_cloudcasts)+more
         if uri is not None:
-            return get_tracks_for_uri(uri)
+            tracks=lookup_cache.get(uri)
+            if tracks is not None: return tracks
+            track=tracks_cache.get(uri)
+            if track is not None: return [track]
+            suri=strip_uri(uri)
+            if uri_cloudcasts in uri:
+                (username,more)=strip_special_uri(suri,uri_cloudcasts)
+            elif uri_user in uri:
+                (username,more)=strip_special_uri(suri,uri_user)
+            else:
+                ref=get_tracks_for_uri(suri)
+                lookup_cache.add(uri,ref)
+                return ref
+     
+            turi=uri
+            if username is not None:
+                turi=make_special_api(username,uri_cloudcasts)+more
+            if turi is not None:
+                ref=get_tracks_for_uri(turi)
+                lookup_cache.add(uri,ref)
+                return ref
+            else:
+                return []
         else:
             ret={}
             for uri in uris:
-                l=get_tracks_for_uri(strip_uri(uri))
+                l=self.lookup(uri=uri)
                 if len(l) > 0: ret[uri]=l
             return ret
                        
