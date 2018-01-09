@@ -12,10 +12,11 @@ from htmltemplates import *
 import urllib
 from dateutil import parser
 
-__version__ = '2.2.2'
+__version__ = '3.1.4'
 
 logger = logging.getLogger(__name__)
 refresh_html=''
+refresh_period=0
 _feedparser = CachedFeedParser()
 browser = None
 def create_browser(core):
@@ -26,16 +27,18 @@ def create_browser(core):
 
 def flip_refresh( l = 10):
     global refresh_html
-    if len(refresh_html) == 0:
+    global refresh_period
+    if len(refresh_html) == 0 or l>refresh_period:
         refresh_html='<meta http-equiv="refresh" content="{}" >'.format(l)
+        refresh_period=l
     else:
         refresh_html=''
+        refresh_period=0
 
 current_waiting_to_change=None
 first_pass_waiting=False
 def setup_waiting_for_change(browser):
     global current_waiting_to_change
-    global refresh_html
     if refresh_html != '': 
         current_waiting_to_change=None
         return
@@ -53,7 +56,7 @@ def check_changed(browser):
     if (info is None and current_waiting_to_change != 'None') or \
         (info is not None and info['uri'] != current_waiting_to_change):
         current_waiting_to_change=None
-        flip_refresh()
+        flip_refresh(0)
     
 # miliseconds to a time string
 def to_time_string(ms):
@@ -74,7 +77,16 @@ def dec(s):
             return s.decode('utf-8','ignore')
         except:
             return s
-            
+
+def uri_quote(uri):
+    try:
+        return urllib.quote(uri,'')
+    except:
+        try:
+            return urllib.quote(uri.encode('utf-8'),'')
+        except:
+            return urllib.quote(uri.decode('utf-8'),'')
+
 class GlobalsHandler(tornado.web.RequestHandler):
     def initialize(self, core):
         self.core = core
@@ -115,7 +127,6 @@ class TrackHandler(tornado.web.RequestHandler):
         ref = self.request.headers['Referer']
         action=self.get_argument('action',None)
         uri=self.get_argument('uri',None)
-        #uri=urllib.unquote(uri)
         if action=='play_now':
             self.browser.play_now_uri(uri)
             setup_waiting_for_change(self.browser)
@@ -235,7 +246,7 @@ def params_enc(i):
             return urllib.urlencode(translated) 
                
 class BrowsingHandler(tornado.web.RequestHandler):
-    def process(self, page_title, uri=None):
+    def process(self, page_title, uri=None, refType=None, message=None):
         check_changed(self.browser)    
         #title = self.browser.current_title()
         if page_title is None or page_title == '':
@@ -297,167 +308,174 @@ class BrowsingHandler(tornado.web.RequestHandler):
             vol_html=vol_html.replace(u'volume-4.png',u'volume-4_sel.png')
                     
         html=html.replace(u'[%VOLUMECONTROL%]', vol_html)
-        items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
-        itemshtml=[]
-        has_tracks=False    
-        for i in items:
-            if i['name']=='Podcasts': continue
-            is_track=i['type'] == Ref.TRACK
-            if is_track:
-                iuri=urllib.quote(i['uri'],'')
+        if message is None:    
+            items=self.browser.current_refs_data() # {'name':_,'type':_,'uri':_}
+            itemshtml=[]
+            has_tracks=False    
+            for i in items:
+                if i['name']=='Podcasts': continue
+                is_track=i['type'] == Ref.TRACK
+                if is_track:
+                    iuri=urllib.quote(i['uri'],'')
 
-                if i['uri'].startswith('youtube:'):
-                    info={'title':i['name'],'artists':None,'album':None,
-                        'comment':None,'length':None, 
-                        'favorited':self.browser.is_favourited(i['uri']),
-                        'date':None} 
-                else:
-                    info=self.browser.get_track_info_uri(i['uri'])
-
-                if info is None: continue
-                name=i['name']
-                title=name #titles look too long and ugly
-                pub_date=info['date']
-                if pub_date is None: pub_date=''
-                elif len(pub_date)==10:
-                    pub_date=parser.parse(pub_date).strftime(u' (%d %b %Y) ')
-                else:
-                    pub_date=u' ({}) '.format(pub_date)    
-
-
-                if info['favorited']:
-                  ihtml=track_item_html_favourited
-                else:
-                  ihtml=track_item_html
-                ihtml=ihtml.replace(u'[%DATE%]',pub_date)
-                if self.browser.is_queue():
-                    ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
-                        replace(u'queue_add.png',u'queue_remove.png').\
-                        replace(u'alt="add to queue" title="add to queue"',u'alt="remove from queue" title="remove from queue"')
-                ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(title)).\
-                    replace(u'[%NAME%]',dec(name))
-                if current_track_uri is not None and current_track_uri==iuri:
-                    ihtml=ihtml.replace(u'play.png', u'playing.png')
-                if iuri.startswith('youtube:'):
-                    comment=None
-                else:
-                    comment=info['comment']
-                    if comment is None:
-                        if title is not None and info['title'] !=name:
-                            comment=info['title']
-                
-                if info['album'] is not None or info['artists'] is not None:
-                    if info['album'] is not None and info['album'][0] != page_title and \
-                        u'tunein' not in info['album'][1] and u'somafm' not in info['album'][1]:
-                        album_name=trydec(info['album'][0])
-                        album_uri=urllib.quote(info['album'][1],'')
-                        typenameuri=u'type=album&name={}&uri={}'.format(album_name,album_uri)
-                        album_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',album_name)
+                    if i['uri'].startswith('youtube:'):
+                        info={'title':i['name'],'artists':None,'album':None,
+                            'comment':None,'length':None, 
+                            'favorited':self.browser.is_favourited(i['uri']),
+                            'date':None} 
                     else:
-                        album_name=''
-                        album_uri=None
-                        album_html=''
-                    
-                    if info['artists'] is not None:
-                        artists=info['artists']
-                        artists=[a for a in artists if a[0]!=album_name]
-                        if len(artists) > 0:
-                            artists_html=''
-                            for a in artists:
-                                artist_name=trydec(a[0])
-                                if artist_name!=page_title and u'tunein' not in a[1] and u'somafm' not in a[1]:
-                                    artist_uri=urllib.quote(a[1],'')
-                                    typenameuri=u'type=artist&name={}&uri={}'.format(artist_name,artist_uri)
-                                    artist_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',artist_name)
-                                    if artists_html=='': artists_html=artist_html
-                                    else: artists_html=artists_html+','+artist_html
-                        else:
-                            artists_html=''
-                    
-                    if album_html!='' and artists_html!='':
-                        albumartist_html=u'{} - {}'.format(artists_html, album_html)
-                    elif album_html!='':
-                        albumartist_html=album_html
-                    elif artists_html!='':
-                        albumartist_html=artists_html
-                    else:
-                        albumartist_html=''
-                else:
-                        albumartist_html=''
+                        info=self.browser.get_track_info_uri(i['uri'])
 
-                if comment is None: comment=u''        
-                if comment!='' or albumartist_html!='':
-                    if comment=='':
-                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',albumartist_html).replace(u'[%ARTISTALBUM%]','')
-                    elif albumartist_html=='':
-                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','')
-                    else:    
-                        chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','<br/>&nbsp;&nbsp;&nbsp;   '+albumartist_html)
-                    ihtml=ihtml+chtml   
-                     
-                itemshtml.append(ihtml)
-                has_tracks=True
-            else:# not track
-                is_playlist=i['type'] == Ref.PLAYLIST
-                if is_playlist:
+                    if info is None: continue
                     name=i['name']
                     title=name #titles look too long and ugly
-                    if self.browser.is_favourited(i['uri']):
-                      ihtml=playlist_item_html_favorited
+                    pub_date=info['date']
+                    if pub_date is None: pub_date=''
+                    elif len(pub_date)==10:
+                        pub_date=parser.parse(pub_date).strftime(u' (%d %b %Y) ')
                     else:
-                      ihtml=playlist_item_html
-                    
-                    params=params_enc(i)
+                        pub_date=u' ({}) '.format(pub_date)    
 
-                    iuri=urllib.quote(i['uri'],'')
-                    ihtml=ihtml.replace(u'[%TYPENAMEURI%]',params)
-    
-                    ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(name)).\
+
+                    if info['favorited']:
+                      ihtml=track_item_html_favourited
+                    else:
+                      ihtml=track_item_html
+                    ihtml=ihtml.replace(u'[%DATE%]',pub_date)
+                    if self.browser.is_queue():
+                        ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
+                            replace(u'queue_add.png',u'queue_remove.png').\
+                            replace(u'alt="add to queue" title="add to queue"',u'alt="remove from queue" title="remove from queue"')
+                    ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(title)).\
                         replace(u'[%NAME%]',dec(name))
                     if current_track_uri is not None and current_track_uri==iuri:
                         ihtml=ihtml.replace(u'play.png', u'playing.png')
-                    comment=None
+                    if iuri.startswith('youtube:'):
+                        comment=None
+                    else:
+                        comment=info['comment']
+                        if comment is None:
+                            if title is not None and info['title'] !=name:
+                                comment=info['title']
+                    
+                    if info['album'] is not None or info['artists'] is not None:
+                        album_name=''
+                        album_uri=None
+                        album_html=''
+                        artists_html=''
+                        if info['album'] is not None and info['album'][0] != page_title and \
+                            u'tunein' not in info['album'][1] and u'somafm' not in info['album'][1]:
+                            album_name=trydec(info['album'][0])
+                            album_uri=urllib.quote(info['album'][1],'')
+                            typenameuri=u'type=album&name={}&uri={}'.format(album_name,album_uri)
+                            album_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',album_name)
+                        
+                        if info['artists'] is not None:
+                            artists=info['artists']
+                            artists=[a for a in artists if a[0]!=album_name]
+                            if len(artists) > 0:
+                                artists_html=''
+                                for a in artists:
+                                    artist_name=trydec(a[0])
+                                    if artist_name!=page_title and u'tunein' not in a[1] and u'somafm' not in a[1]:
+                                        artist_uri=urllib.quote(a[1],'')
+                                        typenameuri=u'type=artist&name={}&uri={}'.format(artist_name,artist_uri)
+                                        artist_html=named_link_html.replace(u'[%TYPENAMEURI%]',typenameuri).replace(u'[%NAME%]',artist_name)
+                                        if artists_html=='': artists_html=artist_html
+                                        else: artists_html=artists_html+','+artist_html
+                        
+                        if album_html!='' and artists_html!='':
+                            albumartist_html=u'{} - {}'.format(artists_html, album_html)
+                        elif album_html!='':
+                            albumartist_html=album_html
+                        elif artists_html!='':
+                            albumartist_html=artists_html
+                        else:
+                            albumartist_html=''
+                    else:
+                            albumartist_html=''
+
+                    if comment is None: comment=u''        
+                    if comment!='' or albumartist_html!='':
+                        if comment=='':
+                            chtml=comment_html.replace(u'[%COMMENTTEXT%]',albumartist_html).replace(u'[%ARTISTALBUM%]','')
+                        elif albumartist_html=='':
+                            chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','')
+                        else:    
+                            chtml=comment_html.replace(u'[%COMMENTTEXT%]',comment).replace(u'[%ARTISTALBUM%]','<br/>&nbsp;&nbsp;&nbsp;   '+albumartist_html)
+                        ihtml=ihtml+chtml   
+                         
                     itemshtml.append(ihtml)
                     has_tracks=True
-                else:# not playlist and not track
-                    params=params_enc(i)
-                    iuri=urllib.quote(i['uri'])
-                    name=dec(i['name'])
-                    is_playable = i['type']==Ref.ALBUM or i['type']==Ref.ARTIST
-                    if uri is None:
-                        ihtml=root_item_html.replace(u'[%TITLE%]',name).\
-                            replace(u'[%TYPENAMEURI%]',params)
-                    elif self.browser.is_favourited(i['uri']):
-                        if is_playable:
-                            ihtml=playable_item_html_favorited.replace(u'[%TITLE%]',name).\
-                                replace(u'[%TYPENAMEURI%]',params).\
-                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                else:# not track
+                    is_playlist=i['type'] == Ref.PLAYLIST
+                    if is_playlist:
+                        name=i['name']
+                        title=name #titles look too long and ugly
+                        if self.browser.is_favourited(i['uri']):
+                          ihtml=playlist_item_html_favorited
                         else:
-                            ihtml=non_playable_item_html_favorited.replace(u'[%TITLE%]',name).\
-                                replace(u'[%TYPENAMEURI%]',params).\
-                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
-                    else:
-                        if is_playable:
-                            ihtml=playable_item_html.replace(u'[%TITLE%]',name).\
-                                replace(u'[%TYPENAMEURI%]',params).\
-                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
-                        else:    
-                            ihtml=non_playable_item_html.replace(u'[%TITLE%]',name).\
-                                replace(u'[%TYPENAMEURI%]',params).\
-                                replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
-                    
-                    itemshtml.append(ihtml)
-        html=html.replace(u'[%ITEMS%]',u'<table cellspacing="3" width="100%">'+\
-            u''.join(itemshtml)+u'</table>')        
+                          ihtml=playlist_item_html
+                        
+                        params=params_enc(i)
+
+                        iuri=urllib.quote(i['uri'],'')
+                        ihtml=ihtml.replace(u'[%TYPENAMEURI%]',params)
         
+                        ihtml=ihtml.replace(u'[%URI%]',iuri).replace(u'[%TITLE%]',dec(name)).\
+                            replace(u'[%NAME%]',dec(name))
+                        if current_track_uri is not None and current_track_uri==iuri:
+                            ihtml=ihtml.replace(u'play.png', u'playing.png')
+                        comment=None
+                        itemshtml.append(ihtml)
+                        has_tracks=True
+                    else:# not playlist and not track
+                        params=params_enc(i)
+                        iuri=urllib.quote(i['uri'])
+                        name=dec(i['name'])
+                        is_playable = i['type']==Ref.ALBUM or i['type']==Ref.ARTIST
+                        if uri is None:
+                            ihtml=root_item_html.replace(u'[%TITLE%]',name).\
+                                replace(u'[%TYPENAMEURI%]',params)
+                        elif self.browser.is_favourited(i['uri']):
+                            if is_playable:
+                                ihtml=playable_item_html_favorited.replace(u'[%TITLE%]',name).\
+                                    replace(u'[%TYPENAMEURI%]',params).\
+                                    replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                            else:
+                                ihtml=non_playable_item_html_favorited.replace(u'[%TITLE%]',name).\
+                                    replace(u'[%TYPENAMEURI%]',params).\
+                                    replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                        else:
+                            if is_playable:
+                                ihtml=playable_item_html.replace(u'[%TITLE%]',name).\
+                                    replace(u'[%TYPENAMEURI%]',params).\
+                                    replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                            else:    
+                                ihtml=non_playable_item_html.replace(u'[%TITLE%]',name).\
+                                    replace(u'[%TYPENAMEURI%]',params).\
+                                    replace(u'[%URI%]',iuri).replace(u'[%NAME%]',name)
+                        
+                        itemshtml.append(ihtml)
+            html=html.replace(u'[%ITEMS%]',u'<table cellspacing="3" width="100%">'+\
+                u''.join(itemshtml)+u'</table>')        
+        else:
+            html=html.replace(u'[%ITEMS%]',message)
+                
         if len(refresh_html)==0:
             gth=global_toolbar_html_ref_off
         else:
             gth=global_toolbar_html_ref_on
-        if self.browser.is_queue():
-            gth=gth.replace(u'[%LOOPALL%]',loop_all_html).replace(u'[%QUEUEHTML%]',clear_queue_html)
+        if refType is not None and (refType=='album' or refType=='artist' or refType=='playlist'):
+            play_html=play_all_html.replace(u'[%URI%]',uri_quote(uri))
         else:
-            gth=gth.replace(u'[%LOOPALL%]',u'').replace(u'[%QUEUEHTML%]',show_queue_html)
+            play_html=u''
+        if self.browser.is_queue():
+            gth=gth.replace(u'[%LOOPALL%]',loop_all_html).replace(u'[%QUEUEHTML%]',clear_queue_html).\
+                replace(u'[%PLAYALL%]',play_html)
+        else:
+            gth=gth.replace(u'[%LOOPALL%]',u'').replace(u'[%QUEUEHTML%]',show_queue_html).\
+                replace(u'[%PLAYALL%]',play_html)
         html=html.replace(u'[%GLOBAL%]',gth)          
         self.write(html)
         self.flush()
@@ -475,8 +493,13 @@ class SearchHandler(BrowsingHandler):
             self.redirect(ref)
             return
 
+        l=self.browser.current_level()
         self.browser.search(query)
-        self.process('Search: '+query,'rough+search')
+        if l==self.browser.current_level():
+            m=u'<br/><font size="4"><strong>&nbsp;&nbsp;Search returned no results.</strong></font><br/><br/><br/>'
+            self.process('Search: '+query,'rough+search',message=m)
+        else:
+            self.process('Search: '+query,'rough+search')
         
 class ListHandler(BrowsingHandler):
     def initialize(self, core):
@@ -494,7 +517,7 @@ class ListHandler(BrowsingHandler):
             self.browser.request(refType,name,uri)
         except:
             self.browser.request(refType,name,urllib.unquote(uri))
-        self.process(name,uri)   
+        self.process(name,uri,refType)   
 
 path = os.path.abspath(__file__)
 dir_path = os.path.dirname(__file__)

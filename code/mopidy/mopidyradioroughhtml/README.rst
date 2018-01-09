@@ -3,7 +3,7 @@ Radio Rough HTML
 ****************************
 
 Radio rough HTML is a rough and simple interface for Mopidy. It is intended to provide a usable interface to excellent Mopidy via simpler devices and browsers that do not support fanciness that is java script.
-Or you can use it if you like things simple and as fast as can be. I will work on pretty much anything with any sort of browser - tried it on an old IPod, pi zero with dillo, a ubuntu box ...
+Or you can use it if you like things simple and as fast as can be. It will work on pretty much anything with any sort of browser - tried it on an old IPod, pi zero with dillo, a ubuntu box ...
 
 Once installed it will let you search YouTube, browse thousands of internet radio streams (via TuneIn) or podcasts published on iTunes. It will also support any additional Mopidy extensions you care to install (look `here <https://docs.mopidy.com/en/latest/ext/backends/>`_ for what's available, much interesting stuff like internet archive, spotify, soma fm ... ). 
 
@@ -21,8 +21,24 @@ On Raspberries, probably the ideal setup is to run it with Pi Music Box. It will
 
 If you don't have Music Box set-up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough.
 
+Use
+===
+
+At the start Radio Rough will present you with the list of browsable Mopidy addins that you can explore by clicking on them. 
+Once you select one, a search box will appear at the top. 
+In addition, via the home page or buttons at the bottom of every page you can access Favorites, Playlists, Queue and History of tracks played (favorites and history are internal to radio rough, not the same ones you have in your browser and history is kept for a single session only).
+
+The rest of the navigation is via buttons at the top of the screen and next to each item in lists, this should be quite intuitive and there are tooltips to help.
+
+Since there are no dynamic features used (i.e. no JavaScript and such) to  display track progress the page needs to be refreshed, you can make this happen automatically ever ten seconds or so using auto-refresh button at the bottom of every page.
+
 
 Configuration
 =============
 
 Once installed it will work, you can disable it by setting enabled=false in [radio_rough_html] section of `mopidy.conf <https://docs.mopidy.com/en/latest/config/>`_.
+
+Credits
+=======
+
+I used icons downloaded from `flaticon universal interface <https://www.flaticon.com/packs/universal-interface>`_.

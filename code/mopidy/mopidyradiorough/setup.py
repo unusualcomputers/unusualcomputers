@@ -28,7 +28,7 @@ setup(
         'Mopidy >= 1.0',
         'Mopidy-Podcast-iTunes',
         'Mopidy-Youtube',
-        'Mopidy-Rough-Base >= 2.3.5',
+        'Mopidy-Rough-Base >= 3.1.4',
         'Mopidy-TuneIn',
         'Pykka >= 1.1',
         'feedparser',

@@ -245,7 +245,13 @@ class MopidyBrowser:
             return self.current_list[index].name
     
     def get_track_info_uri(self,uri):
-        tracks=self.core.library.lookup(uri).get()
+        tracks = None
+        for ref in self.current_list:
+            if isinstance(ref,RefWithData) and ref.uri==uri and ref.type==Ref.TRACK:
+                tracks=[ref.data]
+                break
+        if tracks is None:
+            tracks=self.core.library.lookup(uri).get()
         if len(tracks)==0: return None
         track=tracks[0]
         title=track.name
@@ -719,7 +725,7 @@ class MopidyBrowser:
         self.__fix_current_list()    
         self.current_sel = self.current_level()
         self.set_status(None)
-    
+
     # tracklist and playback
     def add_to_tracks(self,indices,pos = None):
         sz = len(self.current_list)
