@@ -141,7 +141,6 @@ class TrackHandler(tornado.web.RequestHandler):
             setup_waiting_for_change(self.browser)
         self.redirect(ref)
 
-#   playback( action = "prev" | "rew10m" | "rew3m" | "rew20s" | "playpause" | "ffwd20s" | "ffwd3m" | "ffwd10m" | "next" )
 
 class PlaybackHandler(tornado.web.RequestHandler):
     def initialize(self, core):
@@ -248,7 +247,6 @@ def params_enc(i):
 class BrowsingHandler(tornado.web.RequestHandler):
     def process(self, page_title, uri=None, refType=None, message=None):
         check_changed(self.browser)    
-        #title = self.browser.current_title()
         if page_title is None or page_title == '':
             html=main_html.replace(u'[%TITLE%]','').\
                 replace('[%REFRESH%]',refresh_html)
@@ -342,7 +340,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                     else:
                       ihtml=track_item_html
                     ihtml=ihtml.replace(u'[%DATE%]',pub_date)
-                    if self.browser.is_queue():
+                    if uri is not None and uri.startswith('rough+queue'):
                         ihtml=ihtml.replace(u'action=add_to_queue',u'action=remove_from_queue').\
                             replace(u'queue_add.png',u'queue_remove.png').\
                             replace(u'alt="add to queue" title="add to queue"',u'alt="remove from queue" title="remove from queue"')
@@ -511,8 +509,6 @@ class ListHandler(BrowsingHandler):
         if refType == 'track': return # this should never happen
         name = self.get_argument('name',None)
         uri=self.get_argument('uri',None)
-        #if uri is not None: 
-        #    uri =urllib.unquote(uri)
         try:
             self.browser.request(refType,name,uri)
         except:

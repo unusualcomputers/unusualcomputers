@@ -36,6 +36,7 @@ class Cache:
         else: return None
 
 _favourites_cache=Cache()
+_track_info_cache=Cache()
 
 # some refs and uris are created by us, makes browsing easier
 _subscriptions_ref=Ref.directory(name = 'Subscriptions',
@@ -232,10 +233,14 @@ class MopidyBrowser:
             if not self.__index_ok(index): return None
             ref=self.current_list[index]
             if ref.type == Ref.TRACK:
-                ts=self.core.library.lookup(ref.uri).get()
-                if len(ts)==0: return ref.name
-                t=ts[0]
-                return self.format_track_info(t,None,include_name)
+                inf=_track_info_cache.get(ref.uri)
+                if inf is None:        
+                    ts=self.core.library.lookup(ref.uri).get()
+                    if len(ts)==0: return ref.name
+                    t=ts[0]
+                    inf=self.format_track_info(t,None,include_name)
+                    _track_info_cache.add(ref.uri,inf)
+                return inf
             elif self.is_channel_ref(ref):
                 uri=ref.uri[len(podcast_scheme):]
                 return self.subscriptions.channel_desc(uri)
@@ -245,6 +250,10 @@ class MopidyBrowser:
             return self.current_list[index].name
     
     def get_track_info_uri(self,uri):
+        inf=_track_info_cache.get(uri)
+        if inf is not None:
+            return inf
+            
         tracks = None
         for ref in self.current_list:
             if isinstance(ref,RefWithData) and ref.uri==uri and ref.type==Ref.TRACK:
@@ -272,10 +281,12 @@ class MopidyBrowser:
         length=track.length
         fav=self.is_favourited(uri)
         date=track.date
-        return {'title':title,'artists':artists,'album':album,
+        inf={'title':title,'artists':artists,'album':album,
             'comment':comment,'length':length, 'favorited':fav, 
             'date':date}  
-
+        _track_info_cache.add(uri,inf)
+        return inf
+        
     def get_current_track_info(self):
         track=self.player.get_current_track()
         if track is None: return None
