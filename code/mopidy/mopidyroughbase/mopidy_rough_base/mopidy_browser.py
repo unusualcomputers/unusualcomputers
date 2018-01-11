@@ -728,7 +728,7 @@ class MopidyBrowser:
             self.set_status('Search returned no results')
             time.sleep(5)
             self.set_status(None)
-            return
+            return 0
         self.add_level(Ref.directory(
             name = u'search: {}'.format(enc(query)),
             uri = 'searchres:'))
@@ -736,6 +736,7 @@ class MopidyBrowser:
         self.__fix_current_list()    
         self.current_sel = self.current_level()
         self.set_status(None)
+        return len(search_res)
 
     # tracklist and playback
     def add_to_tracks(self,indices,pos = None):

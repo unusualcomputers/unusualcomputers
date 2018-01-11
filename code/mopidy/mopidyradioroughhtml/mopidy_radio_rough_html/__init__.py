@@ -86,7 +86,7 @@ def uri_quote(uri):
             return urllib.quote(uri.encode('utf-8'),'')
         except:
             return urllib.quote(uri.decode('utf-8'),'')
-
+                
 class GlobalsHandler(tornado.web.RequestHandler):
     def initialize(self, core):
         self.core = core
@@ -241,7 +241,7 @@ def params_enc(i):
     except:
         for t in translated:
             if t=='uri':
-                translated[t]=urllib.unquote(translated[t])
+                translated[t]=uri_quote(translated[t])#urllib.unquote(translated[t])
             return urllib.urlencode(translated) 
                
 class BrowsingHandler(tornado.web.RequestHandler):
@@ -255,7 +255,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                 replace('[%REFRESH%]',refresh_html)
         if uri is not None and not uri.startswith('rough+queue') \
             and not uri.startswith('rough+history') and not uri.startswith('rough+favourites'): # no searching on top level
-            uri=urllib.unquote(uri)
+            #uri=urllib.unquote(uri)
             if self.browser.is_channel_uri(uri) and uri.strip()!='podcast+itunes:':
                 comment = _feedparser.parse_channel_desc(uri[len('podcast+'):])
                 if comment is not None and len(comment) > 0: comment = comment+'<hr>'
@@ -491,9 +491,8 @@ class SearchHandler(BrowsingHandler):
             self.redirect(ref)
             return
 
-        l=self.browser.current_level()
-        self.browser.search(query)
-        if l==self.browser.current_level():
+        found=self.browser.search(query)
+        if found==0:
             m=u'<br/><font size="4"><strong>&nbsp;&nbsp;Search returned no results.</strong></font><br/><br/><br/>'
             self.process('Search: '+query,'rough+search',message=m)
         else:
@@ -512,7 +511,8 @@ class ListHandler(BrowsingHandler):
         try:
             self.browser.request(refType,name,uri)
         except:
-            self.browser.request(refType,name,urllib.unquote(uri))
+            uri=urllib.unquote(uri)
+            self.browser.request(refType,name,uri)
         self.process(name,uri,refType)   
 
 path = os.path.abspath(__file__)

@@ -166,8 +166,11 @@ def strip_special_uri(uri,uri_prefix):
         return (None,None)
         
 def make_special_api(user_key,uri_prefix):
-    return api_prefix+user_key+uri_prefix
-    
+    try:
+        return api_prefix+user_key+uri_prefix
+    except:
+        return api_prefix+urllib.quote(user_key)+uri_prefix
+
 def make_more_name(user_key,group):
     try:
         name=enc(user_name[1:-1])
