@@ -102,14 +102,17 @@ class GlobalsHandler(tornado.web.RequestHandler):
             self.browser.flip_loop()
         elif action=='clearqueue':
             self.browser.clear_tracks()
-        elif action=='reboot':
-            self.write(reboot_confirm_html)
+        elif action=='restart':
+            self.write(restart_confirm_html)
             self.flush()
             return
-        elif action=='really_reboot':
-            logger.info('Rebooting NOW.')
-            import os
-            os.system('sudo reboot')
+        elif action=='really_restart':
+            logger.info('Restarting mopidy.')
+            #import os
+            #os.system('sudo reboot')
+            from subprocess import Popen
+            Popen('sudo pkill -9 mopidy;sleep 5;sudo mopidy > /dev/null 2>&1 &',shell=True)
+            self.redirect('/radiorough/')
             return
         elif action=='home':
             self.browser.refresh()
