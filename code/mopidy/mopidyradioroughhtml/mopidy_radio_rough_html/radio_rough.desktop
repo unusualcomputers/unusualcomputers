@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Radio Rough
+Exec=sudo mopidy
+Comment=Listen to the internet
+StartupNotify=true
+Icon=/usr/share/pixmaps/ucc.gif
+Categories=AudioVideo;Audio;Player;ConsoleOnly;

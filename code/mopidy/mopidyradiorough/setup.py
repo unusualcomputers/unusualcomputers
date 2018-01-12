@@ -30,6 +30,7 @@ setup(
         'Mopidy-Youtube',
         'Mopidy-Rough-Base >= 3.1.4',
         'Mopidy-TuneIn',
+        'Mopidy-Mixcloud',
         'Pykka >= 1.1',
         'feedparser',
         'jsonpickle',

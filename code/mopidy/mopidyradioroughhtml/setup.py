@@ -31,6 +31,7 @@ setup(
         'Mopidy-Youtube',
         'Mopidy-Rough-Base >= 3.1.4',
         'Mopidy-TuneIn',
+        'Mopidy-Mixcloud',
     ],
     entry_points={
         'mopidy.ext': [

@@ -4,6 +4,7 @@ main_html= u"""<!doctype html>
 <head>
     <title>Radio Rough [%TITLE%] </title>
     <meta name="description" content"Radio Rough">
+    <link rel="icon" type="image/png" href="/radiorough/icons/ucc.png">
     [%REFRESH%]
 </head>
 <body>
