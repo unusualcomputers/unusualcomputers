@@ -567,10 +567,14 @@ class MopidyBrowser:
                         else: ref = None
                     elif len(ref) == 1:
                         ref=ref[0]
-                    elif all(r.type in self.playable_types for r in ref):
-                        ref=Ref.album(name=f[0],uri=f[1])
                     else:
-                        ref=Ref.directory(name=f[0],uri=f[1])
+                        r = next((rf for rf in ref if rf.uri==uri),None)
+                        if r is not None:
+                            ref=r
+                        elif all(r.type in self.playable_types for r in ref):
+                            ref=Ref.album(name=f[0],uri=f[1])
+                        else:
+                            ref=Ref.directory(name=f[0],uri=f[1])
                     if ref is not None:
                         _favourites_cache.add(uri,ref)
             if ref is not None:
