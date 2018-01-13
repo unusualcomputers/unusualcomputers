@@ -26,7 +26,7 @@ This will create an entry in the start menu in "Audio & Video" section, click on
 
 To download the above script from the command line run:
 ::
-    wget https://goo.gl/Gw2drB -O ~/Desktop/rr.desktop
+    wget https://goo.gl/qjGZeG -O ~/Desktop/rr.desktop
 
 It downloads and runs this `shell script <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/rasp_radio_rough_install.sh>`_
 
