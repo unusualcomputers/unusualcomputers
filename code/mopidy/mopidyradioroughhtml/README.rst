@@ -21,6 +21,16 @@ On Raspberries, probably the ideal setup is to run it with Pi Music Box. It will
 
 If you don't have Music Box set-up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough.
 
+Alternatively, on debian based machines (including Raspbian) download `installation script from here  <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/rr.desktop>`_ (right click on the link and choose 'save as') and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way. 
+This will create an entry in the start menu in "Audio & Video" section, click on it and enjoy.
+
+To download the above script from the command line run:
+::
+    wget https://goo.gl/Gw2drB -O ~/Desktop/rr.desktop
+
+It downloads and runs this `shell script <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/rasp_radio_rough_install.sh>`_
+
+
 Use
 ===
 

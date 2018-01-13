@@ -5,7 +5,7 @@
 # or short: https://goo.gl/qjGZeG
 [Desktop Entry]
 Type=Application
-Name=Radio Rough test
+Name=Radio Rough HTML installation
 Exec=lxterminal -t "Installing radio rough" -e sh -c "cd ~/Desktop ; wget https://goo.gl/kKVQ5p -O ~/Desktop/rasp_radio_rough_install.sh ; sudo chmod a+x ./rasp_radio_rough_install.sh ; ./rasp_radio_rough_install.sh ; sudo rm ./rasp_radio_rough_install.sh ; sleep 20"
 Terminal=True
 Comment=Listen to the internet
