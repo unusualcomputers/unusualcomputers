@@ -24,8 +24,8 @@ sudo pip install -U Mopidy-Radio-Rough-HTML
 
 ## Install a version of youtube-dl that doesn't have 'unknown url type' bug
 echo Installing youtube-dl
-sudo pip install git+https://github.com/Khang-NT/youtube-dl.git
- 
+sudo pip install -U youtube-dl
+
 ## Setup the start menu
 echo Copying desktop and icon files
 sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/radio_rough.desktop -O /usr/share/applications/radio_rough.desktop
