@@ -18,7 +18,7 @@ import time
 class Cache:
     def __init__(self):
         self.data=[]
-        self.max_size=250
+        self.max_size=2500
 
     def clear(self):
         self.data=[]
@@ -541,7 +541,8 @@ class MopidyBrowser:
                 refs.append(Ref.track(name=p.name,
                     uri='{}{}#{}'.format(podcast_scheme,p.channel_uri,p.guid)))
         self.current_list = refs
-    
+        
+        
     def select_subscriptions(self):
         if not self.include_subscriptions: return
         self.add_level(_subscriptions_ref)
@@ -701,7 +702,6 @@ class MopidyBrowser:
             self.add_level(ref)
             self.current_list = self.core.library.browse(ref.uri).get()
         self.__fix_current_list()
-
 
 
     def back(self):

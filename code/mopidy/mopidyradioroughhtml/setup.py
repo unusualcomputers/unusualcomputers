@@ -29,7 +29,7 @@ setup(
         'Pykka >= 1.1',
         'Mopidy-Podcast-iTunes',
         'Mopidy-Youtube',
-        'Mopidy-Rough-Base >= 3.14.1',
+        'Mopidy-Rough-Base >= 3.14.15',
         'Mopidy-TuneIn',
         'Mopidy-Mixcloud',
     ],

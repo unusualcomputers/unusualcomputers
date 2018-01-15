@@ -39,7 +39,7 @@ default_users=[]
 class Cache:
     def __init__(self):
         self.data=[]
-        self.max_size=250
+        self.max_size=2000
         self.lock=Lock()
         
     def clear(self):

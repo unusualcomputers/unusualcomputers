@@ -19,16 +19,20 @@ If you already have `mopidy installed <https://docs.mopidy.com/en/latest/install
 
 On Raspberries, probably the ideal setup is to run it with Pi Music Box. It will run just fine even on a pi zero and once installed you will find in at musicbox.local/radiorough.
 
-If you don't have Music Box set-up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough.
-
 Alternatively, on debian based machines (including Raspbian) download `installation script from here  <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/rr.desktop>`_ (right click on the link and choose 'save as') and place it on the desktop (has to be on the desktop), then double click it. It will install all sorts of dependencies and will ask you if that's ok a couple of times along the way. 
-This will create an entry in the start menu in "Audio & Video" section, click on it and enjoy.
+This will create an entry in the start menu in "Audio & Video" section, click on it and enjoy. Otherwise, once installed just run modpidy, e.g. sudo mopidy on the command line.
 
 To download the above script from the command line run:
 ::
     wget https://goo.gl/qjGZeG -O ~/Desktop/rr.desktop
 
 It downloads and runs this `shell script <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/rasp_radio_rough_install.sh>`_
+
+
+If you don't have Music Box set up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough or 127.0.0.1:6680/radiorough. 
+You can quite easily make it accessible from any computer on your local network at home: find the file mopidy.conf on your computer. For example by typing sudo find / -name mopidy.conf on the command line.
+There may be more than one, just change them all as follows: open the file, any text editor will do,for example: sudo nano /root/.config/mopidy/mopidy.conf. I the file, find section [http] and in it the line that mentions 'hostname'. Change this line to be exactly: hostname=0.0.0.0 (make sure there is no # in front of it).
+Then you can access radiorough from any computer on your network using the ip adress of the machine you are running it on, e.g. http://192.168.0.1:6680/radiorough. You can do even better by naming your host and making sure mopidy runs always, drop me a line if you need help with this.
 
 
 Use

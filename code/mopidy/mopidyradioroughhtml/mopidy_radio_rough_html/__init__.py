@@ -12,7 +12,7 @@ from htmltemplates import *
 import urllib
 from dateutil import parser
 
-__version__ = '3.14.1'
+__version__ = '3.14.15'
 
 logger = logging.getLogger(__name__)
 refresh_html=''
