@@ -23,6 +23,7 @@ sudo apt-get install python-pip
 
 ## Then radio rough
 echo Installing radio rough
+sudo pip install uritools
 sudo pip install -U Mopidy-Radio-Rough-HTML
 
 ## Install a version of youtube-dl that doesn't have 'unknown url type' bug
