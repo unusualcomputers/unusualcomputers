@@ -18,6 +18,9 @@ sudo apt-get update
 echo Installing mopidy
 sudo apt-get install mopidy
 
+echo Installing pip
+sudo apt-get install python-pip
+
 ## Then radio rough
 echo Installing radio rough
 sudo pip install -U Mopidy-Radio-Rough-HTML
