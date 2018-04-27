@@ -35,6 +35,8 @@ sudo pip install -U youtube-dl
 echo Copying desktop and icon files
 sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/radio_rough.desktop -O /usr/share/applications/radio_rough.desktop
 
+sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/radio_rough.desktop -O /home/pi/Desktop/radio_rough.desktop
+
 sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.png -O /usr/share/pixmaps/ucc.png
 
 sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.gif -O /usr/share/pixmaps/ucc.gif
