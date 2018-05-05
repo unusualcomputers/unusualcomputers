@@ -17,9 +17,14 @@ echo Updating repos
 sudo apt-get update
 echo Installing mopidy
 sudo apt-get install mopidy
+echo Installing gstreamer stuff
+sudo apt-get install gstreamer1-devel gstreamer1-plugins-base-tools gstreamer1-devel-docs gstreamer1-plugins-base-devel gstreamer1-plugins-base-devel-docs gstreamer1-plugins-good gstreamer1-plugins-good-extras gstreamer1-plugins-ugly gstreamer1-plugins-ugly-devel-docs  gstreamer1-plugins-bad-free gstreamer1-plugins-bad-free-devel gstreamer1-plugins-bad-free-extras
+echo Installing pip
+sudo apt-get install python-pip
 
 ## Then radio rough
 echo Installing radio rough
+sudo pip install uritools
 sudo pip install -U Mopidy-Radio-Rough
 
 ## Install a version of youtube-dl that doesn't have 'unknown url type' bug
@@ -29,6 +34,8 @@ sudo pip install -U youtube-dl
 ## Setup the start menu
 echo Copying desktop and icon files
 sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/radio_rough.desktop -O /usr/share/applications/radio_rough.desktop
+
+sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/radio_rough.desktop -O /home/pi/Desktop/radio_rough.desktop
 
 sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradiorough/mopidy_radio_rough/ucc.png -O /usr/share/pixmaps/ucc.png
 

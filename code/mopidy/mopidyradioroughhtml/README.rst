@@ -26,7 +26,7 @@ To download the above script from the command line run:
 ::
     wget https://goo.gl/qjGZeG -O ~/Desktop/rr.desktop
 
-It downloads and runs this `shell script <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/rasp_radio_rough_install.sh>`_
+It downloads and runs this `shell script <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/rasp_radio_rough_install.sh>`_
 
 
 If you don't have Music Box set up it will be wherever your mopidy is in your browser, by default localhost:6680/radiorough or 127.0.0.1:6680/radiorough. 

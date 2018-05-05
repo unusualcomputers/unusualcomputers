@@ -17,9 +17,14 @@ echo Updating repos
 sudo apt-get update
 echo Installing mopidy
 sudo apt-get install mopidy
+echo Installing gstreamer stuff
+sudo apt-get install gstreamer1-devel gstreamer1-plugins-base-tools gstreamer1-devel-docs gstreamer1-plugins-base-devel gstreamer1-plugins-base-devel-docs gstreamer1-plugins-good gstreamer1-plugins-good-extras gstreamer1-plugins-ugly gstreamer1-plugins-ugly-devel-docs  gstreamer1-plugins-bad-free gstreamer1-plugins-bad-free-devel gstreamer1-plugins-bad-free-extras
+echo Installing pip
+sudo apt-get install python-pip
 
 ## Then radio rough
 echo Installing radio rough
+sudo pip install uritools
 sudo pip install -U Mopidy-Radio-Rough-HTML
 
 ## Install a version of youtube-dl that doesn't have 'unknown url type' bug

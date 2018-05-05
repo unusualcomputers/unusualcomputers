@@ -6,6 +6,15 @@ calls and enquiries: unusual.computers(at)gmail.com
 
 ## what we made 
 
+
+* [Mopidy Mixcloud](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidymixcloud/README.rst)
+  
+  A Mopidy plug in to listen to Mixcloud.
+  
+* [Radio Rough HTML](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/README.rst)
+  
+  A lightweight front end for mopidy, use for listening to internet on your network.
+
 * [Radio Rough](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst)
   
   A computer program for listening to internet.
