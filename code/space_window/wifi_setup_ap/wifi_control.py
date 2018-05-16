@@ -9,7 +9,7 @@ import socket
 import os.path
 from collections import OrderedDict
 import re
-import ConfigParser
+from config_util import Config
 import logging
 import socket
 
@@ -51,18 +51,14 @@ country=GB
 
 """
 
-# get config path
-def _get_conf_path():
-    return os.path.dirname(os.path.abspath(__file__))+'/conf/'
+config = Config('access_point.conf')
 
-_config = ConfigParser.ConfigParser()
-_config.read('%saccess_point.conf'%_get_conf_path())
-
-_ap_name=_config.get('access-point','name')
-_ap_driver=_config.get('access-point','driver')
-_ap_interface=_config.get('access-point','interface')
-_ap_ip=_config.get('access-point','ip')
-_ap_iprange=_config.get('access-point','iprange')
+ap_name=config.get('access-point','name','UnusualWiFi')
+_ap_driver=config.get('access-point','driver','nl80211')
+# edimax driver is rtl871xdrv
+_ap_interface=config.get('access-point','interface','wlan0')
+ap_ip=config.get('access-point','ip','192.168.4.1')
+_ap_iprange=config.get('access-point','iprange','192.168.4.2,192.168.4.20')
 
 # run a program and wait for it to finish
 def run(rcmd):

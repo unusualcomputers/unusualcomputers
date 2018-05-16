@@ -4,30 +4,18 @@ from urlparse import urlparse, parse_qs
 import wifi_control as wifi
 import time
 import socket
-import ConfigParser
+from config_util import Config
 from subprocess import Popen
 import shlex
 import py_game_msg as msg
 import pygame
 
-_cfg = ConfigParser.ConfigParser()
-_cfg.read('conf/access_point.conf')
 
-_ap_name=_cfg.get('access-point','name')
-_ap_ip=_cfg.get('access-point','ip')
+_ap_name=wifi.ap_name
+_to_launch=wifi.config.get('access-point','execute_when_connected')
+_sleep_on_connect=wifi.config.getint('access-point','sleep_on_connect',10)
 
-if _cfg.has_option('access-point','execute_when_connected'):
-    _to_launch=_cfg.read('access-point','execute_when_connected')
-else:
-    _to_launch=None
-
-if _cfg.has_option('access-point','sleep_on_connect'):
-    _sleep_on_connect=_cfg.getint('access-point','sleep_on_connect')
-else:
-    _sleep_on_connect=10
-
-if _cfg.has_option('access-point','use_pygame') and \
-        _cfg.getboolean('access-point','use_pygame'):
+if wifi.config.getbool('access-point','use_pygame',false):
     pygame.init()
     _msg=msg.MsgScreen()
 else:
@@ -232,7 +220,7 @@ def start_ap():
     _report('access point is running, I think :)')
     time.sleep(5)
     _report('connect to network %s\n( that\'s me :) )\n' % _ap_name +
-        'then type %s in a browser' % _ap_ip)
+        'then type %s in a browser' % wifi.ap_ip)
 
 def test_connection(s):                
     _report(s)

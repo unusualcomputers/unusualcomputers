@@ -3,29 +3,33 @@ from time import *
 import threading
 import os
 import sys
+from config_util import Config
 
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb0')
 
 class MsgScreenThread:
     def __init__(self):
-        self.border=10
-        self.left=False
-        self.top=False
+        config = Config('py_game_msg.conf')
+
+        self.border=config.getint('position','border',10)
+        self.left=config.getbool('position','left',False)
+        self.top=config.getbool('position','top',False)
+        self.forecol=config.getcolor('colors','foreground',(255,128,0))
+        self.bckcol=config.getcolor('colors','background',(32,0,32))
+        self.fontname=config.get('font','name','comicsansms')
+        self.fontsz=config.getint('font','size',68)
+        
         self.screen = None
-        self.forecol=(255,128,0)
-        self.bckcol=(32,0,32) 
         self.running=False
         self.delay=1
         self.screen=None
         self.text=None
         self.black=None
         self.font=None
-        self.fontname='comicsansms'
-        self.fontsz=68
 
         pg.init()
-        sleep(1)
+        #sleep(1)
         pg.mouse.set_visible(False)	
         self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN )
         self.black=self.screen.copy()
@@ -131,3 +135,11 @@ class MsgScreen:
 
     def get_screen(self):
         return _msg
+
+if __name__=='__main__':
+    msg=MsgScreen()
+    msg.set_text('Hello World!')
+    sleep(5)
+    msg.stop()
+    pg.display.quit()
+    pg.quit()

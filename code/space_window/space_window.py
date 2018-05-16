@@ -7,7 +7,7 @@ from collections import OrderedDict
 from time import sleep
 from nasa_pod import *
 from threading import Timer
-import py_game_msg as msg
+import wifi_setup_ap.py_game_msg as msg
 import sys
 import wifi_setup_ap.wifi_control as wifi
 import wifi_setup_ap.connection_http as connection
