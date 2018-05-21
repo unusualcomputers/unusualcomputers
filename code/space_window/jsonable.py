@@ -5,6 +5,7 @@ import os
 class Jsonable(object):
     # base class for object that can be serialised to Json
 
+    @classmethod
     def file_exists(self, path):
         try:
             os.stat(path)

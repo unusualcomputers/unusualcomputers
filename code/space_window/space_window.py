@@ -12,7 +12,7 @@ import sys
 import wifi_setup_ap.wifi_control as wifi
 import wifi_setup_ap.connection_http as connection
 from jsonable import Jsonable
-from mopidy_listener import MopidyUpdates()
+from mopidy_listener import MopidyUpdates
 from html import get_html
 
 PORT_NUMBER = 80
@@ -31,10 +31,10 @@ class Streams(Jsonable):
 
     @classmethod
     def load(cls):
-        if not self.file_exists(_base_path):
+        if not cls.file_exists(_base_path):
             os.mkdir(_base_path)
         path=_config_path
-        if self.file_exists(path):
+        if cls.file_exists(path):
             return cls.from_file(path)
         s=cls()
         s.save()

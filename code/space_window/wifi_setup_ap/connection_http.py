@@ -15,7 +15,7 @@ _ap_name=wifi.ap_name
 _to_launch=wifi.config.get('access-point','execute_when_connected')
 _sleep_on_connect=wifi.config.getint('access-point','sleep_on_connect',10)
 
-if wifi.config.getbool('access-point','use_pygame',false):
+if wifi.config.getbool('access-point','use_pygame',False):
     pygame.init()
     _msg=msg.MsgScreen()
 else:
@@ -123,7 +123,7 @@ _html_template=u"""
     <br><br>
 
     <form align="left" action="/connect">
-    <table width=100%>
+    <table width=100%%>
         WIFI_ROWS
     </table>
     </form>
@@ -270,7 +270,7 @@ def display_connection_details():
         if con.is_wifi: 
             if con.ssid is not None: 
                 network=con.ssid
-                ip=con.ip
+                ip_address=con.ip
                 hostname=wifi.get_host_name()
                 msg=('I am now on network %s\n'+
                     'and my name is %s.local\n'+
