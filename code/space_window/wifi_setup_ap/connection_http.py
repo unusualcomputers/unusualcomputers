@@ -248,6 +248,7 @@ def run_wifi_server():
 def configure_wifi(sleep=_sleep_on_connect):
     ip=""
     try:
+        print 'testing connection'
         while not test_connection('checking wifi connection\n'+
             'be patient, this can take a few minutes\n'):
             _report('not connected to wifi, starting access point\n'+
@@ -258,6 +259,7 @@ def configure_wifi(sleep=_sleep_on_connect):
         time.sleep(sleep)
         return  
     finally:
+        print 'displaying connection details in connection module'
         display_connection_details()
         time.sleep(sleep)
 
@@ -265,24 +267,28 @@ def display_connection_details():
     connections=wifi.get_interfaces_info()
     # first check for wifi connections
     # but keep track of lan 
-    lan=None 
+    lan=None
+    print connections
     for con in connections:
         if con.is_wifi: 
             if con.ssid is not None: 
                 network=con.ssid
-                ip_address=con.ip
+                ip_address=con.ip_address
                 hostname=wifi.get_host_name()
                 msg=('I am now on network %s\n'+
                     'and my name is %s.local\n'+
-                    '(or %s if that fails)') % (network,hostname,ip)
+                    '(or %s if that fails)') % (network,hostname,ip_address)
                 _report(msg)
                 return
+            else:
+                print 'ssid is None'
+                print con
         else:
             lan=con
     
     # no wifi, wired connection?
     if lan is not None:
-            ip=con.ip
+            ip=con.ip_address
             hostname=socket.gethostname()
             msg=('connected by wire\n'+
                 'my name is %s.local\n'+

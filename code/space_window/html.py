@@ -117,7 +117,7 @@ _cnt=0
 
 def get_html(rows_html):
     global _cnt
-    html = html_template_main.replace(u'STREAM_ROWS',rows_html())
+    html = html_template_main.replace('STREAM_ROWS',rows_html)
     _cnt+=1
     cntstr='%i' % _cnt
     return html.replace('CNT',cntstr)

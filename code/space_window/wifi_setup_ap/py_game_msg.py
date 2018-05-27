@@ -3,8 +3,10 @@ from time import *
 import threading
 import os
 import sys
+print 'importing config'
 from config_util import Config
-
+print 'done imorting'
+from borg import borg
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb0')
 
@@ -27,18 +29,25 @@ class MsgScreenThread:
         self.text=None
         self.black=None
         self.font=None
-
+        print 'pg.init'
         pg.init()
+        print 'pg init done'
         #sleep(1)
         pg.mouse.set_visible(False)	
+        print 'msg init 1'
         self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN )
+        print 'msg init 2'
         self.black=self.screen.copy()
+        print 'msg init 3'
         self.black.fill(self.bckcol)
+        print 'msg init 4'
         self.font = pg.font.SysFont(self.fontname, self.fontsz)
+        print 'msg init 5'
         self.lock=threading.Lock()
+        print 'msg init 6'
 
     def lock_t(self):
-        while not (_msg.lock.acquire(False)):
+        while not (self.lock.acquire(False)):
             sleep(0.1)
     
     def get_running(self):
@@ -78,7 +87,7 @@ class MsgScreenThread:
         return zip(surfaces,rects)   
     
     def run_msg(self):
-        pg.init()
+        #pg.init()
         local_text=''
         while(self.get_running()):
             for event in pg.event.get():
@@ -97,44 +106,47 @@ class MsgScreenThread:
                     self.screen.blit(row[0], row[1])
                 pg.display.flip()
             sleep(self.delay)
+print 'creting msg thread'
+print 'created msg thread'
+class MsgScreen(borg):
+    def __init__(self):
+        borg.__init__(self)
+        self._msg=MsgScreenThread()
 
-_msg=MsgScreenThread()
-
-class MsgScreen:
     def start_thread(self):
-        if _msg.running: return
-        _msg.running = True
-        threading.Thread(target=_msg.run_msg).start()
+        if self._msg.running: return
+        self._msg.running = True
+        threading.Thread(target=self._msg.run_msg).start()
     
     def lock_t(self):
-        while not (_msg.lock.acquire(False)):
+        while not (self._msg.lock.acquire(False)):
             sleep(0.1)
     
     def stop(self):
         self.lock_t()
-        _msg.running=False
-        _msg.lock.release()
+        self._msg.running=False
+        self._msg.lock.release()
 
     def set_text(self,msg):  
         self.lock_t()
-        _msg.text=msg
-        _msg.lock.release()
+        self._msg.text=msg
+        self._msg.lock.release()
         self.start_thread()
 
     def get_text(self):
         self.lock_t()
-        t=_msg.text
-        _msg.lock.release()
+        t=self._msg.text
+        self._msg.lock.release()
         return t
 
     def get_running(self):
         self.lock_t()
-        r=_msg.running
-        _msg.lock.release()
+        r=self._msg.running
+        self._msg.lock.release()
         return r
 
     def get_screen(self):
-        return _msg
+        return self._msg
 
 if __name__=='__main__':
     msg=MsgScreen()

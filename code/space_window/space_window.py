@@ -1,3 +1,4 @@
+print 'starting imports'
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from urlparse import urlparse, parse_qs
 import os
@@ -5,21 +6,30 @@ import signal
 import subprocess
 from collections import OrderedDict
 from time import sleep
+print 'importing nasa pod'
 from nasa_pod import *
 from threading import Timer
+print 'importing msg'
 import wifi_setup_ap.py_game_msg as msg
 import sys
+print 'importing wifi'
 import wifi_setup_ap.wifi_control as wifi
 import wifi_setup_ap.connection_http as connection
+print 'importing jsonable'
 from jsonable import Jsonable
+print 'importing mopidy listener'
 from mopidy_listener import MopidyUpdates
+print 'importing html'
 from html import get_html
-
+print 'done importing'
 PORT_NUMBER = 80
 
+print 'initialising msg screen'
 _msg=msg.MsgScreen()
+print 'initialised msg screen'
 def status_update(txt):
-    status_update(txt)
+    #status_update(txt)
+    _msg.set_text(txt)
 
 _mopidy=MopidyUpdates(status_update)
 
@@ -116,7 +126,9 @@ class Streams(Jsonable):
     def make_command_line(self,name):
         (uri,quality)=self.streams[name]
         # raspberry version
-        return u'streamlink {} {} --player "omxplayer --vol 500 --timeout 60" --player-continuous-http'.format(uri,quality)
+        command= u'streamlink {} {} --player "omxplayer --vol 500 --timeout 60" --player-continuous-http'.format(uri,quality)
+        print command
+        return command
         # ubuntu version
         #return u'streamlink {} {} --player "mplayer -cache 8000" --player-continuous-http'.format(uri,quality)
 
@@ -374,13 +386,16 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
 
 _server=None
 try:
+    print 'configuring wifi'
     connection.configure_wifi()
-    connection.display_connection_details()
+    #print 'displaying connection details'
+    #connection.display_connection_details()
     #Create a web server and define the handler to manage the
     #incoming request
+    print 'creating http server'
     handler=SpaceWindowServer
     _server = HTTPServer(('', PORT_NUMBER),handler )
-    print 'Started httpserver on port ' , PORT_NUMBER, server.server_address
+    print 'Started httpserver on port ' , PORT_NUMBER, _server.server_address
     sleep(30)
     check_running()    
     #Wait forever for incoming http requests

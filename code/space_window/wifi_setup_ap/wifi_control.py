@@ -100,7 +100,10 @@ def get_connected_ssid():
 # lists available wifi interfces
 def _list_wifi_interfaces():
     s=run('sudo wpa_cli interface')
-    return re.findall('Available interfaces:\s(\S+)$',s,re.M)
+    p='Available interfaces:\n'
+    return s[s.find(p)+len(p):].split()
+    #print s
+    #return re.findall('Available interfaces:\s(\S+)$',s,re.M)
 
 # a class to return information about an interface
 class interface_info:
@@ -116,25 +119,34 @@ class interface_info:
 
 
 # get information about interfaces
+def get_ssid(iface):
+    s=run('sudo iwconfig')
+    ss=re.findall('%s.+ESSID:\"(.*)\"' % iface,s)
+    if len(ss)!=1: return None
+    return ss[0]
+
 def get_interfaces_info():
     s=run('sudo ip address show')
     m=re.findall('^\s*inet ([0-9\.]+).+\s(\S+)$',s,re.M)
     wifis=_list_wifi_interfaces()
+    print 'wifis', wifis
     infos={}
     for (ip,iface) in m:
-        if iface == 'lo' or iface == 'tun0':continue
+        print iface,'p2p' in iface
+        if iface == 'lo' or iface == 'tun0' or ('p2p' in iface):continue
         is_wifi=iface in wifis
         ssid=None
         if is_wifi:
-            run('sudo wpa_cli interface %s' % iface)
-            status=run('sudo wpa_cli status')
-            r=re.findall('^ssid=(.*)$',status,re.M)
-            if len(r) != 0: ssid=r[0]
+            ssid=get_ssid(iface)
+            #run('sudo wpa_cli interface %s' % iface)
+            #status=run('sudo wpa_cli status')
+            #r=re.findall('^ssid=(.*)$',status,re.M)
+            #if len(r) != 0: ssid=r[0]
         
         infos[iface]=interface_info(iface,ip,is_wifi,ssid)
 
     for w in wifis:
-        if w not in infos:
+        if w not in infos and ('p2p' not in w):
             infos[w]=interface_info(w,None,True,None)
     ret=[infos[i] for i in infos]
     return ret
@@ -201,7 +213,7 @@ def list_network_data(iface=_ap_interface):
 
 # get the name of this host
 def get_host_name():
-        hostname=socket.gethostname()
+        return socket.gethostname()
 
 # start access point
 def start_ap():
