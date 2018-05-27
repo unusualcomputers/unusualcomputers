@@ -31,17 +31,6 @@ sudo pip install -U Mopidy-Radio-Rough-HTML
 echo Installing youtube-dl
 sudo pip install -U youtube-dl
 
-## Setup the start menu
-echo Copying desktop and icon files
-sudo wget https://raw.githubusercontent.com/unusualcomputers/unusualcomputers/master/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/radio_rough.desktop -O /usr/share/applications/radio_rough.desktop
-
-sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/icons/ucc.png -O /usr/share/pixmaps/ucc.png
-
-sudo wget https://github.com/unusualcomputers/unusualcomputers/raw/master/code/mopidy/mopidyradioroughhtml/mopidy_radio_rough_html/icons/ucc.gif -O /usr/share/pixmaps/ucc.gif
-
-## Update the start menu
-sudo lxpanelctl restart
-
 echo
 echo **********************************************************************
 echo * radio rough is installed                                           *
