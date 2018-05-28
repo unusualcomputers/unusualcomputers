@@ -6,7 +6,7 @@ import sys
 print 'importing config'
 from config_util import Config
 print 'done imorting'
-from borg import borg
+from borg import borg_init_once
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb0')
 
@@ -29,22 +29,15 @@ class MsgScreenThread:
         self.text=None
         self.black=None
         self.font=None
-        print 'pg.init'
         pg.init()
-        print 'pg init done'
+        print 'pygame initialisation done'
         #sleep(1)
         pg.mouse.set_visible(False)	
-        print 'msg init 1'
         self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN )
-        print 'msg init 2'
         self.black=self.screen.copy()
-        print 'msg init 3'
         self.black.fill(self.bckcol)
-        print 'msg init 4'
         self.font = pg.font.SysFont(self.fontname, self.fontsz)
-        print 'msg init 5'
         self.lock=threading.Lock()
-        print 'msg init 6'
 
     def lock_t(self):
         while not (self.lock.acquire(False)):
@@ -108,9 +101,11 @@ class MsgScreenThread:
             sleep(self.delay)
 print 'creting msg thread'
 print 'created msg thread'
-class MsgScreen(borg):
+class MsgScreen(borg_init_once):
     def __init__(self):
         borg.__init__(self)
+
+    def init_once(self)
         self._msg=MsgScreenThread()
 
     def start_thread(self):

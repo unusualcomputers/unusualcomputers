@@ -268,7 +268,6 @@ def display_connection_details():
     # first check for wifi connections
     # but keep track of lan 
     lan=None
-    print connections
     for con in connections:
         if con.is_wifi: 
             if con.ssid is not None: 

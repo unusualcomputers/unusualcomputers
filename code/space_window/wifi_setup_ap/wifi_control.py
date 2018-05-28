@@ -102,8 +102,6 @@ def _list_wifi_interfaces():
     s=run('sudo wpa_cli interface')
     p='Available interfaces:\n'
     return s[s.find(p)+len(p):].split()
-    #print s
-    #return re.findall('Available interfaces:\s(\S+)$',s,re.M)
 
 # a class to return information about an interface
 class interface_info:
@@ -129,10 +127,8 @@ def get_interfaces_info():
     s=run('sudo ip address show')
     m=re.findall('^\s*inet ([0-9\.]+).+\s(\S+)$',s,re.M)
     wifis=_list_wifi_interfaces()
-    print 'wifis', wifis
     infos={}
     for (ip,iface) in m:
-        print iface,'p2p' in iface
         if iface == 'lo' or iface == 'tun0' or ('p2p' in iface):continue
         is_wifi=iface in wifis
         ssid=None
@@ -172,7 +168,6 @@ def is_connected():
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(('8.8.8.8', 80))
         ip = s.getsockname()[0]
-        print ip
         s.close()
         return True
     except socket.error:
