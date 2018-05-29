@@ -19,7 +19,6 @@ PORT_NUMBER = 80
 
 _msg=msg.MsgScreen()
 def status_update(txt):
-    #status_update(txt)
     _msg.set_text(txt)
 
 _mopidy=MopidyUpdates(status_update)
@@ -28,6 +27,9 @@ _streams_data='.space.window'
 _base_path=os.path.join(os.path.expanduser('~'),_streams_data)
 _config_path=os.path.join(_base_path,_streams_data)
 _cnt=0 # global counter, used to make html more responsive
+
+# streams
+#   main class managing sreams to play
 class Streams(Jsonable):
 
     @classmethod
@@ -378,8 +380,6 @@ _server=None
 try:
     print 'configuring wifi'
     connection.configure_wifi()
-    #print 'displaying connection details'
-    #connection.display_connection_details()
     #Create a web server and define the handler to manage the
     #incoming request
     handler=SpaceWindowServer
@@ -392,8 +392,9 @@ try:
 
 except KeyboardInterrupt:
     print 'space window is shutting down'
-    pygame.quit()
     kill_running()
     if _server is not None:
         _server.socket.close()
+finally:
+    pygame.quit()
     

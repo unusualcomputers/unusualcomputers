@@ -132,13 +132,7 @@ def get_interfaces_info():
         if iface == 'lo' or iface == 'tun0' or ('p2p' in iface):continue
         is_wifi=iface in wifis
         ssid=None
-        if is_wifi:
-            ssid=get_ssid(iface)
-            #run('sudo wpa_cli interface %s' % iface)
-            #status=run('sudo wpa_cli status')
-            #r=re.findall('^ssid=(.*)$',status,re.M)
-            #if len(r) != 0: ssid=r[0]
-        
+        if is_wifi: ssid=get_ssid(iface)
         infos[iface]=interface_info(iface,ip,is_wifi,ssid)
 
     for w in wifis:
@@ -190,6 +184,7 @@ def _get_networks(iface=_ap_interface, retry=20):
         retry-=1
         time.sleep(0.5)
         return None
+
 # get data about available networks
 # returns triplets (interface name, network name, WPA or OPEN)
 def list_network_data(iface=_ap_interface):

@@ -3,9 +3,7 @@ from time import *
 import threading
 import os
 import sys
-print 'importing config'
 from config_util import Config
-print 'done imorting'
 from borg import borg_init_once
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb0')
@@ -30,7 +28,6 @@ class MsgScreenThread:
         self.black=None
         self.font=None
         pg.init()
-        print 'pygame initialisation done'
         #sleep(1)
         pg.mouse.set_visible(False)	
         self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN )
@@ -99,8 +96,7 @@ class MsgScreenThread:
                     self.screen.blit(row[0], row[1])
                 pg.display.flip()
             sleep(self.delay)
-print 'creting msg thread'
-print 'created msg thread'
+
 class MsgScreen(borg_init_once):
     def __init__(self):
         borg_init_once.__init__(self)
@@ -109,13 +105,12 @@ class MsgScreen(borg_init_once):
         self._msg=MsgScreenThread()
 
     def start_thread(self):
-        if self._msg.running: return
+        if self._msg.get_running(): return
         self._msg.running = True
         threading.Thread(target=self._msg.run_msg).start()
     
     def lock_t(self):
-        while not (self._msg.lock.acquire(False)):
-            sleep(0.1)
+        self._msg.lock_t()
     
     def stop(self):
         self.lock_t()
@@ -133,15 +128,6 @@ class MsgScreen(borg_init_once):
         t=self._msg.text
         self._msg.lock.release()
         return t
-
-    def get_running(self):
-        self.lock_t()
-        r=self._msg.running
-        self._msg.lock.release()
-        return r
-
-    def get_screen(self):
-        return self._msg
 
 if __name__=='__main__':
     msg=MsgScreen()

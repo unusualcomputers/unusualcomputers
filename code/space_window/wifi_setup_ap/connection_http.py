@@ -280,8 +280,7 @@ def display_connection_details():
                 _report(msg)
                 return
             else:
-                print 'ssid is None'
-                print con
+                print 'ssid is None, wifi will be ignored\n',con
         else:
             lan=con
     

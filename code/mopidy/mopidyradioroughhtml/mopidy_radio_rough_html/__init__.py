@@ -245,6 +245,7 @@ def params_enc(i):
         for t in translated:
             if t=='uri':
                 translated[t]=uri_quote(translated[t])#urllib.unquote(translated[t])
+            print t,translated[t]    
             return urllib.urlencode(translated) 
                
 class BrowsingHandler(tornado.web.RequestHandler):

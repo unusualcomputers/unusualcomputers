@@ -435,9 +435,11 @@ class MopidyBrowser:
             
     def remove_from_favourites(self,indices):
         #if self.current_sel!=_favourites_ref: return
+        print "BROWSER:", self.current_list
         for i in indices:
             if not self.__index_ok(i): continue
             ref=self.current_list[i]
+            print ref
             self.favourites.remove(ref.name)
             _favourites_cache.clear()
             

@@ -10,11 +10,10 @@ import traceback
 
 #os.putenv('SDL_VIDEODRIVER','fbcon')
 #os.putenv('SDL_FBDEV','/dev/fb0')
+delay=5 # delay between frames in seconds
 _apod_url='https://apod.nasa.gov/apod/'
 _apod_archive_url='https://apod.nasa.gov/apod/archivepix.html'
 _pics_at_once=5
-#_scrh=1080
-#_scrw=1920
 _scrh=None
 _scrw=None
 
@@ -69,7 +68,6 @@ def place_text(p,font,y=0,pref=""):
     return (text,textrect)
 
 running=False
-delay=5
 screen=None
 def slideshow():    
     global running
@@ -116,9 +114,9 @@ def slideshow():
                 (nt,ntr)=place_text(p,basicfont,40,"Next: ")
                 black.blit(text, textrect)
                 black.blit(nt, ntr)
+                #fading out
                 for i in range(0,255,1):
                     if not running: 
-                        #pg.quit()
                         return
                     #sleep(0.02)
                     image.set_alpha(255-i)
@@ -137,9 +135,9 @@ def slideshow():
             screen.blit(black,(0,0))
             screen.blit(text, textrect)
             screen.blit(nt, ntr)
+            # fading in
             for i in range(0,255,1):
                 if not running: 
-                    #pg.quit()
                     return
                 #sleep(0.02)
                 image.set_alpha(i)
@@ -152,21 +150,23 @@ def slideshow():
             prev_p=p
             p=load(randint(1,len(pages)-1),pages)
     except:
-        #pg.quit()
         traceback.print_stack()
         raise
-    #pg.quit()
+
 def start_apod():
     global running
     if running: return
     running=True
     pg.init()
     threading.Thread(target=slideshow).start()
-    #pg.quit()
 
 def stop_apod():
     global running
     running=False
 
 if __name__=="__main__":    
-    start_apod()
+    try:
+        start_apod()
+    finally:
+        pg.quit()
+

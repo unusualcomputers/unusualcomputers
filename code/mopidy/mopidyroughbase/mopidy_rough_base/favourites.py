@@ -40,6 +40,7 @@ class Favourites(Jsonable):
         self.save()
             
     def remove(self,name):
+        print name,self.favourites
         self.favourites=[x for x in self.favourites if x[0]!=name]
         self.save()
         

@@ -1,14 +1,11 @@
 from mopidy_json_client import MopidyClient
 
-
 class MopidyUpdates:
     def __init__(self,updates_func):
-        print 'initialising mopidy listener'
         self.update=updates_func
         self._mopidy=MopidyClient()
         self._mopidy.bind_event('track_playback_started', self.playback_started)
         self._mopidy.bind_event('stream_title_changed', self.title_changed)
-        print 'initialised mopidy listener'
 
     # mopidy updates
     def playback_started(tl_track):
