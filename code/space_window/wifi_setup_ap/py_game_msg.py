@@ -103,9 +103,9 @@ print 'creting msg thread'
 print 'created msg thread'
 class MsgScreen(borg_init_once):
     def __init__(self):
-        borg.__init__(self)
+        borg_init_once.__init__(self)
 
-    def init_once(self)
+    def init_once(self):
         self._msg=MsgScreenThread()
 
     def start_thread(self):

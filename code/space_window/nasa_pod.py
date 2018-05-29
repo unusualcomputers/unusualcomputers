@@ -118,7 +118,7 @@ def slideshow():
                 black.blit(nt, ntr)
                 for i in range(0,255,1):
                     if not running: 
-                        pg.quit()
+                        #pg.quit()
                         return
                     #sleep(0.02)
                     image.set_alpha(255-i)
@@ -139,7 +139,7 @@ def slideshow():
             screen.blit(nt, ntr)
             for i in range(0,255,1):
                 if not running: 
-                    pg.quit()
+                    #pg.quit()
                     return
                 #sleep(0.02)
                 image.set_alpha(i)
@@ -152,10 +152,10 @@ def slideshow():
             prev_p=p
             p=load(randint(1,len(pages)-1),pages)
     except:
-        pg.quit()
+        #pg.quit()
         traceback.print_stack()
         raise
-    pg.quit()
+    #pg.quit()
 def start_apod():
     global running
     if running: return

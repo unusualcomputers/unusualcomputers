@@ -119,7 +119,7 @@ class interface_info:
 # get information about interfaces
 def get_ssid(iface):
     s=run('sudo iwconfig')
-    ss=re.findall('%s.+ESSID:\"(.*)\"' % iface,s)
+    ss=re.findall('%s.+ESSID:\"(.*)\" ' % iface,s)
     if len(ss)!=1: return None
     return ss[0]
 

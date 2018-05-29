@@ -310,7 +310,7 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
             status_update('testing the new connection')
             if connection.test_connection():
                 display_connection_details()
-                time.sleep(20)
+                sleep(20)
             wifi_setup=False
             #check_running()
             return
@@ -326,7 +326,7 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
             print 'starting kodi'
             os.system('sudo -u pi kodi-standalone')
             print 'started kodi'
-            time.sleep(40)
+            sleep(40)
             print 'slept a bit'
             ip=wifi.get_ip()
             txt='enjoy'
@@ -344,7 +344,7 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
             print 'starting mopidy'
             subprocess.Popen(['mopidy'])
             print 'started mopidy'
-            time.sleep(40)
+            sleep(40)
             print 'slept a bit'
             ip=wifi.get_ip()
             txt='go to spacewindow.local:6680/radiorough\nor %s:6680/radiorough' % ip
