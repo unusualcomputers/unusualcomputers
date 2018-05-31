@@ -1,4 +1,4 @@
-
+import random
 html_template_main=u"""
 <!doctype html>
 <html>
@@ -113,7 +113,7 @@ html_template_main=u"""
 </body>
 
 """           
-_cnt=0
+_cnt=random.randint(0,1000)
 
 def get_html(rows_html):
     global _cnt

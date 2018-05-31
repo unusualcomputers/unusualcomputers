@@ -15,6 +15,7 @@ from jsonable import Jsonable
 from mopidy_listener import MopidyUpdates
 from html import get_html
 import pygame
+import random
 PORT_NUMBER = 80
 
 _msg=msg.MsgScreen()
@@ -26,7 +27,7 @@ _mopidy=MopidyUpdates(status_update)
 _streams_data='.space.window'
 _base_path=os.path.join(os.path.expanduser('~'),_streams_data)
 _config_path=os.path.join(_base_path,_streams_data)
-_cnt=0 # global counter, used to make html more responsive
+_cnt=random.randint(0,1000)
 
 # streams
 #   main class managing sreams to play

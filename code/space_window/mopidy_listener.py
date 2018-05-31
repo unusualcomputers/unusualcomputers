@@ -8,7 +8,7 @@ class MopidyUpdates:
         self._mopidy.bind_event('stream_title_changed', self.title_changed)
 
     # mopidy updates
-    def playback_started(tl_track):
+    def playback_started(self,tl_track):
         try:
             track=tl_track.get('track') if tl_track else None
             if not track:
@@ -23,7 +23,7 @@ class MopidyUpdates:
         except: 
             pass
 
-    def title_changed(title):
+    def title_changed(self,title):
         try:
             self.update(title)
         except:
