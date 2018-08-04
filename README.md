@@ -27,7 +27,7 @@ calls and enquiries: unusual.computers(at)gmail.com
 
   A pi zero based laptop packed inside old comic book covers.
 
-* [twitter media tools](https://github.com/unusualcomputers/twittermedia)
+* [Twitter media tools](https://github.com/unusualcomputers/twittermedia)
 
   Windows utilities create twitter friendly videos.
 
