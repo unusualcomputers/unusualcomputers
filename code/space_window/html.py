@@ -1,5 +1,5 @@
 
-html_template_main=u"""
+_html_template_main=u"""
 <!doctype html>
 <html>
 <head>
@@ -53,6 +53,11 @@ html_template_main=u"""
 <body>
 <h1>Space Window</h1>
 <br><br>
+HTML_BODY
+</body>
+
+"""           
+_main_table=u"""
 
 <div align="left">
 <form align="center" action="/play_remove">
@@ -110,14 +115,20 @@ html_template_main=u"""
 </td>
 </tr>
 </table>    
-</body>
+"""
 
-"""           
 _cnt=0
-
-def get_html(rows_html):
+def build_html(body):
     global _cnt
-    html = html_template_main.replace('STREAM_ROWS',rows_html)
+    html = _html_template_main.replace('HTML_BODY',body)
+    _cnt+=1
+    cntstr='%i' % _cnt
+    return html.replace('CNT',cntstr)
+
+def get_main_html(rows_html):
+    global _cnt
+    html = _html_template_main.replace('HTML_BODY',_main_table).\
+        replace('STREAM_ROWS',rows_html)
     _cnt+=1
     cntstr='%i' % _cnt
     return html.replace('CNT',cntstr)

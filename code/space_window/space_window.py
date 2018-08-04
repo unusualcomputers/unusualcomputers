@@ -13,7 +13,7 @@ import wifi_setup_ap.wifi_control as wifi
 import wifi_setup_ap.connection_http as connection
 from jsonable import Jsonable
 from mopidy_listener import MopidyUpdates
-from html import get_html
+from html import get_main_html,build_html
 import pygame
 PORT_NUMBER = 80
 
@@ -95,6 +95,19 @@ class Streams(Jsonable):
         self.streams=d
         self.save()
 
+    def make_remove_html(self,name):
+        form = u"""    
+            <p style="font-size:45px">Really, really remove {}?</p>
+
+            <form action="/really_remove">
+            <input type="hidden" name="hidden_{}" value="{}">
+            <button type="submit" name="action" value="really remove {}">
+                    Yes, really remove it!
+            </button></td><td>
+            </form>
+        """.format(name,name,name,name)
+        return build_html(form)
+
     def make_html(self):
         global _cnt
         _cnt+=1
@@ -103,14 +116,15 @@ class Streams(Jsonable):
             (uri,quality)=self.streams[name]
             row = u"""<tr><td>{}</td><td><a href="{}">{}</a></td><td>{}</td><td>
                 <input type="hidden" name="hidden_{}" value="{}">
-                <button type="submit" name="action" value="remove {}">
-                        remove
-                </button></td><td>
                 <button type="submit" name="action" value="play {}">
                     play
                 </button></td><td>
                 <button type="submit" name="action" value="moveup {}">
                     up</button></td>
+                <td>
+                <button type="submit" name="action" value="remove {}">
+                        remove
+                </button></td>
                 </tr>
                 """.format(name,uri,uri,quality,_cnt,name,name,name,name)
             html+=row
@@ -119,7 +133,7 @@ class Streams(Jsonable):
     def make_command_line(self,name):
         (uri,quality)=self.streams[name]
         # raspberry version
-        command= u'streamlink {} {} --player "omxplayer --vol 500 --timeout 60" --player-continuous-http'.format(uri,quality)
+        command= u'streamlink {} {} --player "omxplayer --vol 500 --timeout 60" --player-fifo'.format(uri,quality)
         return command
         # ubuntu version
         #return u'streamlink {} {} --player "mplayer -cache 8000" --player-continuous-http'.format(uri,quality)
@@ -274,12 +288,19 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
         if 'play_remove' in self.path:
             ps=params['action'][0]
             if u'remove' in ps:
-                _streams.remove(ps[len('remove '):])
+                html=_streams.make_remove_html(ps[len('remove '):])
+                self.wfile.write(html)
+                return
             elif 'moveup' in ps:
                 _streams.up(ps[len('moveup '):])
             else: #if it's not remove, then it's play
                 play_stream(ps[len('play '):])
                 if check_timer is None: check_running()
+            self.return_to_front()
+            return
+        elif 'really_remove' in self.path:
+            ps=params['action'][0]
+            _streams.remove(ps[len('really remove '):])
             self.return_to_front()
             return
         elif 'add' in self.path:
@@ -373,19 +394,20 @@ class SpaceWindowServer(BaseHTTPRequestHandler):
         self.send_header('Content-type','text/html')
         self.end_headers()
         # Send the html message
-        html = get_html(_streams.make_html())
+        html = get_main_html(_streams.make_html())
         self.wfile.write(html)
 
 _server=None
 try:
     print 'configuring wifi'
-    connection.configure_wifi()
+    connection.configure_wifi(30,False)
     #Create a web server and define the handler to manage the
     #incoming request
     handler=SpaceWindowServer
     _server = HTTPServer(('', PORT_NUMBER),handler )
     print 'Started httpserver on port ' , PORT_NUMBER, _server.server_address
-    sleep(30)
+    connection.display_connection_details()
+    sleep(10)
     check_running()    
     #Wait forever for incoming http requests
     _server.serve_forever()

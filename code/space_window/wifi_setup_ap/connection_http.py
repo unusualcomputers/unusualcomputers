@@ -245,7 +245,7 @@ def run_wifi_server():
         server.socket.close()
 
 
-def configure_wifi(sleep=_sleep_on_connect):
+def configure_wifi(sleep=_sleep_on_connect,display_details=True):
     ip=""
     try:
         print 'testing connection'
@@ -259,9 +259,10 @@ def configure_wifi(sleep=_sleep_on_connect):
         time.sleep(sleep)
         return  
     finally:
-        print 'displaying connection details in connection module'
-        display_connection_details()
-        time.sleep(sleep)
+        if display_details:
+            print 'displaying connection details in connection module'
+            display_connection_details()
+            time.sleep(sleep)
 
 def display_connection_details():
     connections=wifi.get_interfaces_info()
