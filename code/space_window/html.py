@@ -1,5 +1,5 @@
-
-_html_template_main=u"""
+import random
+html_template_main=u"""
 <!doctype html>
 <html>
 <head>
@@ -117,13 +117,7 @@ _main_table=u"""
 </table>    
 """
 
-_cnt=0
-def build_html(body):
-    global _cnt
-    html = _html_template_main.replace('HTML_BODY',body)
-    _cnt+=1
-    cntstr='%i' % _cnt
-    return html.replace('CNT',cntstr)
+_cnt=random.randint(0,1000)
 
 def get_main_html(rows_html):
     global _cnt
