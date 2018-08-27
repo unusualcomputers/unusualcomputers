@@ -32,8 +32,8 @@ echo Installing youtube-dl
 sudo pip install -U youtube-dl
 
 echo
-echo **********************************************************************
-echo * radio rough is installed                                           *
-echo * run it from the start menu or type sudo mopidy on the command line *
-echo **********************************************************************
+echo '**********************************************************************'
+echo '* radio rough is installed                                           *'
+echo '* run it from the start menu or type sudo mopidy on the command line *'
+echo '**********************************************************************'
 echo
