@@ -366,6 +366,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                         album_html=''
                         artists_html=''
                         if info['album'] is not None and info['album'][0] != page_title and \
+                            and info['album'][0] is not None and info['album'][1] is not None and\
                             u'tunein' not in info['album'][1] and u'somafm' not in info['album'][1]:
                             album_name=trydec(info['album'][0])
                             album_uri=urllib.quote(info['album'][1],'')
