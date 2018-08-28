@@ -12,7 +12,7 @@ from htmltemplates import *
 import urllib
 from dateutil import parser
 
-__version__ = '3.14.15'
+__version__ = '3.14.15922'
 
 logger = logging.getLogger(__name__)
 refresh_html=''
@@ -366,7 +366,7 @@ class BrowsingHandler(tornado.web.RequestHandler):
                         album_html=''
                         artists_html=''
                         if info['album'] is not None and info['album'][0] != page_title and \
-                            and info['album'][0] is not None and info['album'][1] is not None and\
+                            info['album'][0] is not None and info['album'][1] is not None and\
                             u'tunein' not in info['album'][1] and u'somafm' not in info['album'][1]:
                             album_name=trydec(info['album'][0])
                             album_uri=urllib.quote(info['album'][1],'')
