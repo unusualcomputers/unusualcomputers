@@ -31,6 +31,11 @@ calls and enquiries: unusual.computers(at)gmail.com
 
   Windows utilities create twitter friendly videos.
 
+* [Internet of Nothings](https://github.com/unusualcomputers/InternetOfNothings/blob/master/README.md)
+
+Internet of Nothings is a standalone Wi-Fi network to which you can connect from any internet enabled device. It will then accept any non encrypted website address and redirect the browser to nothing.
+
+
 ## what we learned
 
 * [Notes on editing raspberry configuration files](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/config_gfiles.md#notes-on-editing-raspberry-configuration-files)
