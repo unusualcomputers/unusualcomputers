@@ -35,6 +35,14 @@ calls and enquiries: unusual.computers(at)gmail.com
 
   Internet of Nothings is a standalone Wi-Fi network to which you can connect from any internet enabled device. It will then accept any non encrypted website address and redirect the browser to nothing.
 
+* [Space Window](https://github.com/unusualcomputers/space_window)
+
+  Space window is like a picture that shows faraway places.
+  It will stream videos from the internet or play your own ones, show beautiful pictures of space that NASA publishes every day or some you chose yourself, play radio and podcasts and show time and weather where you are. 
+
+* [Rock-i](https://github.com/unusualcomputers/space_window/blob/master/code/RockI.md)
+
+  Rock-i is a computer made of a rock, concrete and love.
 
 ## what we learned
 
