@@ -2,6 +2,8 @@
 
 [unusualcomputerscollective.org](http://unusualcomputerscollective.org)
 
+about us: [youtube](https://www.youtube.com/watch?v=PckU7jtVDQs)
+
 calls and enquiries: unusual.computers(at)gmail.com
 
 ## what we made 
