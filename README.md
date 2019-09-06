@@ -8,6 +8,10 @@ calls and enquiries: unusual.computers(at)gmail.com
 
 ## what we made 
 
+* [Raspberry rainbow](https://github.com/unusualcomputers/space_window/blob/master/code/raspberryrainbow.md)
+
+  A mood lamp to celebrate love.
+
 * [Rock-i](https://github.com/unusualcomputers/space_window/blob/master/code/RockI.md)
 
   Rock-i is a computer made of a rock, concrete and love.
