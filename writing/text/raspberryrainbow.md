@@ -1,4 +1,4 @@
-Raspberry rainbow is a tiny Arduino (digispark ATTiny85) driving a few led pixels, a button, a piece of wood and an old tree bark making a beautiful proud rainbow light.
+Rainbow tree is a tiny Arduino (digispark ATTiny85) driving a few led pixels, a button, a piece of wood and an old tree bark making a beautiful proud rainbow light.
 
 The code driving it is tiny, thanks to the excellent ![FastLED](http://fastled.io/) library, this is all there is to it:
  
