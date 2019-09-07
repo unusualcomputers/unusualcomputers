@@ -8,7 +8,7 @@ calls and enquiries: unusual.computers(at)gmail.com
 
 ## what we made 
 
-* [Rainbow tree](https://github.com/unusualcomputers/unusualcomputers/tree/master/writing/text)
+* [Rainbow tree](https://github.com/unusualcomputers/unusualcomputers/blob/master/writing/text/rainbowtree.md)
 
   A mood lamp to celebrate love.
 
