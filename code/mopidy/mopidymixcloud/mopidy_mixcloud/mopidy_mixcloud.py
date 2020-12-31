@@ -13,8 +13,7 @@ import youtube_dl
 from cache import Cache
 
 search_max=150
-uri_scheme=u'mixcloud'
-uri_prefix=uri_scheme+':'
+uri_prefix=u'mixcloud:'
 track_prefix='track:'
 api_prefix=u'https://api.mixcloud.com'
 mixcloud_prefix=u'https://mixcloud.com'
@@ -29,7 +28,7 @@ uri_playlist=u'playlist/'
 uri_following=u'following/'
 uri_followers=u'followers/'
 uri_listens=u'listens/'
-uri_search=u'https://api.mixcloud.com/search/?type={}&q="{}"'
+uri_search=u'https://api.mixcloud.com/search/?type={}&q={}'
 
 class LocalData:
 
@@ -104,20 +103,6 @@ def uri_json(uri):
     if not r.ok: raise MixcloudException('Request failed for uri '+uri)
     return r.json()
  
-def get_next_page(json_dict, name):
-    if 'paging' not in json_dict: return None
-    paging = json_dict['paging']
-    if 'next' not in paging: return None
-    name = u'More {}...'.format(name)
-    return Ref.directory(name=name, uri=make_uri(paging['next']))
-
-def get_next_page_uri(json_dict):
-    if 'paging' not in json_dict: return None
-    paging = json_dict['paging']
-    if 'next' not in paging: return None
-    return paging['next']
-
-
 def make_special_uri(user_key,uri_prefix,more=''):
     try:
         enc=user_key.encode('base64')
@@ -152,6 +137,19 @@ def make_more_name(user_key,group):
         return u"More {}'s {}...".format(decoded,group)
     except:
         return u"More {}...".format(group)
+
+def get_next_page(json_dict, name):
+    if 'paging' not in json_dict: return None
+    paging = json_dict['paging']
+    if 'next' not in paging: return None
+    name = u'More {}...'.format(name)
+    return Ref.directory(name=name, uri=make_uri(paging['next']))
+
+def get_next_page_uri(json_dict):
+    if 'paging' not in json_dict: return None
+    paging = json_dict['paging']
+    if 'next' not in paging: return None
+    return paging['next']
 
 def list_playlists(uri,user_key):
     uri=strip_uri(uri)
@@ -418,8 +416,7 @@ def get_tracks_for_uri(uri,max_tracks=search_max):
     uri=strip_uri(uri)
     if uri == uri_categories: return []
 
-
-    if downloader_prefix in uri: # this is a track
+    if track_prefix in uri: # this is a track
         return [get_track_for_uri(uri)]    
 
     json=uri_json(uri)
@@ -523,7 +520,7 @@ class MixcloudLibrary(LibraryProvider):
  
     def browse(self, uri):
         _cache.refresh()
-        if not dec(uri).startswith(uri_scheme):
+        if not dec(uri).startswith(uri_prefix):
             return []
                        
         if uri==uri_root:
@@ -575,7 +572,7 @@ class MixcloudLibrary(LibraryProvider):
     def search(self, query=None, uris=None, exact=False):
         _cache.refresh()
         if uris is not None:
-            if next((uri for uri in uris if uri.startswith(uri_scheme)),
+            if next((uri for uri in uris if uri.startswith(uri_prefix)),
                 None) is None:
                 return None
                    
