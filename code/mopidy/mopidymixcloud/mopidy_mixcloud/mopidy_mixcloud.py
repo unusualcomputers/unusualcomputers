@@ -7,6 +7,7 @@ import time
 logger = logging.getLogger(__name__)
 import urllib
 from threading import Lock
+import youtube_dl
 
 # I have learned a lot from jackyNIX's code for kodi mopidy plugin
 # https://github.com/jackyNIX/xbmc-mixcloud-plugin
@@ -14,13 +15,11 @@ from threading import Lock
 search_max=150
 uri_scheme=u'mixcloud'
 uri_prefix=uri_scheme+':'
+track_prefix='track:'
 api_prefix=u'https://api.mixcloud.com'
-downloader_prefix=u'http://download.mixcloud-downloader.com/d/mixcloud'
+mixcloud_prefix=u'https://mixcloud.com'
 uri_root='mixcloud:root'
 uri_categories=u'https://api.mixcloud.com/categories/'
-uri_popular=u'https://api.mixcloud.com/popular/'
-uri_hot=u'https://api.mixcloud.com/popular/hot/'
-uri_new=u'https://api.mixcloud.com/new/'
 uri_users=u'users'
 uri_user=u'user'
 uri_category=u'category'
@@ -120,9 +119,6 @@ def strip_uri(uri):
 
 root_list=[ 
         Ref.directory(name=u'Categories',uri=make_uri(uri_categories)), 
-        Ref.directory(name=u'Popular',uri=make_uri(uri_popular)), 
-        Ref.directory(name=u'Hot',uri=make_uri(uri_hot)), 
-        Ref.directory(name=u'New',uri=make_uri(uri_new)),
         Ref.directory(name=u'Users',uri=make_uri(uri_users))] 
 
 def uri_json(uri):
@@ -298,8 +294,19 @@ def list_categories():
     refs_cache.add(uri_categories, cat_refs)
     return cat_refs
 
+ydl=youtube_dl.YoutubeDL()
+
+def translate_uri_to_url(uri):
+    uri=strip_uri(uri)
+    if uri.startswith(track_prefix):
+        uri=uri[len(track_prefix):]
+        info=ydl.extract_info(mixcloud_prefix+uri,download=False)
+        return dec(info['url'])
+    else:
+        return uri
+
 def track_uri(track_key):
-    return dec(make_uri(downloader_prefix+track_key))
+    return dec(make_uri(track_prefix+track_key))
     
 def make_track(track_key, name, user, time, length,user_key):
     uri=track_uri(track_key)
@@ -343,12 +350,13 @@ def make_track_from_json(cloudcast):
 
 def list_cloudcasts(uri,user_key=''):
     suri=strip_uri(uri)
-    if suri.startswith(downloader_prefix):
-        key=strip_uri(uri)[len(downloader_prefix):]
-        curi=api_prefix+key
-        ref=make_track_from_json(uri_json(curi))[0]
-        refs_cache.add(uri,ref)
-        return [ref]
+    print suri, uri
+#    if suri.startswith(downloader_prefix):
+#        key=strip_uri(uri)[len(downloader_prefix):]
+#        curi=api_prefix+key
+#        ref=make_track_from_json(uri_json(curi))[0]
+#        refs_cache.add(uri,ref)
+#        return [ref]
     json=uri_json(uri)
     cloudcasts=json['data']
     refs=[]
@@ -642,4 +650,4 @@ class MixcloudLibrary(LibraryProvider):
                    
 class MixcloudPlayback(PlaybackProvider):
     def translate_uri(self, uri): 
-        return strip_uri(uri)
+        return translate_uri_to_url(uri)
