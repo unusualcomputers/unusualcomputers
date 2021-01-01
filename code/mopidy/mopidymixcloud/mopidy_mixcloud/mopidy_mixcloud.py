@@ -70,19 +70,6 @@ class MixcloudException(Exception):
     def __str__(self):
         return repr(self.parameter)
 
-def enc(s):
-    try:
-        return s.encode('utf-8')
-    except:
-        return s
-        
-def dec(s):
-    try:
-        return s.decode('utf-8')
-    except:
-        return s
-    
-
 def make_uri(uri):
     return uri_prefix+uri.strip()
                
@@ -91,15 +78,13 @@ root_list=[
         Ref.directory(name=u'Users',uri=make_uri(uri_users))] 
 
 def strip_uri(uri):
-    uri=dec(uri)
     if uri.startswith(uri_prefix):
         return uri[len(uri_prefix):]
     else:
         return uri
 
 def uri_json(uri):
-    decoded=enc(uri)
-    r=requests.get(decoded)
+    r=requests.get(uri)
     if not r.ok: raise MixcloudException('Request failed for uri '+uri)
     return r.json()
  
@@ -113,7 +98,7 @@ def make_special_uri(user_key,uri_prefix,more=''):
         
 def strip_special_uri(uri,uri_prefix):
     uri=strip_uri(uri)
-    if dec(uri).startswith(uri_prefix):
+    if uri.startswith(uri_prefix):
         elements=uri.split(':')
         user_key=elements[1]
         special=user_key.decode('base64')
@@ -131,8 +116,8 @@ def make_special_api(user_key,uri_prefix):
 
 def make_more_name(user_key,group):
     try:
-        name=enc(user_name[1:-1])
-        decoded=dec(urllib.unquote(name))
+        name=user_name[1:-1]
+        decoded=urllib.unquote(name)
         pre0=u'{} '.format(decoded)
         return u"More {}'s {}...".format(decoded,group)
     except:
@@ -188,7 +173,7 @@ def list_category_users(uri):
         name=fol['username']
         key=fol['key']
         fol_uri=make_special_uri(key,uri_user)
-        ref=Ref.directory(name=enc(name),uri=fol_uri)
+        ref=Ref.directory(name=name,uri=fol_uri)
         refs.append(ref)
 
     more=get_next_page(json,u'users')
@@ -210,7 +195,7 @@ def list_fols(uri,user_key): # followers or following
         name=fol['username']
         key=fol['key']
         fol_uri=make_special_uri(key,uri_user)
-        ref=Ref.directory(name=enc(name),uri=fol_uri)
+        ref=Ref.directory(name=name,uri=fol_uri)
         refs.append(ref)
 
     more=get_next_page_uri(json)
@@ -234,8 +219,8 @@ def list_fols(uri,user_key): # followers or following
 def list_user(user_name):
     
     try:
-        name=enc(user_name[1:-1])
-        decoded=dec(urllib.unquote(name))
+        name=user_name[1:-1]
+        decoded=urllib.unquote(name)
         pre0=u'{} '.format(decoded)
         pre=u"{}'s ".format(decoded)
     except:
@@ -276,12 +261,12 @@ def translate_uri_to_url(uri):
     if uri.startswith(track_prefix):
         uri=uri[len(track_prefix):]
         info=ydl.extract_info(mixcloud_prefix+uri,download=False)
-        return dec(info['url'])
+        return info['url']
     else:
         return uri
 
 def track_uri(track_key):
-    return dec(make_uri(track_prefix+track_key))
+    return make_uri(track_prefix+track_key)
     
 def make_track(track_key, name, user, time, length,user_key):
     uri=track_uri(track_key)
@@ -325,12 +310,12 @@ def make_track_from_json(cloudcast):
 
 def list_cloudcasts(uri,user_key=''):
     suri=strip_uri(uri)
-#    if suri.startswith(downloader_prefix):
-#        key=strip_uri(uri)[len(downloader_prefix):]
-#        curi=api_prefix+key
-#        ref=make_track_from_json(uri_json(curi))[0]
-#        refs_cache.add(uri,ref)
-#        return [ref]
+    if track_prefix in suri:
+        key=strip_uri(uri)[len(downloader_prefix):]
+        curi=api_prefix+key
+        ref=make_track_from_json(uri_json(curi))[0]
+        refs_cache.add(uri,ref)
+        return [ref]
     json=uri_json(uri)
     cloudcasts=json['data']
     refs=[]
@@ -520,7 +505,7 @@ class MixcloudLibrary(LibraryProvider):
  
     def browse(self, uri):
         _cache.refresh()
-        if not dec(uri).startswith(uri_prefix):
+        if not uri.startswith(uri_prefix):
             return []
                        
         if uri==uri_root:
