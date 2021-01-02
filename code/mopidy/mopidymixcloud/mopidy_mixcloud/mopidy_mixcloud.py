@@ -340,7 +340,8 @@ def list_categories():
     categories = get_json(uri_categories)['data']
     cat_refs = []
     for category in categories:
-        uri=make_uri(api_prefix+category['key']+u'users/')
+        #uri=make_uri(api_prefix+category['key']+u'users/')
+        uri=make_uri(api_prefix+category['key']+u'cloudcasts/')
         name=category['name']
         cat_refs.append(Ref.directory(name=name,uri=uri))
     _cache.refs.add(uri_categories, cat_refs)
@@ -408,8 +409,9 @@ def list_refs(uri):
     if refs is not None: return refs        
     refs=refs_from_encoded_uri(uri, uri_followers, list_fols)
     if refs is not None: return refs        
-
-    if uri_users in uri:# TODO: this should work with Users->Categories, just build uri properly
+    
+    # TODO: this should work with Users->Categories, just build uri properly
+    if uri_users in uri:
         refs=list_category_users(uri)
         _cache.refs.add(uri,refs)
         return refs
@@ -427,7 +429,7 @@ def list_users(uri, max_artists):
     for artist in artists_dict:
         key=artist['key']
         name=artist['name']
-        username=album['username']
+        username=artist['username']
         uri=make_uri(api_prefix+key+u'cloudcasts/')
         ref=Artist(name=name, uri=uri)
         _cache.add_thumbnail(artist,ref.uri)
@@ -435,8 +437,8 @@ def list_users(uri, max_artists):
         if username not in _cache.users: _cache.users.append(username)
         
     more=next_page_uri(json)
-    so_far = len(albums)
-    if more is not None and so_far < max_albums:
+    so_far = len(artists)
+    if more is not None and so_far < max_artusts:
             more_artists=list_users(make_uri(more),max_artists-so_far)
             artists=artists+more_artists
     return artists
@@ -500,12 +502,9 @@ class MixcloudPlaylists(PlaylistsProvider):
         playlist=_cache.playlists.get(uri)
         if playlist is not None: return playlist
         
-        if not ((api_prefix in uri) and uri.endswith(u'/cloudcast/')):
-            return None
         name=strip_uri(uri)[len(api_prefix)+1:-len(u'/cloudcasts/')]
-        tracks=get_tracks_for_uri(uri,_cache.search_max)
-        playlist=Playist(uri=uri,name=name,tracks=tracks,
-            length=len(tracks),last_modified=None)
+        tracks=get_tracks_for_uri(strip_uri(uri),_cache.search_max)
+        playlist=Playlist(uri=uri,name=name,tracks=tracks)
         _cache.playlists.add(uri,playlist)
         return playlist
 
