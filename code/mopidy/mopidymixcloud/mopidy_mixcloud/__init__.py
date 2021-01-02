@@ -23,7 +23,10 @@ class Extension(ext.Extension):
 
     def get_config_schema(self):
         schema = super(Extension, self).get_config_schema()
-        schema['users']=config.String()
+        schema['users']=config.String(optional=True)
+        schema['tags']=config.String(optional=True)
+        schema['search_max']=config.Integer(optional=True)
+        schema['refresh_period']=config.Integer(optional=True)
         return schema
 
     def setup(self, registry):
