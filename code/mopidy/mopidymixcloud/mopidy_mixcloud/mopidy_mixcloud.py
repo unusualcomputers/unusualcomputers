@@ -18,6 +18,7 @@ mixcloud_prefix=u'https://mixcloud.com'
 uri_root='mixcloud:root'
 uri_categories=u'https://api.mixcloud.com/categories/'
 uri_users=u'users'
+uri_userscategories=u'userscategories'
 uri_user=u'user'
 uri_tags=u'tags'
 uri_tag=u'tag'
@@ -248,27 +249,6 @@ def list_playlists(uri,user_key):
     _cache.refs.add(uri,refs)
     return refs
 
-def list_category_users(uri):
-    refs=_cache.refs.get(uri)
-    if refs is not None: return refs
-
-    json=get_json(uri)
-    users=json['data']
-    refs=[]
-    for user in users:
-        name=user['username']
-        key=user['key']
-        user_uri=make_encoded_uri(key,uri_user)
-        ref=Ref.directory(name=name,uri=user_uri)
-        refs.append(ref)
-
-    more=next_page_ref(json,u'users')
-    if more is not None:
-        refs.append(more)
-
-    _cache.refs.add(uri,refs)
-    return refs
-    
 def list_fols(uri,user_key): # followers or following
     refs=_cache.refs.get(uri)
     if refs is not None: return refs
@@ -333,26 +313,58 @@ def list_user(user_name):
         uri=make_encoded_uri(user_name,uri_listens))
     return [cloudcasts,favorites,playlists,following,followers,listens]
                    
-def list_categories():
-    cat_refs=_cache.refs.get(uri_categories)
+def list_user_categories():
+    cat_refs=_cache.refs.get(uri_userscategories)
     if cat_refs is not None: return cat_refs
-   
     categories = get_json(uri_categories)['data']
     cat_refs = []
     for category in categories:
-        #uri=make_uri(api_prefix+category['key']+u'users/')
+        uri=make_uri(api_prefix+category['key']+u'users/')
+        name=category['name']
+        cat_refs.append(Ref.directory(name=name,uri=uri))
+    _cache.refs.add(uri_userscategories, cat_refs)
+    return cat_refs
+
+def list_cloudcast_categories():
+    cat_refs=_cache.refs.get(uri_categories)
+    if cat_refs is not None: return cat_refs
+    categories = get_json(uri_categories)['data']
+    cat_refs = []
+    for category in categories:
         uri=make_uri(api_prefix+category['key']+u'cloudcasts/')
         name=category['name']
         cat_refs.append(Ref.directory(name=name,uri=uri))
     _cache.refs.add(uri_categories, cat_refs)
     return cat_refs
 
+def list_category_users(uri):
+    refs=_cache.refs.get(uri)
+    if refs is not None: return refs
+
+    json=get_json(uri)
+    users=json['data']
+    refs=[]
+    for user in users:
+        name=user['username']
+        key=user['key']
+        user_uri=make_encoded_uri(key,uri_user)
+        ref=Ref.directory(name=name,uri=user_uri)
+        refs.append(ref)
+
+    more=next_page_ref(json,u'users')
+    if more is not None:
+        refs.append(more)
+
+    _cache.refs.add(uri,refs)
+    return refs
+
 def list_cloudcasts(uri,unused=''):
     return get_refs_for_uri(uri,_cache.search_max)
     
 def list_refs(uri):
     # listing categories
-    if uri.endswith(uri_categories): return list_categories()
+    if uri.endswith(uri_categories): return list_cloudcast_categories()
+    if uri.endswith(uri_userscategories): return list_user_categories()
     
     # something already cached
     refs=_cache.refs.get(uri)
@@ -362,6 +374,9 @@ def list_refs(uri):
     
     # users
     if uri.endswith(uri_users):
+        #first users per category
+        refs.append(
+            Ref.directory(name=u'Categories',uri=make_uri(uri_userscategories)))
         for user in _cache.users:
             ref=Ref.directory(name=user,
                 uri=make_encoded_uri(u'/{}/'.format(user),uri_user))
@@ -392,31 +407,49 @@ def list_refs(uri):
 
     # list of cloudcasts, could be from a number of sources
     refs=refs_from_encoded_uri(uri, uri_cloudcasts, list_cloudcasts)
-    if refs is not None: return refs        
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
     refs=refs_from_encoded_uri(uri, uri_popular, list_cloudcasts)
-    if refs is not None: return refs        
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
     refs=refs_from_encoded_uri(uri, uri_latest, list_cloudcasts)
-    if refs is not None: return refs        
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
 
     # user's lists
     refs=refs_from_encoded_uri(uri, uri_listens, list_cloudcasts)
-    if refs is not None: return refs        
-    refs=refs_from_encoded_uri(uri, uri_favorites, list_cloudcasts)
-    if refs is not None: return refs        
-    refs=refs_from_encoded_uri(uri, uri_playlists, list_playlists)
-    if refs is not None: return refs        
-    refs=refs_from_encoded_uri(uri, uri_following, list_fols)
-    if refs is not None: return refs        
-    refs=refs_from_encoded_uri(uri, uri_followers, list_fols)
-    if refs is not None: return refs        
-    
-    # TODO: this should work with Users->Categories, just build uri properly
-    if uri_users in uri:
-        refs=list_category_users(uri)
+    if refs is not None: 
         _cache.refs.add(uri,refs)
-        return refs
-    refs=list_cloudcasts(uri)
+        return refs        
+    refs=refs_from_encoded_uri(uri, uri_favorites, list_cloudcasts)
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
+    refs=refs_from_encoded_uri(uri, uri_playlists, list_playlists)
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
+    refs=refs_from_encoded_uri(uri, uri_following, list_fols)
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
+    refs=refs_from_encoded_uri(uri, uri_followers, list_fols)
+    if refs is not None: 
+        _cache.refs.add(uri,refs)
+        return refs        
+    
+    
+    # category of users
+    if uri_users in uri and 'categories' in uri:
+       refs=list_category_users(uri)
+       _cache.refs.add(uri,refs)
+       return refs    
 
+    # everything else
+    refs=list_cloudcasts(uri)
     _cache.refs.add(uri,refs)
     return refs    
 
