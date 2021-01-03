@@ -10,6 +10,9 @@ def get_version(filename):
         metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", fh.read()))
         return metadata['version']
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 
 setup(
     name='Mopidy-Mixcloud',
@@ -19,7 +22,7 @@ setup(
     author='Unusual Computers',
     author_email='unusual.computers@gmail.com',
     description='Mopidy Mixcloud extension',
-    long_description=open('README.rst').read(),
+    long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
     zip_safe=False,
