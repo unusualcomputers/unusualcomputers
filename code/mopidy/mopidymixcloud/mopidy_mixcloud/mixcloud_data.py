@@ -136,19 +136,30 @@ def get_tracks_refs_for_uri(uri,max_tracks):
     refs=[]
     tracks = []
 
+    count=0
     for cloudcast in cloudcasts:
         (ref,track)=make_track(cloudcast)
+        count=count+1
         if ref is not None:
             refs.append(ref)
             tracks.append(track)
 
     more=next_page_uri(json)
     so_far=len(tracks)
-    if more is not None and so_far<max_tracks:
-        more_tracks,more_refs=get_tracks_refs_for_uri(make_uri(more),max_tracks-so_far)
-        tracks=tracks+more_tracks
-        refs=refs+more_refs
-    
+    if so_far+5>count:so_far=count
+    if more is not None: 
+        if so_far<max_tracks:
+            more_tracks,more_refs=get_tracks_refs_for_uri(make_uri(more),max_tracks-so_far)
+            tracks=tracks+more_tracks
+            refs=refs+more_refs
+        else:
+            more_param=more.split('/')[-1]
+            ref=Ref.directory(
+                name=u'More tracks...', 
+                uri=make_uri(more))
+            refs.append(ref)
+   
+ 
     cache.refs.add(uri,refs)
     return tracks,refs
 
@@ -214,6 +225,7 @@ def list_fols(uri,user_key): # followers or following
         name=fol['username']
         key=fol['key']
         fol_uri=make_encoded_uri(key,uri_user)
+        cache.add_thumbnail(fol,fol_user)
         ref=Ref.directory(name=name,uri=fol_uri)
         refs.append(ref)
 
@@ -235,12 +247,20 @@ def list_fols(uri,user_key): # followers or following
     return refs
     
 def list_tag(tag):
-    latest=Ref.album(name=u'latest',
+    latest=Ref.directory(name=u'latest',
         uri=make_encoded_uri(u'/discover'+tag,uri_latest))
-    popular=Ref.album(name=u'popular',
+    popular=Ref.directory(name=u'popular',
         uri=make_encoded_uri(u'/discover'+tag,uri_popular))
 
     return [latest,popular]    
+
+def get_user_images(uri):
+    (user_key,more)=strip_encoded_uri(uri,uri_user)
+    if user_key is None: return []
+    key=urllib.quote(user_key)
+    url=api_prefix+key
+    data=get_json(url)
+    return cache.add_thumbnail(data,make_encoded_uri(user_key,uri_user))
 
 def list_user(user_name):
     
@@ -253,7 +273,7 @@ def list_user(user_name):
         pre0=''
         pre = u''
         
-    cloudcasts=Ref.album(name=pre+u'cloudcasts',
+    cloudcasts=Ref.directory(name=pre+u'cloudcasts',
         uri=make_encoded_uri(user_name,uri_cloudcasts))
     favorites=Ref.directory(name=pre+u'favorites',
         uri=make_encoded_uri(user_name,uri_favorites))
@@ -302,6 +322,7 @@ def list_category_users(uri):
         name=user['username']
         key=user['key']
         user_uri=make_encoded_uri(key,uri_user)
+        cache.add_thumbnail(user,user_uri)
         ref=Ref.directory(name=name,uri=user_uri)
         refs.append(ref)
 
@@ -428,7 +449,8 @@ def list_users(uri, max_artists):
         username=artist['username']
         uri=make_uri(api_prefix+key+u'cloudcasts/')
         ref=Artist(name=name, uri=uri)
-        cache.add_thumbnail(artist,ref.uri)
+        cache.add_thumbnail(artist,make_encoded_uri(key,uri_user))
+        cache.add_thumbnail(artist,uri)
         artists.append(ref)
         if username not in cache.users: cache.users.append(username)
         
@@ -449,7 +471,7 @@ def list_tags(tag, uri, max_albums):
         name=album['name']
         uri=make_uri(api_prefix+key+u'latest/')
         ref=Album(name=name, uri=uri)
-        cache.add_thumbnail(album,ref.uri)
+        cache.add_thumbnail(album,uri)
         albums.append(ref)
         
     more=next_page_uri(json)

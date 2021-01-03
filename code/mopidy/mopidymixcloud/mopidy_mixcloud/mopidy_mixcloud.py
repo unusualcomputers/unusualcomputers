@@ -184,7 +184,9 @@ class MixcloudLibrary(LibraryProvider):
         ret={}
         for uri in uris:
             img=cache.images.get(uri)
-            if img is not None: ret[uri]=[img]
+            if img: ret[uri]=img
+            img=get_user_images(uri)
+            if img: ret[uri]=img
         return ret
                    
 class MixcloudPlayback(PlaybackProvider):

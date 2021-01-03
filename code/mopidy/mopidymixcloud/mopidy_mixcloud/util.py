@@ -10,7 +10,7 @@ class LocalData:
         self.tags=[]
         self.default_tags=[]
         self.search_max=20
-        self.images=Cache() # uri -> Image
+        self.images=Cache() # uri -> [Image]
         self.tracks=Cache() # uri -> Track
         self.refs=Cache()   # uri -> list of Ref              
         self.searches=Cache() # uri -> SearchResult
@@ -53,7 +53,6 @@ class LocalData:
     def clear(self,reset_users=False):
         self.tracks.clear()
         self.refs.clear()
-        self.images.clear()
         self.searches.clear()
         self.playlists.clear()
         self.lookup.clear()
@@ -64,11 +63,17 @@ class LocalData:
 
     # thumbnails have a bit of a fiddly handling
     def add_thumbnail(self,jsdict,uri):
+        pics = []
         if 'pictures' in jsdict:
-            if 'thumbnail' in jsdict['pictures']:
-                self.images.add(uri, 
-                    Image(uri=jsdict['pictures']['thumbnail'])) 
-    
+            if 'medium' in jsdict['pictures']:
+                pics.append(Image(uri=jsdict['pictures']['medium'])) 
+            elif 'large' in jsdict['pictures']:
+                pics.append(Image(uri=jsdict['pictures']['large'])) 
+            elif 'thumbnail' in jsdict['pictures']:
+                pics.append(Image(uri=jsdict['pictures']['thumbnail'])) 
+        if len(pics)>0:
+            self.images.add(uri,pics) 
+        return pics    
         
 class MixcloudException(Exception):
     def __init__(self, value):
