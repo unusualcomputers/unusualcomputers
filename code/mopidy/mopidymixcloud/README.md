@@ -6,11 +6,11 @@ Mopidy-Mixcloud
 Installation
 ============
 
-If you already have `mopidy installed <https://docs.mopidy.com/en/latest/installation/>`_ and running, you can install just by running on a command line:
+If you already have [mopidy installed](<https://docs.mopidy.com/en/latest/installation/>) and running, you can install just by running on a command line:
 
     sudo pip install Mopidy-Mixcloud
 
-If not, maybe you could have a look at `Radio Rough HTML <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/README.rst>`_ or `Radio Rough <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst>`_ :)
+If not, maybe you could have a look at [Radio Rough HTML](<https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/README.rst>) or [Radio Rough](<https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst>) :)
   
 
 Use
@@ -34,7 +34,7 @@ To clear this search for string 'refresh:'. This will also clear internal caches
 Configuration
 =============
 
-Once installed it will work, you can disable it by setting enabled=false in [mixcloud] section of `mopidy.conf <https://docs.mopidy.com/en/latest/config/>`_.
+Once installed it will work, you can disable it by setting enabled=false in [mixcloud] section of [mopidy.conf](<https://docs.mopidy.com/en/latest/config/>).
 You can also list your favorite users (including yourself) in a comma separated list under *users* setting  in [mixcloud] section. 
 These users will then appear in Mixcloud/Users section in Mopidy and you will be able to browse their cloudcasts, playlists, followers etc
 
@@ -50,13 +50,13 @@ It is, sadly, impossible to play "select exclusive" mixcloud tracks outside thei
 Project resources
 =================
 
-- `Source code <https://github.com/unusualcomputers/unusualcomputers/tree/master/code/mopidy/mopidymixcloud>`_
+- [Source code](<https://github.com/unusualcomputers/unusualcomputers/tree/master/code/mopidy/mopidymixcloud>)
 
 
 Credits
 =======
 
-- Original author: `unusual computers <http://unusualcomputerscollective.org>`__ (also on `github <https://github.com/unusualcomputers/unusualcomputers/blob/master/README.md#unusual-computers-collective>`__)
+- Original author: [unusual computers](<http://unusualcomputerscollective.org>) (also on [github](<https://github.com/unusualcomputers/unusualcomputers/blob/master/README.md#unusual-computers-collective>))
 
-I have learned a lot from `jackyNIX's <https://github.com/jackyNIX/xbmc-mixcloud-plugin>`__ code for kodi MixCloud plugin. 
+I have learned a lot from [jackyNIX's](<https://github.com/jackyNIX/xbmc-mixcloud-plugin>) code for kodi MixCloud plugin. 
 
