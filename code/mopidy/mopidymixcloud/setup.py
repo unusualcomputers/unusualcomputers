@@ -27,7 +27,7 @@ setup(
         'setuptools',
         'Mopidy >= 1.0',
         'Pykka >= 1.1',
-        'youtube-dl'
+        'youtube-dl >= 2020.6.16.1'
     ],
     entry_points={
         'mopidy.ext': [
