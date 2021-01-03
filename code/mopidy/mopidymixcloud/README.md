@@ -7,7 +7,7 @@ Installation
 ============
 
 If you already have `mopidy installed <https://docs.mopidy.com/en/latest/installation/>`_ and running, you can install just by running on a command line:
-::
+
     sudo pip install Mopidy-Mixcloud
 
 If not, maybe you could have a look at `Radio Rough HTML <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/README.rst>`_ or `Radio Rough <https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst>`_ :)
