@@ -20,6 +20,7 @@ setup(
     author_email='unusual.computers@gmail.com',
     description='Mopidy Mixcloud extension',
     long_description=open('README.rst').read(),
+    long_description_content_type="text/markdown",
     packages=find_packages(),
     zip_safe=False,
     include_package_data=True,
