@@ -27,6 +27,7 @@ class Extension(ext.Extension):
         schema['tags']=config.String(optional=True)
         schema['search_max']=config.Integer(optional=True)
         schema['refresh_period']=config.Integer(optional=True)
+        schema['ignore_exclusive']=config.Boolean(optional=True)
         return schema
 
     def setup(self, registry):
