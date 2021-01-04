@@ -1,9 +1,22 @@
 from mopidy.models import Ref,Track,Album,Artist
 import requests
 import urllib
+import sys
 import youtube_dl
-from util import LocalData,MixcloudException
-from uris import *
+from .util import LocalData,MixcloudException
+from .uris import *
+# backwards compatibility
+def urllibquote(s):
+    if sys.version_info >= (3, 0):
+        return urllib.parse.quote(s)
+    else:
+        return urllib.quote(s)
+
+def urllibunquote(s):
+    if sys.version_info >= (3, 0):
+        return urllib.parse.unquote(s)
+    else:
+        return urllib.unquote(s)
 
 # all cached data is here
 cache=LocalData()
@@ -12,27 +25,31 @@ cache=LocalData()
 def get_json(uri):
     url=strip_uri(uri)
     r=requests.get(url)
-    if not r.ok: raise MixcloudException('Request failed for uri '+uri)
+    if not r.ok: raise MixcloudException('Request failed for uri {}'.format(uri))
     return r.json()
 
-# dealing with complex uri composition (e.g. when username has spaces
-#   they have to be base64 encoded etc) 
+# dealing with various internal uri formats
 def make_encoded_uri(user_key,uri_prefix,more=''):
-    try:
-        enc=user_key.encode('base64')
-    except:
-        enc=user_key.encode('utf-8').encode('base64')
-    special=make_uri(uri_prefix+':'+enc)
-    return u'{}:base64:{}'.format(special,more)
+    if sys.version_info >= (3, 0):
+        special=make_uri(uri_prefix+'#'+user_key)
+    else:
+        try:
+            enc=user_key.encode('base64')
+        except:
+            enc=user_key.encode('utf-8').encode('base64')
+        special=make_uri(uri_prefix+'#'+enc)
+    return u'{}#base64#{}'.format(special,more)
         
 def strip_encoded_uri(uri,uri_prefix):
     uri=strip_uri(uri)
     if uri.startswith(uri_prefix):
-        elements=uri.split(':')
+        elements=uri.split('#')
         user_key=elements[1]
-        special=user_key.decode('base64')
         more=elements[-1]
-        return (special,more)
+        if sys.version_info >= (3, 0):
+            return (user_key,more)
+        else:
+            return (user_key.decode('base64'),more)
     else:
         return (None,None)
         
@@ -40,11 +57,14 @@ def compose_uri(user_key,uri_prefix):
     try:
         return api_prefix+user_key+uri_prefix
     except:
-        return api_prefix+urllib.quote(user_key)+uri_prefix
+        if sys.version_info >= (3, 0):
+            return api_prefix+urllib.parse.quote(user_key)+uri_prefix
+        else:
+            return api_prefix+urllib.quote(user_key)+uri_prefix
 
 def make_more_name(user_key,group):
     try:
-        decoded=urllib.unquote(user_key)
+        decoded=urllibunquote(user_key)
         return u"More {}'s {}...".format(decoded,group)
     except:
         return u"More {}...".format(group)
@@ -199,7 +219,7 @@ def list_playlists(uri,user_key):
     refs=[]
     for playlist in playlists:
         user_name=playlist['name']
-        key=urllib.quote(playlist['key'])
+        key=urllibquote(playlist['key'])
         playlist_uri=api_prefix+key+u'cloudcasts/'
         ref=Ref.playlist(name=user_name,uri=make_uri(playlist_uri))
         refs.append(ref)
@@ -225,7 +245,7 @@ def list_fols(uri,user_key): # followers or following
         name=fol['username']
         key=fol['key']
         fol_uri=make_encoded_uri(key,uri_user)
-        cache.add_thumbnail(fol,fol_user)
+        cache.add_thumbnail(fol,fol_uri)
         ref=Ref.directory(name=name,uri=fol_uri)
         refs.append(ref)
 
@@ -248,16 +268,17 @@ def list_fols(uri,user_key): # followers or following
     
 def list_tag(tag):
     latest=Ref.directory(name=u'latest',
-        uri=make_encoded_uri(u'/discover'+tag,uri_latest))
+        uri=make_encoded_uri('/discover{}'.format(tag),uri_latest))
     popular=Ref.directory(name=u'popular',
-        uri=make_encoded_uri(u'/discover'+tag,uri_popular))
+        uri=make_encoded_uri('/discover{}'.format(tag),uri_popular))
 
     return [latest,popular]    
 
 def get_user_images(uri):
     (user_key,more)=strip_encoded_uri(uri,uri_user)
     if user_key is None: return []
-    key=urllib.quote(user_key)
+    #key=urllibquote(user_key)
+    key=user_key
     url=api_prefix+key
     data=get_json(url)
     return cache.add_thumbnail(data,make_encoded_uri(user_key,uri_user))
@@ -266,7 +287,7 @@ def list_user(user_name):
     
     try:
         name=user_name[1:-1]
-        decoded=urllib.unquote(name)
+        decoded=urllibunquote(name)
         pre0=u'{} '.format(decoded)
         pre=u"{}'s ".format(decoded)
     except:

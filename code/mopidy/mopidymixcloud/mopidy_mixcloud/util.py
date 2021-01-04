@@ -1,4 +1,4 @@
-from cache import Cache
+from .cache import Cache
 import time
 from mopidy.models import Image
 
@@ -25,12 +25,14 @@ class LocalData:
         cfg=config['mixcloud']['users']
         if cfg:
             self.default_users=cfg.split(',')
+            self.default_users=[x.strip() for x in self.default_users]
         else:
             self.default_users=[]
         self.users=self.default_users[:]
         cfg=config['mixcloud']['tags']
         if cfg:
             self.default_tags=cfg.split(',')
+            self.default_tags=[x.strip() for x in self.default_tags]
         else:
             self.default_tags=[]
         self.tags=self.default_tags[:]

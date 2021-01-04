@@ -6,7 +6,13 @@ Mopidy-Mixcloud
 Installation
 ============
 
-If you already have [mopidy installed](<https://docs.mopidy.com/en/latest/installation/>) and running, you can install just by running on a command line:
+If you already have [mopidy installed](<https://docs.mopidy.com/en/latest/installation/>) and running, you can install just by running on a command line.
+
+If you are using Mopidy 3:
+
+    sudo python3 -m pip install Mopidy-Mixcloud
+
+and for Mopidy 2:
 
     sudo pip install Mopidy-Mixcloud
 

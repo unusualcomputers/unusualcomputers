@@ -5,9 +5,10 @@ from mopidy.backend import *
 from mopidy.models import Ref,SearchResult,Playlist
 import pykka
 import urllib
-from util import MixcloudException
-from uris import *
-from mixcloud_data import *
+import sys
+from .util import MixcloudException
+from .uris import *
+from .mixcloud_data import *
 
 # top level menus
 root_list=[ 
@@ -38,7 +39,7 @@ class MixcloudPlaylists(PlaylistsProvider):
             uri=u'{}/{}/{}'.format(api_prefix,u,uri_playlists)
             refs=cache.refs.get(uri)
             if refs is None: 
-                refs=list_playlists(uri,'/'+u+'/')
+                refs=list_playlists(uri,'/{}/'.format(u))
             if refs is not None:
                 playlists=playlists+refs
         return playlists        
@@ -47,7 +48,10 @@ class MixcloudPlaylists(PlaylistsProvider):
         try:
             return list_refs(uri)
         except MixcloudException:#someone encoded our uris
-            return list_refs(urllib.unquote(uri))
+            if sys.version_info >= (3, 0):
+                return list_refs(urllib.parse.unquote(uri))
+            else:
+                return list_refs(urllib.unquote(uri))
 
     def lookup(self, uri):
         playlist=cache.playlists.get(uri)
@@ -80,7 +84,10 @@ class MixcloudLibrary(LibraryProvider):
             try:
                 return list_refs(uri)
             except MixcloudException:#someone encoded our uris
-                return list_refs(urllib.unquote(uri))
+                if sys.version_info >= (3, 0):
+                    return list_refs(urllib.parse.unquote(uri))
+                else:
+                    return list_refs(urllib.unquote(uri))
                            
     def refresh(self, uri=None):
         cache.clear(True)
