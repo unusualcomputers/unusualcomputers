@@ -39,7 +39,7 @@ calls and enquiries: unusual.computers(at)gmail.com
 
   A fully functional kodi machine built into a fully functional flower pot.
 
-* [Mopidy Mixcloud](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidymixcloud/README.rst)
+* [Mopidy Mixcloud](https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidymixcloud/README.md)
   
   A Mopidy plug in to listen to Mixcloud.
 
