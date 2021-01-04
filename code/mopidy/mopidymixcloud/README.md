@@ -16,8 +16,7 @@ and for Mopidy 2:
 
     sudo pip install Mopidy-Mixcloud
 
-If not, maybe you could have a look at [Radio Rough HTML](<https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradioroughhtml/README.rst>) or [Radio Rough](<https://github.com/unusualcomputers/unusualcomputers/blob/master/code/mopidy/mopidyradiorough/README.rst>) :)
-  
+ 
 
 Use
 ===
